@@ -3,13 +3,14 @@ class DeltaTime {
     constructor(){
         this.startTime = Date.now();
         this.lastTime = Date.now();
+        this.currentTime = Date.now();
         this.deltaTime = 0;
     }
 
     update() {
-        const time = Date.now();
-        this.deltaTime = time - this.lastTime;
-        this.lastTime = time;
+        this.currentTime = Date.now();
+        this.deltaTime = this.currentTime - this.lastTime;
+        this.lastTime = this.currentTime;
     }
 
     getTime() {
@@ -21,11 +22,11 @@ class DeltaTime {
     }
 
     getElapsedTime() {
-        return (Date.now() - this.startTime) / 100;
+        return (this.currentTime - this.startTime) / 100;
     }
 
     getOffsetElapsedTime(offset) {
-        return (Date.now() - this.startTime) / 100 + offset;
+        return (this.currentTime - this.startTime) / 100 + offset;
     }
 }
 
