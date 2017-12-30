@@ -1,10 +1,9 @@
 import ParticleManager from './particle-manager';
-import DeltaTime from './delta-time';
+import {deltaTime} from './delta-time';
 import Bullet from './bullet';
 
 const canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
-const deltaTime = new DeltaTime();
 const width = canvas.width = window.innerWidth;
 const height = canvas.height = window.innerHeight;
 let pm = new ParticleManager(width, height);
@@ -24,7 +23,7 @@ function render() {
     ctx.fillRect(0, 0, width, height);
     pm.draw(ctx);
     deltaTime.update();
-    pm.update(deltaTime);
+    pm.update();
     requestAnimationFrame(render);
 }
 

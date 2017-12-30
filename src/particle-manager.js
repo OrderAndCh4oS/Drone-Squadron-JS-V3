@@ -1,4 +1,3 @@
-import {deltaTime} from './delta-time';
 
 export default class ParticleManager {
     constructor(windowWidth, windowHeight) {
@@ -12,10 +11,10 @@ export default class ParticleManager {
         this.particles.push(particle)
     }
 
-    update(deltaTime) {
+    update() {
         this.particles = this.particles
             .map(p => {
-                p.update(deltaTime);
+                p.update();
                 return p;
             })
             .filter(this.keepParticle);

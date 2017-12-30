@@ -1,14 +1,15 @@
+class DeltaTime {
 
-export default class DeltaTime {
-    constructor() {
+    constructor(){
+        this.startTime = Date.now();
         this.lastTime = Date.now();
         this.deltaTime = 0;
     }
 
     update() {
-        const date = Date.now();
-        this.deltaTime = date - this.lastTime;
-        this.lastTime = date;
+        const time = Date.now();
+        this.deltaTime = time - this.lastTime;
+        this.lastTime = time;
     }
 
     getTime() {
@@ -18,4 +19,14 @@ export default class DeltaTime {
     getOffsetTime(offset) {
         return this.deltaTime / 100 + offset;
     }
+
+    getElapsedTime() {
+        return (Date.now() - this.startTime) / 100;
+    }
+
+    getOffsetElapsedTime(offset) {
+        return (Date.now() - this.startTime) / 100 + offset;
+    }
 }
+
+export const deltaTime = new DeltaTime();

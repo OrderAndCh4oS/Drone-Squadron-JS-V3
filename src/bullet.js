@@ -1,4 +1,5 @@
 import Particle from './particle';
+import {deltaTime} from './delta-time';
 
 export default class Bullet extends Particle {
     constructor(x, y, angle, delay = 0) {
@@ -7,14 +8,14 @@ export default class Bullet extends Particle {
         this.delay = delay;
     }
 
-    update(deltaTime) {
+    update() {
         if(this.delay > 0) {
             this.delay -= deltaTime.getTime();
             if(this.delay <= 0 && Math.abs(this.delay) < deltaTime.getTime()) {
-                super.update(deltaTime, Math.abs(this.delay));
+                super.update(Math.abs(this.delay));
             }
         } else {
-            super.update(deltaTime, 0);
+            super.update(0);
         }
     }
 
