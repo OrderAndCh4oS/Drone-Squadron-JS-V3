@@ -1,6 +1,5 @@
 import ParticleManager from './particle-manager';
 import {deltaTime} from './delta-time';
-import Bullet from './bullet';
 import Weapon from './weapon';
 
 const canvas = document.getElementById('canvas');
