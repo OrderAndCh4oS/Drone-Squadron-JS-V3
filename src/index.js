@@ -14,10 +14,9 @@ function render() {
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = '#FFD700';
     ctx.fillRect(0, 0, width, height);
-    pm.draw(ctx);
     deltaTime.update();
     weapon.update();
-    pm.update();
+    pm.update(ctx);
     requestAnimationFrame(render);
 }
 

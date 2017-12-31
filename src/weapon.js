@@ -11,6 +11,14 @@ export default class Weapon {
         this.pm = pm;
     }
 
+    setTarget(target) {
+        this.target = target;
+    }
+
+    draw() {
+
+    }
+
     update() {
         if((deltaTime.getElapsedTime() - this.lastFired) > this.fireRate) {
             this.fire();
@@ -19,7 +27,7 @@ export default class Weapon {
     }
 
     fire() {
-        const bullet = new Bullet(this.x, this.y, this.angle, 0);
+        const bullet = new Bullet(this.x, this.y, this.angle, 0.15);
         this.pm.addParticle(bullet);
     }
 }

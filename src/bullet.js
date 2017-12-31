@@ -3,7 +3,7 @@ import {deltaTime} from './delta-time';
 
 export default class Bullet extends Particle {
     constructor(x, y, angle, delay = 0) {
-        super(x, y, 30, 10, angle);
+        super(x, y, 30, 3, angle);
         this.delay = delay;
     }
 

@@ -11,17 +11,14 @@ export default class ParticleManager {
         this.particles.push(particle)
     }
 
-    update() {
+    update(ctx) {
         this.particles = this.particles
             .map(p => {
+                p.draw(ctx);
                 p.update();
                 return p;
             })
             .filter(this.keepParticle);
-    }
-
-    draw(ctx) {
-        this.particles.map(p => p.draw(ctx))
     }
 
     keepParticle(particle) {
