@@ -15,8 +15,19 @@ export default class Weapon {
         this.target = target;
     }
 
-    draw() {
-
+    draw(ctx) {
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.beginPath();
+        ctx.lineTo(-10, 0);
+        ctx.lineTo(-10, 4);
+        ctx.lineTo(0, 4);
+        ctx.lineTo(0, 0);
+        ctx.strokeStyle = '#000';
+        ctx.stroke();
+        ctx.fillStyle = '#000';
+        ctx.fill();
+        ctx.resetTransform();
     }
 
     update() {
@@ -27,7 +38,7 @@ export default class Weapon {
     }
 
     fire() {
-        const bullet = new Bullet(this.x, this.y, this.angle, 0.15);
+        const bullet = new Bullet(this.x, this.y + 2, this.angle, 0.15);
         this.pm.addParticle(bullet);
     }
 }
