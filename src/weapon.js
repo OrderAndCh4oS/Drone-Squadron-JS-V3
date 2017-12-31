@@ -23,10 +23,6 @@ export default class Weapon {
         this.angle = angle;
     }
 
-    setRotation(rotation) {
-        this.rotation = rotation;
-    }
-
     draw(ctx) {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
@@ -61,6 +57,10 @@ export default class Weapon {
 
     update() {
         this.turn();
+        this.fireIfReady();
+    }
+
+    fireIfReady() {
         if((deltaTime.getElapsedTime() - this.lastFired) > this.fireRate) {
             this.fire();
             this.lastFired = deltaTime.getElapsedTime();
