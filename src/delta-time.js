@@ -1,6 +1,6 @@
 class DeltaTime {
 
-    constructor(){
+    constructor() {
         this.startTime = Date.now();
         this.lastTime = Date.now();
         this.currentTime = Date.now();

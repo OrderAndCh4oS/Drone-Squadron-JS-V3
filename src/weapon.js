@@ -1,18 +1,18 @@
 import Bullet from './bullet';
+import { Context, pm } from './constants';
 import { deltaTime } from './delta-time';
 
 export default class Weapon {
 
-    constructor(x, y, angle, pm) {
+    constructor(x, y, angle, fireRate, angleLimit, turningSpeed) {
         this.x = x;
         this.y = y;
         this.angle = angle;
-        this.fireRate = 5;
+        this.fireRate = fireRate;
         this.lastFired = 0;
-        this.pm = pm;
         this.rotation = 'right';
-        this.angleLimit = 0.4;
-        this.turningSpeed = 0.01;
+        this.angleLimit = angleLimit;
+        this.turningSpeed = turningSpeed;
     }
 
     setTarget(target) {
@@ -23,19 +23,19 @@ export default class Weapon {
         this.angle = angle;
     }
 
-    draw(ctx) {
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.angle);
-        ctx.beginPath();
-        ctx.lineTo(10, -2);
-        ctx.lineTo(10, 2);
-        ctx.lineTo(0, 2);
-        ctx.lineTo(0, -2);
-        ctx.strokeStyle = '#000';
-        ctx.stroke();
-        ctx.fillStyle = '#000';
-        ctx.fill();
-        ctx.resetTransform();
+    draw() {
+        Context.translate(this.x, this.y);
+        Context.rotate(this.angle);
+        Context.beginPath();
+        Context.lineTo(10, -2);
+        Context.lineTo(10, 2);
+        Context.lineTo(0, 2);
+        Context.lineTo(0, -2);
+        Context.strokeStyle = '#000';
+        Context.stroke();
+        Context.fillStyle = '#000';
+        Context.fill();
+        Context.resetTransform();
     }
 
     turn() {
@@ -69,6 +69,6 @@ export default class Weapon {
 
     fire() {
         const bullet = new Bullet(this.x + 10, this.y, this.angle, 0.15);
-        this.pm.addParticle(bullet);
+        pm.addParticle(bullet);
     }
 }

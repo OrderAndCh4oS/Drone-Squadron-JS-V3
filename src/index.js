@@ -1,23 +1,17 @@
-import ParticleManager from './particle-manager';
+import { canvasHeight, canvasWidth, Context, pm } from './constants';
 import { deltaTime } from './delta-time';
 import Weapon from './weapon';
 
-const canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
-const width = canvas.width = window.innerWidth;
-const height = canvas.height = window.innerHeight;
-let pm = new ParticleManager(width, height);
-
-const weapon = new Weapon(10, height / 2, 0, pm);
+const weapon = new Weapon(10, canvasHeight / 2, 0, 3, 0.5, 0.01);
 
 function render() {
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = '#FFD700';
-    ctx.fillRect(0, 0, width, height);
+    Context.clearRect(0, 0, canvasWidth, canvasHeight);
+    Context.fillStyle = '#FFD700';
+    Context.fillRect(0, 0, canvasWidth, canvasHeight);
     deltaTime.update();
-    weapon.draw(ctx);
+    weapon.draw();
     weapon.update();
-    pm.update(ctx);
+    pm.update();
     requestAnimationFrame(render);
 }
 
