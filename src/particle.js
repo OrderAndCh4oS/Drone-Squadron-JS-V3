@@ -6,7 +6,6 @@ import { deltaTime } from './delta-time';
 export default class Particle {
     constructor(x, y, speed = 10, radius = 50, angle = 0) {
         this.radius = radius;
-        this.angle = angle;
         this.position = new Vector(x, y);
         this.velocity = new Vector(0, 0);
         this.velocity.setLength(speed);
