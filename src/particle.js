@@ -1,4 +1,4 @@
-import { Context } from './constants';
+import { context } from './constants';
 
 import Vector from './vector';
 import { deltaTime } from './delta-time';
@@ -19,9 +19,9 @@ export default class Particle {
     }
 
     draw() {
-        Context.beginPath();
-        Context.arc(this.position.x, this.position.y, this.radius, 0, 2 *
+        context.beginPath();
+        context.arc(this.position.x, this.position.y, this.radius, 0, 2 *
             Math.PI);
-        Context.stroke();
+        context.stroke();
     }
 }

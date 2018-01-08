@@ -1,11 +1,12 @@
-import { Context } from './constants';
+import { context } from './constants';
 import Particle from './particle';
 import { deltaTime } from './delta-time';
 
 export default class Bullet extends Particle {
-    constructor(x, y, angle, delay = 0) {
+    constructor(x, y, angle, velocity, delay = 0) {
         super(x, y, 30, 2, angle);
         this.delay = delay;
+        this.velocity.addTo(velocity);
     }
 
     update() {
@@ -21,7 +22,7 @@ export default class Bullet extends Particle {
 
     draw() {
         if(this.delay <= 0) {
-            super.draw(Context);
+            super.draw(context);
         }
     }
 }

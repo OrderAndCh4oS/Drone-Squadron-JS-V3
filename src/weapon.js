@@ -1,37 +1,34 @@
 import Bullet from './bullet';
-import { Context, pm } from './constants';
+import { context, pm } from './constants';
 import { deltaTime } from './delta-time';
 import Vector from './vector';
-import Point from './point';
 
 export default class Weapon {
-
     constructor(x, y, angle, fireRate, angleLimit, turningSpeed) {
-        this.position = new Point(x, y);
+        this.position = new Vector(x, y);
         this.vector = new Vector(x, y);
-        this.vector.setLength(10);
         this.vector.setAngle(angle);
+        this.velocity = new Vector(10, 0);
         this.fireRate = fireRate;
         this.lastFired = 0;
         this.rotation = 'right';
         this.angleLimit = angleLimit;
         this.turningSpeed = turningSpeed;
-        console.log(this.vector.x, this.vector.y);
     }
 
     draw() {
-        Context.translate(this.position.x, this.position.y);
-        Context.rotate(this.vector.getAngle());
-        Context.beginPath();
-        Context.lineTo(10, -2);
-        Context.lineTo(10, 2);
-        Context.lineTo(0, 2);
-        Context.lineTo(0, -2);
-        Context.strokeStyle = '#000';
-        Context.stroke();
-        Context.fillStyle = '#000';
-        Context.fill();
-        Context.resetTransform();
+        context.translate(this.position.x, this.position.y);
+        context.rotate(this.vector.getAngle());
+        context.beginPath();
+        context.lineTo(10, -2);
+        context.lineTo(10, 2);
+        context.lineTo(0, 2);
+        context.lineTo(0, -2);
+        context.strokeStyle = '#000';
+        context.stroke();
+        context.fillStyle = '#000';
+        context.fill();
+        context.resetTransform();
     }
 
     turn() {
@@ -58,6 +55,9 @@ export default class Weapon {
     }
 
     update() {
+        let distanceByDeltaTime = this.velocity.multiply(
+            deltaTime.getTime());
+        this.position.addTo(distanceByDeltaTime);
         this.turn();
         this.fireIfReady();
     }
@@ -70,8 +70,9 @@ export default class Weapon {
     }
 
     fire() {
+        console.log(this.lastFired);
         const bullet = new Bullet(this.position.x, this.position.y,
-            this.vector.getAngle(), 0.15);
+            this.vector.getAngle(), this.velocity, 0.15);
         pm.addParticle(bullet);
     }
 }
