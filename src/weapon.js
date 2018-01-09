@@ -70,9 +70,12 @@ export default class Weapon {
     }
 
     fire() {
-        console.log(this.lastFired);
-        const bullet = new Bullet(this.position.x, this.position.y,
-            this.vector.getAngle(), this.velocity, 0.15);
+        const bullet = new Bullet(
+            this.position.x,
+            this.position.y,
+            this.vector.getAngle(),
+            this.velocity,
+        );
         pm.addParticle(bullet);
     }
 }

@@ -12,16 +12,19 @@ export default class Particle {
         this.velocity.setAngle(angle);
     }
 
-    update(offset) {
-        let distanceByDeltaTime = this.velocity.multiply(
-            deltaTime.getOffsetTime(offset));
+    update() {
+        let distanceByDeltaTime = this.velocity.multiply(deltaTime.getTime());
         this.position.addTo(distanceByDeltaTime);
     }
 
     draw() {
         context.beginPath();
-        context.arc(this.position.x, this.position.y, this.radius, 0, 2 *
-            Math.PI);
+        context.arc(
+            this.position.x,
+            this.position.y,
+            this.radius,
+            0,
+            2 * Math.PI);
         context.stroke();
     }
 }
