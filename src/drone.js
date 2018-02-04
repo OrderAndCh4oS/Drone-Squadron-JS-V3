@@ -1,7 +1,7 @@
 import { context } from './constants';
 import Vector from './service/vector';
 import { deltaTime } from './service/delta-time';
-import Gimbal from './utilities/gimbal';
+import Gimbal from './utility/gimbal';
 
 export default class Drone {
     constructor(x, y, speed = 10, angle = 0, weapon) {

@@ -1,14 +1,14 @@
 import { canvasHeight, canvasWidth, context, dm, pm } from './constants';
 import { deltaTime } from './service/delta-time';
 import Drone from './drone';
-import Shotgun from './weapons/shotgun';
-import Uzi from './weapons/uzi';
-import Rifle from './weapons/rifle';
+import Shotgun from './weapon/shotgun';
+import Uzi from './weapon/uzi';
+import Rifle from './weapon/rifle';
 
 const droneOne = new Drone(10, canvasHeight / 2, 10, 0, Shotgun);
-const droneTwo = new Drone(canvasWidth / 3, canvasHeight / 2, 10, -Math.PI / 2,
+const droneTwo = new Drone(canvasWidth / 3, canvasHeight - 10, 10, -Math.PI / 2,
     Uzi);
-const droneThree = new Drone(canvasWidth / 3, 20, 10, Math.PI / 2, Rifle);
+const droneThree = new Drone(canvasWidth / 2, 20, 10, Math.PI / 2, Rifle);
 
 dm.addDrone(droneOne);
 dm.addDrone(droneTwo);

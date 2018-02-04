@@ -1,4 +1,4 @@
-import { isOffCanvas } from '../functions';
+import { returnToCanvas } from '../functions';
 
 export default class DroneManager {
     constructor() {
@@ -10,12 +10,11 @@ export default class DroneManager {
     }
 
     update() {
-        this.drones = this.drones
-            .map(p => {
-                p.draw();
-                p.update();
-                return p;
-            })
-            .filter(p => !isOffCanvas(p));
+        this.drones = this.drones.map(d => {
+            d.draw();
+            d.update();
+            returnToCanvas(d);
+            return d;
+        });
     }
 }
