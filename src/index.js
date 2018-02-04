@@ -5,10 +5,11 @@ import Shotgun from './weapon/shotgun';
 import Uzi from './weapon/uzi';
 import Rifle from './weapon/rifle';
 
-const droneOne = new Drone(10, canvasHeight / 2, 10, 0, Shotgun);
-const droneTwo = new Drone(canvasWidth / 3, canvasHeight - 10, 10, -Math.PI / 2,
+const droneOne = new Drone(1, 10, canvasHeight / 2, 10, 0, Shotgun);
+const droneTwo = new Drone(2, canvasWidth / 3, canvasHeight - 10, 10, -Math.PI /
+    2,
     Uzi);
-const droneThree = new Drone(canvasWidth / 2, 20, 10, Math.PI / 2, Rifle);
+const droneThree = new Drone(3, canvasWidth / 2, 20, 10, Math.PI / 2, Rifle);
 
 dm.addDrone(droneOne);
 dm.addDrone(droneTwo);

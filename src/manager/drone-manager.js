@@ -1,20 +1,25 @@
 import { returnToCanvas } from '../functions';
 
 export default class DroneManager {
+
     constructor() {
-        this.drones = [];
+        this._drones = [];
+    }
+
+    get drones() {
+        return this._drones;
     }
 
     addDrone(drone) {
-        this.drones.push(drone);
+        this._drones.push(drone);
     }
 
     update() {
-        this.drones = this.drones.map(d => {
+        this._drones = this._drones.map(d => {
             d.draw();
             d.update();
             returnToCanvas(d);
             return d;
-        });
+        }).filter((d) => d.health > 0);
     }
 }

@@ -2,17 +2,24 @@ import { context } from './constants';
 import Vector from './service/vector';
 import { deltaTime } from './service/delta-time';
 import Gimbal from './utility/gimbal';
+import Particle from './abstract/particle';
 
-export default class Drone {
-    constructor(x, y, speed = 10, angle = 0, weapon) {
-        this.position = new Vector(x, y);
+export default class Drone extends Particle {
+    constructor(id, x, y, speed = 10, angle = 0, weapon) {
+        super(id, x, y, speed, 10, angle);
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
-        this.velocity = new Vector(0, 0);
-        this.velocity.setLength(speed);
-        this.velocity.setAngle(angle);
         const gimbal = new Gimbal(0.5, 0.01);
-        this.weapon = new weapon(x, y, angle, gimbal);
+        this.weapon = new weapon(id, x, y, angle, gimbal);
+        this._health = 10;
+    }
+
+    get health() {
+        return this._health;
+    }
+
+    takeDamage(damage) {
+        this._health -= damage;
     }
 
     update() {

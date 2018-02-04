@@ -4,12 +4,17 @@ import Vector from '../service/vector';
 import { deltaTime } from '../service/delta-time';
 
 export default class Particle {
-    constructor(x, y, speed = 10, radius = 50, angle = 0) {
+    constructor(id, x, y, speed = 10, radius = 50, angle = 0) {
+        this._id = id;
         this.radius = radius;
         this.position = new Vector(x, y);
         this.velocity = new Vector(0, 0);
         this.velocity.setLength(speed);
         this.velocity.setAngle(angle);
+    }
+
+    get id() {
+        return this._id;
     }
 
     update() {

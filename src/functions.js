@@ -23,3 +23,13 @@ export function returnToCanvas(drone) {
         drone.position.y = canvasHeight;
     }
 }
+
+export function distanceTo(p1, p2) {
+    const dx = p2.position.x - p1.position.x,
+        dy = p2.position.y - p1.position.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+export function didCollide(p1, p2) {
+    return !(p1.id === p2.id) && distanceTo(p1, p2) < p1.radius + p2.radius;
+}

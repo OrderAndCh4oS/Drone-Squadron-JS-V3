@@ -3,7 +3,8 @@ import { deltaTime } from '../service/delta-time';
 import Vector from '../service/vector';
 
 export default class Weapon {
-    constructor(x, y, angle, gimbal, round, fireRate) {
+    constructor(id, x, y, angle, gimbal, round, fireRate) {
+        this.id = id;
         this.position = new Vector(x, y);
         this.velocity = 0;
         this.fireRate = fireRate;
@@ -46,6 +47,7 @@ export default class Weapon {
     fire() {
         pm.addParticle(
             new this.round(
+                this.id,
                 this.position.x,
                 this.position.y,
                 this.gimbal.vector.getAngle() + this.droneAngle,

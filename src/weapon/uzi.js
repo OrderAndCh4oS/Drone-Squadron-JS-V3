@@ -3,10 +3,10 @@ import NineMM from '../ammo/nine-mm';
 import { context } from '../constants';
 
 export default class Uzi extends Weapon {
-    constructor(x, y, angle, gimbal) {
+    constructor(id, x, y, angle, gimbal) {
         const fireRate = 4;
         const round = NineMM;
-        super(x, y, angle, gimbal, round, fireRate);
+        super(id, x, y, angle, gimbal, round, fireRate);
     }
 
     draw() {
