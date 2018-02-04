@@ -4,11 +4,11 @@ import { deltaTime } from './delta-time';
 import Vector from './vector';
 
 export default class Weapon {
-    constructor(x, y, angle, fireRate, angleLimit, turningSpeed) {
+    constructor(x, y, angle, velocity, fireRate, angleLimit, turningSpeed) {
         this.position = new Vector(x, y);
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
-        this.velocity = new Vector(10, 0);
+        this.velocity = velocity;
         this.fireRate = fireRate;
         this.lastFired = 0;
         this.rotation = 'right';
@@ -18,7 +18,7 @@ export default class Weapon {
 
     draw() {
         context.translate(this.position.x, this.position.y);
-        context.rotate(this.vector.getAngle());
+        context.rotate(this.vector.getAngle() + this.droneAngle);
         context.beginPath();
         context.lineTo(10, -2);
         context.lineTo(10, 2);
@@ -54,10 +54,11 @@ export default class Weapon {
         }
     }
 
-    update() {
-        let distanceByDeltaTime = this.velocity.multiply(
-            deltaTime.getTime());
-        this.position.addTo(distanceByDeltaTime);
+    update(position, vector, velocity) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+        this.velocity = velocity;
+        this.droneAngle = vector.getAngle();
         this.turn();
         this.fireIfReady();
     }
@@ -73,9 +74,10 @@ export default class Weapon {
         const bullet = new Bullet(
             this.position.x,
             this.position.y,
-            this.vector.getAngle(),
+            this.vector.getAngle() + this.droneAngle,
             this.velocity,
         );
+
         pm.addParticle(bullet);
     }
 }
