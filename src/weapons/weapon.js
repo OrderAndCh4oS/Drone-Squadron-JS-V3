@@ -1,15 +1,15 @@
-import Bullet from './bullet';
 import { context, pm } from '../constants';
 import { deltaTime } from '../delta-time';
 import Vector from '../vector';
 
 export default class Weapon {
-    constructor(x, y, angle, velocity, fireRate, gimbal) {
+    constructor(x, y, angle, gimbal, round, fireRate) {
         this.position = new Vector(x, y);
-        this.velocity = velocity;
+        this.velocity = 0;
         this.fireRate = fireRate;
         this.lastFired = 0;
         this.gimbal = gimbal;
+        this.round = round;
     }
 
     draw() {
@@ -44,13 +44,13 @@ export default class Weapon {
     }
 
     fire() {
-        const bullet = new Bullet(
-            this.position.x,
-            this.position.y,
-            this.gimbal.vector.getAngle() + this.droneAngle,
-            this.velocity,
+        pm.addParticle(
+            new this.round(
+                this.position.x,
+                this.position.y,
+                this.gimbal.vector.getAngle() + this.droneAngle,
+                this.velocity,
+            ),
         );
-
-        pm.addParticle(bullet);
     }
 }
