@@ -33,6 +33,7 @@ function animate() {
     deltaTime.update();
     dm.update();
     pm.update();
+    // console.log(grid.grid);
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;

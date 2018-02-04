@@ -1,6 +1,5 @@
 import { context } from './constants';
 import Vector from './service/vector';
-import { deltaTime } from './service/delta-time';
 import Gimbal from './utility/gimbal';
 import Particle from './abstract/particle';
 
@@ -29,8 +28,8 @@ export default class Drone extends Particle {
             this.vector.setAngle(this.vector.getAngle() - Math.random() * 0.05);
         }
         this.velocity.setAngle(this.vector.getAngle());
-        let distanceByDeltaTime = this.velocity.multiply(deltaTime.getTime());
-        this.position.addTo(distanceByDeltaTime);
+        this.move();
+        console.log(this.id);
         this.weapon.update(this.position, this.vector, this.velocity);
     }
 

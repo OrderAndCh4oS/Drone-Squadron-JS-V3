@@ -1,4 +1,4 @@
-import { context } from '../constants';
+import { context, grid } from '../constants';
 
 import Vector from '../service/vector';
 import { deltaTime } from '../service/delta-time';
@@ -19,7 +19,14 @@ export default class Particle {
 
     update() {
         let distanceByDeltaTime = this.velocity.multiply(deltaTime.getTime());
+        this.move(distanceByDeltaTime);
+    }
+
+    move() {
+        let distanceByDeltaTime = this.velocity.multiply(deltaTime.getTime());
+        grid.removeParticle(this);
         this.position.addTo(distanceByDeltaTime);
+        grid.addParticle(this);
     }
 
     draw() {
