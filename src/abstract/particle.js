@@ -1,7 +1,7 @@
-import { context } from './constants';
+import { context } from '../constants';
 
-import Vector from './vector';
-import { deltaTime } from './delta-time';
+import Vector from '../service/vector';
+import { deltaTime } from '../service/delta-time';
 
 export default class Particle {
     constructor(x, y, speed = 10, radius = 50, angle = 0) {

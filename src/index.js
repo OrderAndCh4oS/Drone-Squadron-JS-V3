@@ -1,8 +1,18 @@
-import { canvasHeight, canvasWidth, context, pm } from './constants';
-import { deltaTime } from './delta-time';
+import { canvasHeight, canvasWidth, context, dm, pm } from './constants';
+import { deltaTime } from './service/delta-time';
 import Drone from './drone';
+import Shotgun from './weapons/shotgun';
+import Uzi from './weapons/uzi';
+import Rifle from './weapons/rifle';
 
-const drone = new Drone(10, canvasHeight / 2, 10, 0);
+const droneOne = new Drone(10, canvasHeight / 2, 10, 0, Shotgun);
+const droneTwo = new Drone(canvasWidth / 3, canvasHeight / 2, 10, -Math.PI / 2,
+    Uzi);
+const droneThree = new Drone(canvasWidth / 3, 20, 10, Math.PI / 2, Rifle);
+
+dm.addDrone(droneOne);
+dm.addDrone(droneTwo);
+dm.addDrone(droneThree);
 
 let fpsInterval, startTime, now, then, elapsed;
 
@@ -20,8 +30,7 @@ function animate() {
     context.fillStyle = '#FFD700';
     context.fillRect(0, 0, canvasWidth, canvasHeight);
     deltaTime.update();
-    drone.draw();
-    drone.update();
+    dm.update();
     pm.update();
     requestAnimationFrame(animate);
     now = Date.now();

@@ -1,16 +1,16 @@
-import { isOffCanvas } from './functions';
+import { isOffCanvas } from '../functions';
 
-export default class ParticleManager {
+export default class DroneManager {
     constructor() {
-        this.particles = [];
+        this.drones = [];
     }
 
-    addParticle(particle) {
-        this.particles.push(particle);
+    addDrone(drone) {
+        this.drones.push(drone);
     }
 
     update() {
-        this.particles = this.particles
+        this.drones = this.drones
             .map(p => {
                 p.draw();
                 p.update();

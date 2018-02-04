@@ -1,10 +1,10 @@
-import Weapon from './weapon';
+import Weapon from '../abstract/weapon';
 import { context } from '../constants';
 import SevenSixTwoMM from '../ammo/seven-six-two-mm';
 
 export default class Rifle extends Weapon {
     constructor(x, y, angle, gimbal) {
-        const fireRate = 5;
+        const fireRate = 10;
         const round = SevenSixTwoMM;
         super(x, y, angle, gimbal, round, fireRate);
     }
@@ -17,9 +17,9 @@ export default class Rifle extends Weapon {
         context.lineTo(10, 2);
         context.lineTo(5, 2);
         context.lineTo(5, -2);
-        context.strokeStyle = '#000';
+        context.strokeStyle = '#555';
         context.stroke();
-        context.fillStyle = '#000';
+        context.fillStyle = '#555';
         context.fill();
         context.resetTransform();
     }

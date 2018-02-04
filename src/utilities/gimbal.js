@@ -1,4 +1,4 @@
-import Vector from '../vector';
+import Vector from '../service/vector';
 
 export default class Gimbal {
     constructor(angleLimit, turningSpeed) {
@@ -11,7 +11,6 @@ export default class Gimbal {
     }
 
     update() {
-        console.log('gimbal');
         switch(true) {
             case this.rotation === 'right' &&
             this.vector.getAngle() < this.angleLimit:

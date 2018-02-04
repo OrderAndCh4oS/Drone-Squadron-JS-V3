@@ -1,6 +1,6 @@
 import { context, pm } from '../constants';
-import { deltaTime } from '../delta-time';
-import Vector from '../vector';
+import { deltaTime } from '../service/delta-time';
+import Vector from '../service/vector';
 
 export default class Weapon {
     constructor(x, y, angle, gimbal, round, fireRate) {
