@@ -1,4 +1,4 @@
-import Particle from './particle';
+import Particle from '../particle';
 
 export default class Bullet extends Particle {
     constructor(x, y, angle, velocity) {
