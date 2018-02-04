@@ -1,8 +1,9 @@
 import Particle from '../particle';
 
-export default class Bullet extends Particle {
+export default class SevenSixTwoMM extends Particle {
     constructor(x, y, angle, velocity) {
-        super(x, y, 30, 2, angle);
+        super(x, y, 50, 2, angle);
+        this.damage = 12;
         this.velocity.addTo(velocity);
     }
 }

@@ -2,7 +2,7 @@ import { context } from './constants';
 import Vector from './vector';
 import { deltaTime } from './delta-time';
 import Gimbal from './weapons/gimbal';
-import Uzi from './weapons/uzi';
+import Rifle from './weapons/rifle';
 
 export default class Drone {
     constructor(x, y, speed = 10, angle = 0) {
@@ -13,7 +13,7 @@ export default class Drone {
         this.velocity.setLength(speed);
         this.velocity.setAngle(angle);
         const gimbal = new Gimbal(0.5, 0.01);
-        this.weapon = new Uzi(x, y, angle, gimbal);
+        this.weapon = new Rifle(x, y, angle, gimbal);
     }
 
     update() {
