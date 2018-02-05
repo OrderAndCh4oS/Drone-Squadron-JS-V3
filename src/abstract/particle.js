@@ -11,6 +11,11 @@ export default class Particle {
         this.velocity = new Vector(0, 0);
         this.velocity.setLength(speed);
         this.velocity.setAngle(angle);
+        this._remove = false;
+    }
+
+    get remove() {
+        return this._remove;
     }
 
     get id() {
@@ -27,6 +32,11 @@ export default class Particle {
         grid.removeParticle(this);
         this.position.addTo(distanceByDeltaTime);
         grid.addParticle(this);
+    }
+
+    removeParticle() {
+        this._remove = true;
+        grid.removeParticle(this);
     }
 
     draw() {

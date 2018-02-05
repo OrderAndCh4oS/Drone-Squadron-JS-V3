@@ -18,13 +18,14 @@ export default class ParticleManager {
                 this.collisionDetection(p);
                 return p;
             })
-            .filter(p => !isOffCanvas(p));
+            .filter(p => !isOffCanvas(p) && !p.remove);
     }
 
     collisionDetection(p) {
         dm.drones.map((d) => {
             if(didCollide(p, d)) {
                 d.takeDamage(p.damage);
+                p.removeParticle();
                 // dm.drones.map((d) => console.log(d.id + ': ' + d.health));
             }
         });
