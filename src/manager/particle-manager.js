@@ -18,7 +18,7 @@ export default class ParticleManager {
                 this.collisionDetection(p);
                 return p;
             })
-            .filter(p => !isOffCanvas(p) && !p.remove);
+            .filter(p => !p.remove && !isOffCanvas(p));
     }
 
     collisionDetection(p) {

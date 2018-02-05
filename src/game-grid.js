@@ -1,10 +1,12 @@
-import { canvasHeight, canvasWidth } from './constants';
+import { canvasWidth } from './constants';
 
 export default class GameGrid {
     constructor() {
-        this._grid = new Array(canvasWidth);
+        this.rows = Math.floor(canvasWidth / 10);
+        this.columns = Math.floor(canvasWidth / 10);
+        this._grid = new Array(this.rows);
         for(let i = 0; i < this._grid.length; i++) {
-            this._grid[i] = new Array(canvasHeight);
+            this._grid[i] = new Array(this.columns);
             for(let j = 0; j < this._grid.length; j++) {
                 this._grid[i][j] = [];
             }
@@ -16,12 +18,10 @@ export default class GameGrid {
     }
 
     static inArray(x, y) {
-        return x >= 0 && x < canvasWidth && y >= 0 && y < canvasHeight;
+        return x >= 0 && x < this.rows && y >= 0 && y < this.columns;
     }
 
-    addParticle(particle) {
-        const x = Math.floor(particle.position.x);
-        const y = Math.floor(particle.position.y);
+    addParticle(particle, x, y) {
         if(!GameGrid.inArray(x, y)) {
             return;
         }
@@ -29,9 +29,7 @@ export default class GameGrid {
         // console.log(x, y, this.grid[x][y]);
     }
 
-    removeParticle(particle) {
-        const x = Math.floor(particle.position.x);
-        const y = Math.floor(particle.position.y);
+    removeParticle(particle, x, y) {
         if(!GameGrid.inArray(x, y)) {
             return;
         }
