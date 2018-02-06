@@ -15,6 +15,7 @@ export default class Scanner {
 
     findTarget(drone) {
         this._drone = drone;
+        this.target = null;
         let nearestTarget = {target: null, distance: null};
         this.findGridRange();
         this.forceRangeToGridRowsColumns();
@@ -22,11 +23,9 @@ export default class Scanner {
             for(let j = this.gridRange.start[1]; j <
             this.gridRange.end[1]; j++) {
                 grid.grid[i][j].map((item) => {
-                    console.log(2);
-                    if(!(item instanceof Drone)) {
+                    if(!(item instanceof Drone) || item.id === drone.id) {
                         return;
                     }
-                    console.log(3);
                     const distanceTo = this.distanceToTarget(item);
                     if(nearestTarget.distance === null ||
                         nearestTarget.distance > distanceTo) {
@@ -75,11 +74,11 @@ export default class Scanner {
         const y = this._drone.position.y;
         this.gridRange = {
             start: [
-                Math.floor((x - this.radius) / 10) - 1,
-                Math.floor((y - this.radius) / 10) - 1],
+                Math.floor((x - this.radius) /  grid.gridBlockSize) - 1,
+                Math.floor((y - this.radius) /  grid.gridBlockSize) - 1],
             end: [
-                Math.floor((x + this.radius) / 10) + 1,
-                Math.floor((y + this.radius) / 10) + 1],
+                Math.round((x + this.radius) /  grid.gridBlockSize) + 1,
+                Math.round((y + this.radius) /  grid.gridBlockSize) + 1],
         };
     }
 }

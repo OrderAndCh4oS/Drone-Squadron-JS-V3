@@ -29,8 +29,8 @@ export default class Particle {
 
     move() {
         let distanceByDeltaTime = this.velocity.multiply(deltaTime.getTime());
-        const gridX = Math.floor(this.position.x / 10);
-        const gridY = Math.floor(this.position.y / 10);
+        const gridX = Math.floor(this.position.x / grid.gridBlockSize);
+        const gridY = Math.floor(this.position.y / grid.gridBlockSize);
         grid.removeParticle(this, gridX, gridY);
         this.position.addTo(distanceByDeltaTime);
         grid.addParticle(this, gridX, gridY);
