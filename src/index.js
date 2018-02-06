@@ -4,16 +4,36 @@ import Drone from './drone';
 import Shotgun from './weapon/shotgun';
 import Uzi from './weapon/uzi';
 import Rifle from './weapon/rifle';
+import Gimbal from './utility/gimbal';
+import Scanner from './abstract/scanner';
 
-const droneOne = new Drone(1, 10, canvasHeight / 2, 10, 0, Shotgun);
-const droneTwo = new Drone(2, canvasWidth / 3, canvasHeight - 10, 10, -Math.PI /
-    2,
-    Uzi);
-const droneThree = new Drone(3, canvasWidth / 2, 20, 10, Math.PI / 2, Rifle);
+for(let i = 0; i < 5; i++) {
 
-dm.addDrone(droneOne);
-dm.addDrone(droneTwo);
-dm.addDrone(droneThree);
+    const gimbalOne = new Gimbal(0, 0);
+    const gimbalTwo = new Gimbal(0.2, 0.01);
+    const gimbalThree = new Gimbal(0.4, 0.01);
+
+    const scannerOne = new Scanner(100);
+    const scannerTwo = new Scanner(100);
+    const scannerThree = new Scanner(100);
+
+    const droneOne = new Drone(1, '#777', Math.random() *
+        canvasWidth, Math.random() *
+        canvasHeight, 12, Math.random() * Math.PI * 2, Shotgun, gimbalOne,
+        scannerOne);
+    const droneTwo = new Drone(2, '#444', Math.random() *
+        canvasWidth, Math.random() *
+        canvasHeight, 8, Math.random() * Math.PI * 2, Uzi, gimbalTwo,
+        scannerTwo);
+    const droneThree = new Drone(3, '#222', Math.random() *
+        canvasWidth, Math.random() *
+        canvasHeight, 15, Math.random() * Math.PI * 2, Rifle, gimbalThree,
+        scannerThree);
+
+    dm.addDrone(droneOne);
+    dm.addDrone(droneTwo);
+    dm.addDrone(droneThree);
+}
 
 let fpsInterval, startTime, now, then, elapsed;
 
@@ -33,7 +53,6 @@ function animate() {
     deltaTime.update();
     dm.update();
     pm.update();
-    // console.log(grid.grid);
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;

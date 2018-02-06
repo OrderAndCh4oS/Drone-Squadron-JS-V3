@@ -4,7 +4,7 @@ import Vector from '../service/vector';
 import { deltaTime } from '../service/delta-time';
 
 export default class Particle {
-    constructor(id, x, y, speed = 10, radius = 50, angle = 0) {
+    constructor(id, x, y, speed, radius, angle) {
         this._id = id;
         this.radius = radius;
         this.position = new Vector(x, y);
@@ -12,6 +12,7 @@ export default class Particle {
         this.velocity.setLength(speed);
         this.velocity.setAngle(angle);
         this._remove = false;
+        this.color = '#000';
     }
 
     get remove() {
@@ -23,8 +24,7 @@ export default class Particle {
     }
 
     update() {
-        let distanceByDeltaTime = this.velocity.multiply(deltaTime.getTime());
-        this.move(distanceByDeltaTime);
+        this.move();
     }
 
     move() {
@@ -49,6 +49,7 @@ export default class Particle {
             this.radius,
             0,
             2 * Math.PI);
+        context.strokeStyle = this.color;
         context.stroke();
     }
 }

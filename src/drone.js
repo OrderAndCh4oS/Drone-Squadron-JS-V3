@@ -1,16 +1,17 @@
 import { context } from './constants';
 import Vector from './service/vector';
-import Gimbal from './utility/gimbal';
 import Particle from './abstract/particle';
 
 export default class Drone extends Particle {
-    constructor(id, x, y, speed = 10, angle = 0, weapon) {
+    constructor(id, color, x, y, speed, angle, weapon, gimbal, scanner) {
         super(id, x, y, speed, 10, angle);
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
-        const gimbal = new Gimbal(0.5, 0.01);
         this.weapon = new weapon(id, x, y, angle, gimbal);
         this._health = 10;
+        this.color = color;
+        this.scanner = scanner;
+
     }
 
     get health() {
@@ -22,14 +23,15 @@ export default class Drone extends Particle {
     }
 
     update() {
-        if(Math.random() > 0.5) {
-            this.vector.setAngle(this.vector.getAngle() + Math.random() * 0.05);
+        this.scanner.findTarget(this);
+        const targetAngle = this.scanner.angleToTarget();
+        if(targetAngle > 0) {
+            this.vector.setAngle(this.vector.getAngle() + 0.07);
         } else {
-            this.vector.setAngle(this.vector.getAngle() - Math.random() * 0.05);
+            this.vector.setAngle(this.vector.getAngle() - 0.07);
         }
         this.velocity.setAngle(this.vector.getAngle());
         this.move();
-        console.log(this.id);
         this.weapon.update(this.position, this.vector, this.velocity);
     }
 
@@ -41,8 +43,9 @@ export default class Drone extends Particle {
         context.lineTo(-10, -7);
         context.lineTo(-10, 7);
         context.lineTo(10, 0);
+        context.strokeStyle = this.color;
         context.stroke();
-        context.fillStyle = '#000000';
+        context.fillStyle = this.color;
         context.fill();
         context.resetTransform();
         this.weapon.draw();
