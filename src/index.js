@@ -14,8 +14,8 @@ for(let i = 0; i < 5; i++) {
     const gimbalThree = new Gimbal(0.4, 0.01);
 
     const scannerOne = new Scanner(500);
-    const scannerTwo = new Scanner(500);
-    const scannerThree = new Scanner(500);
+    const scannerTwo = new Scanner(700);
+    const scannerThree = new Scanner(800);
 
     const droneOne = new Drone(1, '#777', Math.random() *
         canvasWidth, Math.random() *
@@ -23,7 +23,7 @@ for(let i = 0; i < 5; i++) {
         scannerOne);
     const droneTwo = new Drone(2, '#444', Math.random() *
         canvasWidth, Math.random() *
-        canvasHeight, 8, Math.random() * Math.PI * 2, Uzi, gimbalTwo,
+        canvasHeight, 17, Math.random() * Math.PI * 2, Uzi, gimbalTwo,
         scannerTwo);
     const droneThree = new Drone(3, '#222', Math.random() *
         canvasWidth, Math.random() *
