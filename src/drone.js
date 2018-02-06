@@ -25,9 +25,10 @@ export default class Drone extends Particle {
     update() {
         this.scanner.findTarget(this);
         const targetAngle = this.scanner.angleToTarget();
+        console.log(targetAngle);
         if(targetAngle > 0) {
             this.vector.setAngle(this.vector.getAngle() + 0.07);
-        } else {
+        } else if(targetAngle < 0) {
             this.vector.setAngle(this.vector.getAngle() - 0.07);
         }
         this.velocity.setAngle(this.vector.getAngle());

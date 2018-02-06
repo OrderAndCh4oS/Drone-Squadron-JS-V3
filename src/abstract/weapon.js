@@ -3,8 +3,9 @@ import { deltaTime } from '../service/delta-time';
 import Vector from '../service/vector';
 
 export default class Weapon {
-    constructor(id, x, y, angle, gimbal, round, fireRate) {
+    constructor(id, color, x, y, angle, gimbal, round, fireRate) {
         this.id = id;
+        this.color = color;
         this.position = new Vector(x, y);
         this.velocity = 0;
         this.fireRate = fireRate;
@@ -21,9 +22,9 @@ export default class Weapon {
         context.lineTo(10, 2);
         context.lineTo(0, 2);
         context.lineTo(0, -2);
-        context.strokeStyle = '#000';
+        context.strokeStyle = this.color;
         context.stroke();
-        context.fillStyle = '#000';
+        context.fillStyle = this.color;
         context.fill();
         context.resetTransform();
     }
@@ -54,5 +55,15 @@ export default class Weapon {
                 this.velocity,
             ),
         );
+    }
+
+    applyFill() {
+        context.fillStyle = this.color;
+        context.fill();
+    }
+
+    applyStroke() {
+        context.strokeStyle = this.color;
+        context.stroke();
     }
 }

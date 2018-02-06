@@ -1,4 +1,5 @@
 import { grid } from '../constants';
+import Drone from '../drone';
 
 export default class Scanner {
 
@@ -21,9 +22,11 @@ export default class Scanner {
             for(let j = this.gridRange.start[1]; j <
             this.gridRange.end[1]; j++) {
                 grid.grid[i][j].map((item) => {
-                    if(typeof item !== Drone) {
+                    console.log(2);
+                    if(!(item instanceof Drone)) {
                         return;
                     }
+                    console.log(3);
                     const distanceTo = this.distanceToTarget(item);
                     if(nearestTarget.distance === null ||
                         nearestTarget.distance > distanceTo) {

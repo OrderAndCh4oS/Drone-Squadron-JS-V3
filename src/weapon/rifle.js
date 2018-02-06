@@ -4,9 +4,9 @@ import SevenSixTwoMM from '../ammo/seven-six-two-mm';
 
 export default class Rifle extends Weapon {
     constructor(id, x, y, angle, gimbal) {
-        const fireRate = 10;
+        const fireRate = 9;
         const round = SevenSixTwoMM;
-        super(id, x, y, angle, gimbal, round, fireRate);
+        super(id, '#577', x, y, angle, gimbal, round, fireRate);
     }
 
     draw() {
@@ -15,12 +15,10 @@ export default class Rifle extends Weapon {
         context.beginPath();
         context.lineTo(10, -2);
         context.lineTo(10, 2);
-        context.lineTo(5, 2);
-        context.lineTo(5, -2);
-        context.strokeStyle = '#555';
-        context.stroke();
-        context.fillStyle = '#555';
-        context.fill();
+        context.lineTo(0, 2);
+        context.lineTo(0, -2);
+        this.applyStroke();
+        this.applyFill();
         context.resetTransform();
     }
 

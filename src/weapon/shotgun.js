@@ -4,9 +4,9 @@ import Shot from '../ammo/shot';
 
 export default class Shotgun extends Weapon {
     constructor(id, x, y, angle, gimbal) {
-        const fireRate = 8;
+        const fireRate = 11;
         const round = Shot;
-        super(id, x, y, angle, gimbal, round, fireRate);
+        super(id, '#664', x, y, angle, gimbal, round, fireRate);
     }
 
     draw() {
@@ -17,10 +17,8 @@ export default class Shotgun extends Weapon {
         context.lineTo(8, 2);
         context.lineTo(0, 2);
         context.lineTo(0, -2);
-        context.strokeStyle = '#222';
-        context.stroke();
-        context.fillStyle = '#222';
-        context.fill();
+        this.applyStroke();
+        this.applyFill();
         context.resetTransform();
     }
 

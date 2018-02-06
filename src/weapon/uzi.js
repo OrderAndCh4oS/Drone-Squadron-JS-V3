@@ -4,9 +4,9 @@ import { context } from '../constants';
 
 export default class Uzi extends Weapon {
     constructor(id, x, y, angle, gimbal) {
-        const fireRate = 4;
+        const fireRate = 3;
         const round = NineMM;
-        super(id, x, y, angle, gimbal, round, fireRate);
+        super(id, '#8aa', x, y, angle, gimbal, round, fireRate);
     }
 
     draw() {
@@ -17,10 +17,8 @@ export default class Uzi extends Weapon {
         context.lineTo(6, 1);
         context.lineTo(0, 1);
         context.lineTo(0, -1);
-        context.strokeStyle = '#333';
-        context.stroke();
-        context.fillStyle = '#333';
-        context.fill();
+        this.applyStroke();
+        this.applyFill();
         context.resetTransform();
     }
 

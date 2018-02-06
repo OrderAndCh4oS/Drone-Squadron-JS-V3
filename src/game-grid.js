@@ -25,21 +25,20 @@ export default class GameGrid {
         return this._grid;
     }
 
-    static gridHasKeys(x, y) {
+    gridHasKeys(x, y) {
         return x >= 0 && x < this._rows && y >= 0 && y < this._columns;
     }
 
     addParticle(particle, x, y) {
-        console.log('adad');
-        // ToDo: not passing this return statement!!
-        if(!GameGrid.gridHasKeys(x, y)) {
+        if(!this.gridHasKeys(x, y)) {
             return;
         }
+        console.log(1);
         this._grid[x][y].push(particle);
     }
 
     removeParticle(particle, x, y) {
-        if(!GameGrid.gridHasKeys(x, y)) {
+        if(!this.gridHasKeys(x, y)) {
             return;
         }
         this._grid[x][y] = this._grid[x][y].filter((p) => p.id !== particle.id);
