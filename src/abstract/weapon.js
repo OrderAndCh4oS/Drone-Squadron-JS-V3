@@ -29,13 +29,15 @@ export default class Weapon {
         context.resetTransform();
     }
 
-    update(position, vector, velocity) {
+    update(position, vector, velocity, scanner) {
         this.position.x = position.x;
         this.position.y = position.y;
         this.velocity = velocity;
         this.droneAngle = vector.getAngle();
         this.gimbal.update();
-        this.fireIfReady();
+        if(scanner.hasTarget() && scanner.angleToTarget() > -0.4 && scanner.angleToTarget() < 0.4) {
+            this.fireIfReady();
+        }
     }
 
     fireIfReady() {
