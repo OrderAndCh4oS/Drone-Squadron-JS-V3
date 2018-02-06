@@ -28,14 +28,18 @@ export default class Scanner {
                     }
                     const distanceTo = this.distanceToTarget(item);
                     if(nearestTarget.distance === null ||
-                        nearestTarget.distance > distanceTo) {
+                        distanceTo < nearestTarget.distance) {
                         nearestTarget.target = item;
                         nearestTarget.distance = distanceTo;
                     }
                 });
             }
         }
-        this.target = nearestTarget.target;
+        if(nearestTarget.distance < this.radius) {
+            this.target = nearestTarget.target;
+        } else {
+            this.target = null;
+        }
     }
 
     forceRangeToGridRowsColumns() {
