@@ -4,7 +4,7 @@ import { context } from '../constants';
 
 export default class Uzi extends Weapon {
     constructor(id, x, y, angle, gimbal) {
-        const fireRate = 3;
+        const fireRate = 2;
         const round = NineMM;
         super(id, '#8aa', x, y, angle, gimbal, round, fireRate);
     }

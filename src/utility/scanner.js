@@ -1,4 +1,4 @@
-import { grid } from '../constants';
+import { context, grid } from '../constants';
 import Drone from '../drone';
 
 export default class Scanner {
@@ -89,5 +89,29 @@ export default class Scanner {
                 Math.round((x + this.radius) / grid.gridBlockSize) + 1,
                 Math.round((y + this.radius) / grid.gridBlockSize) + 1],
         };
+    }
+
+    draw(drone) {
+        if(this.hasTarget()) {
+            context.translate(this.target.position.x,
+                this.target.position.y);
+            context.beginPath();
+            context.moveTo(-5, -5);
+            context.lineTo(5, 5);
+            context.moveTo(5, -5);
+            context.lineTo(-5, 5);
+            context.strokeStyle = '#ffffff';
+            context.strokeWidth = 2;
+            context.stroke();
+            context.resetTransform();
+            context.setLineDash([1, 2]);
+            context.beginPath();
+            context.moveTo(drone.position.x, drone.position.y);
+            context.lineTo(this.target.position.x,
+                this.target.position.y);
+            context.strokeStyle = drone.color;
+            context.strokeWidth = 0.25;
+            context.stroke();
+        }
     }
 }

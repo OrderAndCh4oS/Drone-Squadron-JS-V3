@@ -86,4 +86,11 @@ export default class Vector {
         this._position.x /= value;
         this._position.y /= value;
     }
+
+    angleTo(v2) {
+        Math.atan2(
+            v2.y - this.y,
+            v2.x - this.x,
+        );
+    }
 }
