@@ -107,6 +107,62 @@ var pm = exports.pm = new _particleManager2.default(canvasWidth, canvasHeight);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.isOffCanvas = isOffCanvas;
+exports.returnToCanvas = returnToCanvas;
+exports.distanceTo = distanceTo;
+exports.angleTo = angleTo;
+exports.didCollide = didCollide;
+exports.randomItem = randomItem;
+
+var _constants = __webpack_require__(0);
+
+function isOffCanvas(particle) {
+    return particle.position.x > _constants.canvasWidth + particle.radius || particle.position.x < 0 - particle.radius || particle.position.y > _constants.canvasHeight + particle.radius || particle.position.y < 0 - particle.radius;
+}
+
+function returnToCanvas(drone) {
+    if (drone.position.x > _constants.canvasWidth) {
+        drone.position.x = 0;
+    }
+    if (drone.position.x < 0) {
+        drone.position.x = _constants.canvasWidth;
+    }
+    if (drone.position.y > _constants.canvasHeight) {
+        drone.position.y = 0;
+    }
+    if (drone.position.y < 0) {
+        drone.position.y = _constants.canvasHeight;
+    }
+}
+
+function distanceTo(p1, p2) {
+    var dx = p2.position.x - p1.position.x,
+        dy = p2.position.y - p1.position.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function angleTo(angleOne, angleTwo) {
+    return Math.atan2(Math.sin(angleOne - angleTwo), Math.cos(angleOne - angleTwo));
+}
+
+function didCollide(p1, p2) {
+    return !(p1.id === p2.id) && distanceTo(p1, p2) < p1.radius + p2.radius;
+}
+
+function randomItem(items) {
+    return items[Math.floor(Math.random() * items.length)];
+}
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -194,6 +250,11 @@ var Vector = function () {
             this._position.y /= value;
         }
     }, {
+        key: 'angleTo',
+        value: function angleTo(v2) {
+            Math.atan2(v2.y - this.y, v2.x - this.x);
+        }
+    }, {
         key: 'x',
         get: function get() {
             return this._position.x;
@@ -225,7 +286,7 @@ var Vector = function () {
 exports.default = Vector;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -284,7 +345,7 @@ var DeltaTime = function () {
 var deltaTime = exports.deltaTime = new DeltaTime();
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -298,9 +359,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _deltaTime = __webpack_require__(2);
+var _deltaTime = __webpack_require__(3);
 
-var _vector = __webpack_require__(1);
+var _vector = __webpack_require__(2);
 
 var _vector2 = _interopRequireDefault(_vector);
 
@@ -346,7 +407,7 @@ var Weapon = function () {
             this.velocity = velocity;
             this.droneAngle = vector.getAngle();
             this.gimbal.update();
-            if (scanner.hasTarget() && scanner.angleToTarget() > -0.8 && scanner.angleToTarget() < 0.8) {
+            if (scanner.hasTarget() && scanner.angleToTarget() > -this.gimbal.angleLimit - 0.1 && scanner.angleToTarget() < this.gimbal.angleLimit + 0.1) {
                 this.fireIfReady();
             }
         }
@@ -383,7 +444,7 @@ var Weapon = function () {
 exports.default = Weapon;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -433,52 +494,6 @@ var Bullet = function (_Particle) {
 exports.default = Bullet;
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.isOffCanvas = isOffCanvas;
-exports.returnToCanvas = returnToCanvas;
-exports.distanceTo = distanceTo;
-exports.didCollide = didCollide;
-
-var _constants = __webpack_require__(0);
-
-function isOffCanvas(particle) {
-    return particle.position.x > _constants.canvasWidth + particle.radius || particle.position.x < 0 - particle.radius || particle.position.y > _constants.canvasHeight + particle.radius || particle.position.y < 0 - particle.radius;
-}
-
-function returnToCanvas(drone) {
-    if (drone.position.x > _constants.canvasWidth) {
-        drone.position.x = 0;
-    }
-    if (drone.position.x < 0) {
-        drone.position.x = _constants.canvasWidth;
-    }
-    if (drone.position.y > _constants.canvasHeight) {
-        drone.position.y = 0;
-    }
-    if (drone.position.y < 0) {
-        drone.position.y = _constants.canvasHeight;
-    }
-}
-
-function distanceTo(p1, p2) {
-    var dx = p2.position.x - p1.position.x,
-        dy = p2.position.y - p1.position.y;
-    return Math.sqrt(dx * dx + dy * dy);
-}
-
-function didCollide(p1, p2) {
-    return !(p1.id === p2.id) && distanceTo(p1, p2) < p1.radius + p2.radius;
-}
-
-/***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -493,7 +508,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _vector = __webpack_require__(1);
+var _vector = __webpack_require__(2);
 
 var _vector2 = _interopRequireDefault(_vector);
 
@@ -512,7 +527,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Drone = function (_Particle) {
     _inherits(Drone, _Particle);
 
-    function Drone(id, color, x, y, speed, angle, weapon, gimbal, scanner) {
+    function Drone(id, color, x, y, speed, angle, weapon, gimbal, scanner, thruster, steering) {
         _classCallCheck(this, Drone);
 
         var _this = _possibleConstructorReturn(this, (Drone.__proto__ || Object.getPrototypeOf(Drone)).call(this, id, x, y, speed, 10, angle));
@@ -521,8 +536,10 @@ var Drone = function (_Particle) {
         _this.vector.setAngle(angle);
         _this.weapon = new weapon(id, x, y, angle, gimbal);
         _this._health = 10;
-        _this.color = color;
+        _this._color = color;
         _this.scanner = scanner;
+        _this.thruster = thruster;
+        _this.steering = steering;
         return _this;
     }
 
@@ -535,17 +552,11 @@ var Drone = function (_Particle) {
         key: 'update',
         value: function update() {
             this.scanner.findTarget(this);
-            var targetAngle = this.scanner.angleToTarget();
-            if (targetAngle > 0.1) {
-                this.vector.setAngle(this.vector.getAngle() + 0.02);
-            } else if (targetAngle < -0.1) {
-                this.vector.setAngle(this.vector.getAngle() - 0.02);
-            } else {
-                this.vector.setAngle(this.vector.getAngle() + Math.random() * 0.06 - 0.03);
-            }
+            this.thruster.setPower(this);
+            this.steering.turn(this);
             this.velocity.setAngle(this.vector.getAngle());
             this.move();
-            this.weapon.update(this.position, this.vector, this.velocity, this.scanner);
+            this.weapon.update(this.position, this.vector, this.velocity, this.scanner, this.gimbal);
         }
     }, {
         key: 'draw',
@@ -557,9 +568,9 @@ var Drone = function (_Particle) {
             _constants.context.lineTo(-10, -7);
             _constants.context.lineTo(-10, 7);
             _constants.context.lineTo(10, 0);
-            _constants.context.strokeStyle = this.color;
+            _constants.context.strokeStyle = this._color;
             _constants.context.stroke();
-            _constants.context.fillStyle = this.color;
+            _constants.context.fillStyle = this._color;
             _constants.context.fill();
             _constants.context.resetTransform();
             this.scanner.draw(this);
@@ -569,6 +580,14 @@ var Drone = function (_Particle) {
         key: 'health',
         get: function get() {
             return this._health;
+        }
+    }, {
+        key: 'angle',
+        get: function get() {
+            return this.vector.getAngle();
+        },
+        set: function set(angle) {
+            this.vector.setAngle(angle);
         }
     }]);
 
@@ -592,11 +611,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _vector = __webpack_require__(1);
+var _vector = __webpack_require__(2);
 
 var _vector2 = _interopRequireDefault(_vector);
 
-var _deltaTime = __webpack_require__(2);
+var _deltaTime = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -613,7 +632,7 @@ var Particle = function () {
         this.velocity.setLength(speed);
         this.velocity.setAngle(angle);
         this._remove = false;
-        this.color = '#000';
+        this._color = '#000';
     }
 
     _createClass(Particle, [{
@@ -642,7 +661,7 @@ var Particle = function () {
         value: function draw() {
             _constants.context.beginPath();
             _constants.context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
-            _constants.context.strokeStyle = this.color;
+            _constants.context.strokeStyle = this._color;
             _constants.context.stroke();
         }
     }, {
@@ -654,6 +673,11 @@ var Particle = function () {
         key: 'id',
         get: function get() {
             return this._id;
+        }
+    }, {
+        key: 'color',
+        get: function get() {
+            return this._color;
         }
     }]);
 
@@ -671,7 +695,7 @@ exports.default = Particle;
 
 var _constants = __webpack_require__(0);
 
-var _deltaTime = __webpack_require__(2);
+var _deltaTime = __webpack_require__(3);
 
 var _drone = __webpack_require__(6);
 
@@ -697,21 +721,41 @@ var _scanner = __webpack_require__(20);
 
 var _scanner2 = _interopRequireDefault(_scanner);
 
+var _steering = __webpack_require__(21);
+
+var _steering2 = _interopRequireDefault(_steering);
+
+var _thruster = __webpack_require__(22);
+
+var _thruster2 = _interopRequireDefault(_thruster);
+
+var _functions = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var weaponsArray = [_shotgun2.default, _uzi2.default, _rifle2.default];
 
 for (var i = 0; i < 5; i++) {
 
-    var gimbalOne = new _gimbal2.default(0, 0);
-    var gimbalTwo = new _gimbal2.default(0.2, 0.01);
-    var gimbalThree = new _gimbal2.default(0.4, 0.01);
+    var gimbalOne = new _gimbal2.default(Math.random() * 0.9 + 0.3, 0.01);
+    var gimbalTwo = new _gimbal2.default(Math.random() * 0.9 + 0.3, 0.01);
+    var gimbalThree = new _gimbal2.default(Math.random() * 0.9 + 0.3, 0.01);
 
-    var scannerOne = new _scanner2.default(500);
-    var scannerTwo = new _scanner2.default(700);
-    var scannerThree = new _scanner2.default(800);
+    var scannerOne = new _scanner2.default(Math.random() * 600 + 200);
+    var scannerTwo = new _scanner2.default(Math.random() * 600 + 200);
+    var scannerThree = new _scanner2.default(Math.random() * 600 + 200);
 
-    var droneOne = new _drone2.default(1, '#777', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 12, Math.random() * Math.PI * 2, _shotgun2.default, gimbalOne, scannerOne);
-    var droneTwo = new _drone2.default(2, '#444', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 17, Math.random() * Math.PI * 2, _uzi2.default, gimbalTwo, scannerTwo);
-    var droneThree = new _drone2.default(3, '#222', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 15, Math.random() * Math.PI * 2, _rifle2.default, gimbalThree, scannerThree);
+    var thrusterOne = new _thruster2.default(Math.random() * 20 + 20);
+    var thrusterTwo = new _thruster2.default(Math.random() * 20 + 20);
+    var thrusterThree = new _thruster2.default(Math.random() * 20 + 20);
+
+    var steeringOne = new _steering2.default(Math.random() * 0.9 + 0.4);
+    var steeringTwo = new _steering2.default(Math.random() * 0.9 + 0.4);
+    var steeringThree = new _steering2.default(Math.random() * 0.9 + 0.4);
+
+    var droneOne = new _drone2.default(1, '#345b77', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalOne, scannerOne, thrusterOne, steeringOne);
+    var droneTwo = new _drone2.default(2, '#cd4535', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalTwo, scannerTwo, thrusterTwo, steeringTwo);
+    var droneThree = new _drone2.default(3, '#80bf32', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalThree, scannerThree, thrusterThree, steeringThree);
 
     _constants.dm.addDrone(droneOne);
     _constants.dm.addDrone(droneTwo);
@@ -761,7 +805,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _functions = __webpack_require__(5);
+var _functions = __webpack_require__(1);
 
 var _constants = __webpack_require__(0);
 
@@ -824,7 +868,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _functions = __webpack_require__(5);
+var _functions = __webpack_require__(1);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1006,7 +1050,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(3);
+var _weapon = __webpack_require__(4);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
@@ -1075,7 +1119,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(4);
+var _bullet = __webpack_require__(5);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -1114,7 +1158,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(3);
+var _weapon = __webpack_require__(4);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
@@ -1138,7 +1182,7 @@ var Uzi = function (_Weapon) {
     function Uzi(id, x, y, angle, gimbal) {
         _classCallCheck(this, Uzi);
 
-        var fireRate = 3;
+        var fireRate = 2;
         var round = _nineMm2.default;
         return _possibleConstructorReturn(this, (Uzi.__proto__ || Object.getPrototypeOf(Uzi)).call(this, id, '#8aa', x, y, angle, gimbal, round, fireRate));
     }
@@ -1175,7 +1219,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(4);
+var _bullet = __webpack_require__(5);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -1193,7 +1237,7 @@ var NineMM = function (_Bullet) {
     function NineMM(id, x, y, angle, velocity) {
         _classCallCheck(this, NineMM);
 
-        return _possibleConstructorReturn(this, (NineMM.__proto__ || Object.getPrototypeOf(NineMM)).call(this, id, x, y, 45, 1, angle, velocity, 2));
+        return _possibleConstructorReturn(this, (NineMM.__proto__ || Object.getPrototypeOf(NineMM)).call(this, id, x, y, 45, 1, angle, velocity, 3));
     }
 
     return NineMM;
@@ -1214,7 +1258,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(3);
+var _weapon = __webpack_require__(4);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
@@ -1275,7 +1319,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(4);
+var _bullet = __webpack_require__(5);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -1314,7 +1358,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _vector = __webpack_require__(1);
+var _vector = __webpack_require__(2);
 
 var _vector2 = _interopRequireDefault(_vector);
 
@@ -1330,7 +1374,7 @@ var Gimbal = function () {
         this.vector.setAngle(0);
         this.vector.setLength(5);
         this.rotation = 'right';
-        this.angleLimit = angleLimit;
+        this._angleLimit = angleLimit;
         this.turningSpeed = turningSpeed;
     }
 
@@ -1338,19 +1382,24 @@ var Gimbal = function () {
         key: 'update',
         value: function update() {
             switch (true) {
-                case this.rotation === 'right' && this.vector.getAngle() < this.angleLimit:
+                case this.rotation === 'right' && this.vector.getAngle() < this._angleLimit:
                     this.vector.setAngle(this.vector.getAngle() + this.turningSpeed);
                     break;
-                case this.rotation === 'left' && this.vector.getAngle() > -this.angleLimit:
+                case this.rotation === 'left' && this.vector.getAngle() > -this._angleLimit:
                     this.vector.setAngle(this.vector.getAngle() - this.turningSpeed);
                     break;
-                case this.rotation === 'right' && this.vector.getAngle() > this.angleLimit:
+                case this.rotation === 'right' && this.vector.getAngle() > this._angleLimit:
                     this.rotation = 'left';
                     break;
-                case this.rotation === 'left' && this.vector.getAngle() < -this.angleLimit:
+                case this.rotation === 'left' && this.vector.getAngle() < -this._angleLimit:
                     this.rotation = 'right';
                     break;
             }
+        }
+    }, {
+        key: 'angleLimit',
+        get: function get() {
+            return this._angleLimit;
         }
     }]);
 
@@ -1477,18 +1526,18 @@ var Scanner = function () {
                 _constants.context.lineTo(5, 5);
                 _constants.context.moveTo(5, -5);
                 _constants.context.lineTo(-5, 5);
-                _constants.context.strokeStyle = '#ffffff';
-                _constants.context.strokeWidth = 2;
+                _constants.context.strokeStyle = drone.color;
+                _constants.context.strokeWidth = 3;
                 _constants.context.stroke();
                 _constants.context.resetTransform();
-                _constants.context.setLineDash([1, 2]);
-                _constants.context.beginPath();
-                _constants.context.moveTo(drone.position.x, drone.position.y);
-                _constants.context.lineTo(this.target.position.x, this.target.position.y);
-                _constants.context.strokeStyle = this.color;
-                _constants.context.strokeWidth = 1;
-                _constants.context.strokeOpacity = 0.5;
-                _constants.context.stroke();
+                // context.setLineDash([1, 2]);
+                // context.beginPath();
+                // context.moveTo(drone.position.x, drone.position.y);
+                // context.lineTo(this.target.position.x,
+                //     this.target.position.y);
+                // context.strokeStyle = drone.color;
+                // context.strokeWidth = 0.25;
+                // context.stroke();
             }
         }
     }, {
@@ -1502,6 +1551,173 @@ var Scanner = function () {
 }();
 
 exports.default = Scanner;
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _functions = __webpack_require__(1);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Steering = function () {
+    function Steering(turningSpeed) {
+        _classCallCheck(this, Steering);
+
+        this.turningSpeed = turningSpeed;
+        this.roaming = { callback: null, count: 0 };
+    }
+
+    _createClass(Steering, [{
+        key: 'turn',
+        value: function turn(drone) {
+            this.drone = drone;
+            if (!drone.scanner.hasTarget()) {
+                this.roam();
+            }
+            switch (true) {
+                case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) >= 0.6:
+                    this.turnLeft(this.turningSpeed * 0.1);
+                    break;
+                case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) >= 0.4:
+                    this.turnLeft(this.turningSpeed * 0.1 / 3 * 2);
+                    break;
+                case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) >= 0.2:
+                    this.turnLeft(this.turningSpeed * 0.1 / 3);
+                    break;
+                case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) > 0:
+                    this.turnLeft((0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()));
+                    break;
+                case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) <= -0.6:
+                    this.turnRight(this.turningSpeed * 0.1);
+                    break;
+                case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) <= -0.4:
+                    this.turnRight(this.turningSpeed * 0.1 / 3 * 2);
+                    break;
+                case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) <= -0.2:
+                    this.turnRight(this.turningSpeed * 0.1 / 3);
+                    break;
+                case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) < 0:
+                    this.turnRight((0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()));
+                    break;
+            }
+        }
+    }, {
+        key: 'turnLeft',
+        value: function turnLeft(turnSpeed) {
+            var turn = turnSpeed * this.turningSpeed;
+            this.incrementAngle(-turn);
+        }
+    }, {
+        key: 'turnRight',
+        value: function turnRight(turnSpeed) {
+            var turn = turnSpeed * this.turningSpeed;
+            this.incrementAngle(turn);
+        }
+    }, {
+        key: 'incrementAngle',
+        value: function incrementAngle(increment) {
+            this.drone.angle += increment;
+        }
+    }, {
+        key: 'roam',
+        value: function roam() {
+            if (this.roaming.count > 0) {
+                this.roaming.callback(0.1);
+                this.roaming.count--;
+            } else {
+                this.roaming.count = Math.floor(Math.random() * 60 + 20);
+                this.roaming.callback = Math.random() > 0.5 ? this.turnRight.bind(this) : this.turnLeft.bind(this);
+            }
+        }
+    }]);
+
+    return Steering;
+}();
+
+exports.default = Steering;
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _functions = __webpack_require__(1);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Thruster = function () {
+    function Thruster(thrust) {
+        _classCallCheck(this, Thruster);
+
+        this.thrust = thrust;
+    }
+
+    _createClass(Thruster, [{
+        key: 'setPower',
+        value: function setPower(drone) {
+            this.drone = drone;
+            if (drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 30 && this.angleBetweenRange(drone, 0.4)) {
+                this.stopThrusting();
+                return;
+            }
+            if (drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 300 && !this.angleBetweenRange(drone, 0.7)) {
+                this.startThrusting(1);
+                return;
+            }
+            if (this.angleBetweenRange(drone, 0.6)) {
+                this.startThrusting(0.5);
+            } else if (this.angleBetweenRange(drone, 0.3)) {
+                this.startThrusting(0.8);
+            } else if (this.angleBetweenRange(drone, 0.2)) {
+                this.startThrusting(1);
+            } else {
+                this.startThrusting(0.7);
+            }
+        }
+    }, {
+        key: 'angleBetweenRange',
+        value: function angleBetweenRange(drone, range) {
+            return (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) <= range / 2 && (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) >= -(range / 2);
+        }
+    }, {
+        key: 'startThrusting',
+        value: function startThrusting(power) {
+            this.drone.velocity.setLength(this.thrust * power);
+        }
+    }, {
+        key: 'stopThrusting',
+        value: function stopThrusting() {
+            this.thrustPower = 0;
+        }
+    }, {
+        key: 'isThrusting',
+        value: function isThrusting() {
+            return this.thrusterPower > 0;
+        }
+    }]);
+
+    return Thruster;
+}();
+
+exports.default = Thruster;
 
 /***/ })
 /******/ ]);
