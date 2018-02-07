@@ -60,7 +60,7 @@ export default class Steering {
             this.roaming.callback(0.1);
             this.roaming.count--;
         } else {
-            this.roaming.count = Math.floor(Math.random() * 60);
+            this.roaming.count = Math.floor(Math.random() * 60 + 20);
             this.roaming.callback = Math.random() > 0.5 ? this.turnRight.bind(
                 this) : this.turnLeft.bind(this);
         }
