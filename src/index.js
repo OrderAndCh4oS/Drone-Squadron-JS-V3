@@ -15,17 +15,17 @@ for(let i = 0; i < 5; i++) {
     const gimbalTwo = new Gimbal(Math.random() * 0.9 + 0.3, 0.01);
     const gimbalThree = new Gimbal(Math.random() * 0.9 + 0.3, 0.01);
 
-    const scannerOne = new Scanner(Math.random() * 600 + 400);
-    const scannerTwo = new Scanner(Math.random() * 600 + 400);
-    const scannerThree = new Scanner(Math.random() * 600 + 400);
+    const scannerOne = new Scanner(Math.random() * 600 + 200);
+    const scannerTwo = new Scanner(Math.random() * 600 + 200);
+    const scannerThree = new Scanner(Math.random() * 600 + 200);
 
-    const thrusterOne = new Thrust(Math.random() * 40 + 20);
-    const thrusterTwo = new Thrust(Math.random() * 40 + 20);
-    const thrusterThree = new Thrust(Math.random() * 40 + 20);
+    const thrusterOne = new Thrust(Math.random() * 20 + 20);
+    const thrusterTwo = new Thrust(Math.random() * 20 + 20);
+    const thrusterThree = new Thrust(Math.random() * 20 + 20);
 
-    const steeringOne = new Steering(Math.random() * 0.8 + 0.6);
-    const steeringTwo = new Steering(Math.random() * 0.8 + 0.6);
-    const steeringThree = new Steering(Math.random() * 0.8 + 0.6);
+    const steeringOne = new Steering(Math.random() * 0.9 + 0.4);
+    const steeringTwo = new Steering(Math.random() * 0.9 + 0.4);
+    const steeringThree = new Steering(Math.random() * 0.9 + 0.4);
 
     const droneOne = new Drone(1, '#345b77', Math.random() *
         canvasWidth, Math.random() *
