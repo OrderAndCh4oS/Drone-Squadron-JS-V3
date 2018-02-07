@@ -346,7 +346,7 @@ var Weapon = function () {
             this.velocity = velocity;
             this.droneAngle = vector.getAngle();
             this.gimbal.update();
-            if (scanner.hasTarget() && scanner.angleToTarget() > -0.4 && scanner.angleToTarget() < 0.4) {
+            if (scanner.hasTarget() && scanner.angleToTarget() > -0.8 && scanner.angleToTarget() < 0.8) {
                 this.fireIfReady();
             }
         }
@@ -523,7 +523,6 @@ var Drone = function (_Particle) {
         _this._health = 10;
         _this.color = color;
         _this.scanner = scanner;
-
         return _this;
     }
 
@@ -563,6 +562,26 @@ var Drone = function (_Particle) {
             _constants.context.fillStyle = this.color;
             _constants.context.fill();
             _constants.context.resetTransform();
+            if (this.scanner.hasTarget()) {
+                _constants.context.translate(this.scanner.target.position.x, this.scanner.target.position.y);
+                _constants.context.beginPath();
+                _constants.context.moveTo(-5, -5);
+                _constants.context.lineTo(5, 5);
+                _constants.context.moveTo(5, -5);
+                _constants.context.lineTo(-5, 5);
+                _constants.context.strokeStyle = '#ffffff';
+                _constants.context.strokeWidth = 2;
+                _constants.context.stroke();
+                _constants.context.resetTransform();
+                _constants.context.setLineDash([1, 2]);
+                _constants.context.beginPath();
+                _constants.context.moveTo(this.position.x, this.position.y);
+                _constants.context.lineTo(this.scanner.target.position.x, this.scanner.target.position.y);
+                _constants.context.strokeStyle = this.color;
+                _constants.context.strokeWidth = 1;
+                _constants.context.strokeOpacity = 0.5;
+                _constants.context.stroke();
+            }
             this.weapon.draw();
         }
     }, {
@@ -1387,14 +1406,14 @@ var Scanner = function () {
         _classCallCheck(this, Scanner);
 
         this.radius = radius;
-        this.target = null;
+        this._target = null;
         this._drone = null;
     }
 
     _createClass(Scanner, [{
         key: 'hasTarget',
         value: function hasTarget() {
-            return this.target !== null;
+            return this._target !== null;
         }
     }, {
         key: 'findTarget',
@@ -1402,7 +1421,7 @@ var Scanner = function () {
             var _this = this;
 
             this._drone = drone;
-            this.target = null;
+            this._target = null;
             var nearestTarget = { target: null, distance: null };
             this.findGridRange();
             this.forceRangeToGridRowsColumns();
@@ -1413,14 +1432,18 @@ var Scanner = function () {
                             return;
                         }
                         var distanceTo = _this.distanceToTarget(item);
-                        if (nearestTarget.distance === null || nearestTarget.distance > distanceTo) {
+                        if (nearestTarget.distance === null || distanceTo < nearestTarget.distance) {
                             nearestTarget.target = item;
                             nearestTarget.distance = distanceTo;
                         }
                     });
                 }
             }
-            this.target = nearestTarget.target;
+            if (nearestTarget.target !== null && nearestTarget.distance < this.radius && nearestTarget.target.health > 0) {
+                this._target = nearestTarget.target;
+            } else {
+                this._target = null;
+            }
         }
     }, {
         key: 'forceRangeToGridRowsColumns',
@@ -1442,7 +1465,7 @@ var Scanner = function () {
         key: 'angleToTarget',
         value: function angleToTarget() {
             if (this.hasTarget()) {
-                return Math.atan2(this.target.position.y - this._drone.position.y, this.target.position.x - this._drone.position.x);
+                return Math.atan2(this._target.position.y - this._drone.position.y, this._target.position.x - this._drone.position.x);
             }
             return 0;
         }
@@ -1462,6 +1485,11 @@ var Scanner = function () {
                 start: [Math.floor((x - this.radius) / _constants.grid.gridBlockSize) - 1, Math.floor((y - this.radius) / _constants.grid.gridBlockSize) - 1],
                 end: [Math.round((x + this.radius) / _constants.grid.gridBlockSize) + 1, Math.round((y + this.radius) / _constants.grid.gridBlockSize) + 1]
             };
+        }
+    }, {
+        key: 'target',
+        get: function get() {
+            return this._target;
         }
     }]);
 

@@ -11,7 +11,6 @@ export default class Drone extends Particle {
         this._health = 10;
         this.color = color;
         this.scanner = scanner;
-
     }
 
     get health() {
@@ -30,11 +29,13 @@ export default class Drone extends Particle {
         } else if(targetAngle < -0.1) {
             this.vector.setAngle(this.vector.getAngle() - 0.02);
         } else {
-            this.vector.setAngle(this.vector.getAngle() + Math.random() * 0.06 - 0.03);
+            this.vector.setAngle(this.vector.getAngle() + Math.random() * 0.06 -
+                0.03);
         }
         this.velocity.setAngle(this.vector.getAngle());
         this.move();
-        this.weapon.update(this.position, this.vector, this.velocity, this.scanner);
+        this.weapon.update(this.position, this.vector, this.velocity,
+            this.scanner);
     }
 
     draw() {
@@ -50,6 +51,28 @@ export default class Drone extends Particle {
         context.fillStyle = this.color;
         context.fill();
         context.resetTransform();
+        if(this.scanner.hasTarget()) {
+            context.translate(this.scanner.target.position.x,
+                this.scanner.target.position.y);
+            context.beginPath();
+            context.moveTo(-5, -5);
+            context.lineTo(5, 5);
+            context.moveTo(5, -5);
+            context.lineTo(-5, 5);
+            context.strokeStyle = '#ffffff';
+            context.strokeWidth = 2;
+            context.stroke();
+            context.resetTransform();
+            context.setLineDash([1, 2]);
+            context.beginPath();
+            context.moveTo(this.position.x, this.position.y);
+            context.lineTo(this.scanner.target.position.x,
+                this.scanner.target.position.y);
+            context.strokeStyle = this.color;
+            context.strokeWidth = 1;
+            context.strokeOpacity = 0.5;
+            context.stroke();
+        }
         this.weapon.draw();
     }
 }
