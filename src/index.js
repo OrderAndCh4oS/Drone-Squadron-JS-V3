@@ -8,6 +8,9 @@ import Gimbal from './utility/gimbal';
 import Scanner from './utility/scanner';
 import Steering from './utility/steering';
 import Thrust from './utility/thruster';
+import { randomItem } from './functions';
+
+const weaponsArray = [Shotgun, Uzi, Rifle];
 
 for(let i = 0; i < 5; i++) {
 
@@ -29,15 +32,18 @@ for(let i = 0; i < 5; i++) {
 
     const droneOne = new Drone(1, '#345b77', Math.random() *
         canvasWidth, Math.random() *
-        canvasHeight, 0, Math.random() * Math.PI * 2, Shotgun, gimbalOne,
+        canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
+        gimbalOne,
         scannerOne, thrusterOne, steeringOne);
     const droneTwo = new Drone(2, '#cd4535', Math.random() *
         canvasWidth, Math.random() *
-        canvasHeight, 0, Math.random() * Math.PI * 2, Uzi, gimbalTwo,
+        canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
+        gimbalTwo,
         scannerTwo, thrusterTwo, steeringTwo);
     const droneThree = new Drone(3, '#80bf32', Math.random() *
         canvasWidth, Math.random() *
-        canvasHeight, 0, Math.random() * Math.PI * 2, Rifle, gimbalThree,
+        canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
+        gimbalThree,
         scannerThree, thrusterThree, steeringThree);
 
     dm.addDrone(droneOne);
