@@ -562,26 +562,7 @@ var Drone = function (_Particle) {
             _constants.context.fillStyle = this.color;
             _constants.context.fill();
             _constants.context.resetTransform();
-            if (this.scanner.hasTarget()) {
-                _constants.context.translate(this.scanner.target.position.x, this.scanner.target.position.y);
-                _constants.context.beginPath();
-                _constants.context.moveTo(-5, -5);
-                _constants.context.lineTo(5, 5);
-                _constants.context.moveTo(5, -5);
-                _constants.context.lineTo(-5, 5);
-                _constants.context.strokeStyle = '#ffffff';
-                _constants.context.strokeWidth = 2;
-                _constants.context.stroke();
-                _constants.context.resetTransform();
-                _constants.context.setLineDash([1, 2]);
-                _constants.context.beginPath();
-                _constants.context.moveTo(this.position.x, this.position.y);
-                _constants.context.lineTo(this.scanner.target.position.x, this.scanner.target.position.y);
-                _constants.context.strokeStyle = this.color;
-                _constants.context.strokeWidth = 1;
-                _constants.context.strokeOpacity = 0.5;
-                _constants.context.stroke();
-            }
+            this.scanner.draw(this);
             this.weapon.draw();
         }
     }, {
@@ -1485,6 +1466,30 @@ var Scanner = function () {
                 start: [Math.floor((x - this.radius) / _constants.grid.gridBlockSize) - 1, Math.floor((y - this.radius) / _constants.grid.gridBlockSize) - 1],
                 end: [Math.round((x + this.radius) / _constants.grid.gridBlockSize) + 1, Math.round((y + this.radius) / _constants.grid.gridBlockSize) + 1]
             };
+        }
+    }, {
+        key: 'draw',
+        value: function draw(drone) {
+            if (this.hasTarget()) {
+                _constants.context.translate(this.target.position.x, this.target.position.y);
+                _constants.context.beginPath();
+                _constants.context.moveTo(-5, -5);
+                _constants.context.lineTo(5, 5);
+                _constants.context.moveTo(5, -5);
+                _constants.context.lineTo(-5, 5);
+                _constants.context.strokeStyle = '#ffffff';
+                _constants.context.strokeWidth = 2;
+                _constants.context.stroke();
+                _constants.context.resetTransform();
+                _constants.context.setLineDash([1, 2]);
+                _constants.context.beginPath();
+                _constants.context.moveTo(drone.position.x, drone.position.y);
+                _constants.context.lineTo(this.target.position.x, this.target.position.y);
+                _constants.context.strokeStyle = this.color;
+                _constants.context.strokeWidth = 1;
+                _constants.context.strokeOpacity = 0.5;
+                _constants.context.stroke();
+            }
         }
     }, {
         key: 'target',

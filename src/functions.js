@@ -30,6 +30,11 @@ export function distanceTo(p1, p2) {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
+export function angleTo(angleOne, angleTwo) {
+    return Math.atan2(Math.sin(angleOne - angleTwo),
+        Math.cos(angleOne - angleTwo));
+}
+
 export function didCollide(p1, p2) {
     return !(p1.id === p2.id) && distanceTo(p1, p2) < p1.radius + p2.radius;
 }
