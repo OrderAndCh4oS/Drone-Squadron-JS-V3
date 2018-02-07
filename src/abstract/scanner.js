@@ -2,20 +2,23 @@ import { grid } from '../constants';
 import Drone from '../drone';
 
 export default class Scanner {
-
     constructor(radius) {
         this.radius = radius;
-        this.target = null;
+        this._target = null;
         this._drone = null;
     }
 
+    get target() {
+        return this._target;
+    }
+
     hasTarget() {
-        return this.target !== null;
+        return this._target !== null;
     }
 
     findTarget(drone) {
         this._drone = drone;
-        this.target = null;
+        this._target = null;
         let nearestTarget = {target: null, distance: null};
         this.findGridRange();
         this.forceRangeToGridRowsColumns();
@@ -35,10 +38,12 @@ export default class Scanner {
                 });
             }
         }
-        if(nearestTarget.distance < this.radius) {
-            this.target = nearestTarget.target;
+        if(nearestTarget.target !== null &&
+            nearestTarget.distance < this.radius &&
+            nearestTarget.target.health > 0) {
+            this._target = nearestTarget.target;
         } else {
-            this.target = null;
+            this._target = null;
         }
     }
 
@@ -60,8 +65,8 @@ export default class Scanner {
     angleToTarget() {
         if(this.hasTarget()) {
             return Math.atan2(
-                this.target.position.y - this._drone.position.y,
-                this.target.position.x - this._drone.position.x,
+                this._target.position.y - this._drone.position.y,
+                this._target.position.x - this._drone.position.x,
             );
         }
         return 0;
@@ -78,11 +83,11 @@ export default class Scanner {
         const y = this._drone.position.y;
         this.gridRange = {
             start: [
-                Math.floor((x - this.radius) /  grid.gridBlockSize) - 1,
-                Math.floor((y - this.radius) /  grid.gridBlockSize) - 1],
+                Math.floor((x - this.radius) / grid.gridBlockSize) - 1,
+                Math.floor((y - this.radius) / grid.gridBlockSize) - 1],
             end: [
-                Math.round((x + this.radius) /  grid.gridBlockSize) + 1,
-                Math.round((y + this.radius) /  grid.gridBlockSize) + 1],
+                Math.round((x + this.radius) / grid.gridBlockSize) + 1,
+                Math.round((y + this.radius) / grid.gridBlockSize) + 1],
         };
     }
 }
