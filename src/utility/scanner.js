@@ -100,18 +100,18 @@ export default class Scanner {
             context.lineTo(5, 5);
             context.moveTo(5, -5);
             context.lineTo(-5, 5);
-            context.strokeStyle = '#ffffff';
-            context.strokeWidth = 2;
+            context.strokeStyle = drone.color;
+            context.strokeWidth = 3;
             context.stroke();
             context.resetTransform();
-            context.setLineDash([1, 2]);
-            context.beginPath();
-            context.moveTo(drone.position.x, drone.position.y);
-            context.lineTo(this.target.position.x,
-                this.target.position.y);
-            context.strokeStyle = drone.color;
-            context.strokeWidth = 0.25;
-            context.stroke();
+            // context.setLineDash([1, 2]);
+            // context.beginPath();
+            // context.moveTo(drone.position.x, drone.position.y);
+            // context.lineTo(this.target.position.x,
+            //     this.target.position.y);
+            // context.strokeStyle = drone.color;
+            // context.strokeWidth = 0.25;
+            // context.stroke();
         }
     }
 }
