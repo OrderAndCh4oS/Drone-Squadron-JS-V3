@@ -19,19 +19,19 @@ import { randomItem } from './functions';
 
 const weaponsArray = [Shotgun, Uzi, Rifle];
 
-for(let i = 0; i < 5; i++) {
+for(let i = 0; i < 10; i++) {
 
-    const gimbalOne = new Gimbal(Math.random() * 0.9 + 0.3, 0.01);
-    const gimbalTwo = new Gimbal(Math.random() * 0.9 + 0.3, 0.01);
-    const gimbalThree = new Gimbal(Math.random() * 0.9 + 0.3, 0.01);
+    const gimbalOne = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
+    const gimbalTwo = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
+    const gimbalThree = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
 
     const scannerOne = new Scanner(Math.random() * 600 + 200);
     const scannerTwo = new Scanner(Math.random() * 600 + 200);
     const scannerThree = new Scanner(Math.random() * 600 + 200);
 
-    const thrusterOne = new Thrust(Math.random() * 20 + 20);
-    const thrusterTwo = new Thrust(Math.random() * 20 + 20);
-    const thrusterThree = new Thrust(Math.random() * 20 + 20);
+    const thrusterOne = new Thrust(Math.random() * 20 + 10);
+    const thrusterTwo = new Thrust(Math.random() * 20 + 10);
+    const thrusterThree = new Thrust(Math.random() * 20 + 10);
 
     const steeringOne = new Steering(Math.random() * 0.9 + 0.4);
     const steeringTwo = new Steering(Math.random() * 0.9 + 0.4);

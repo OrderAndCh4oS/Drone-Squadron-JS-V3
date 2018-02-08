@@ -29,15 +29,15 @@ export default class Weapon {
         context.resetTransform();
     }
 
-    update(position, vector, velocity, scanner) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-        this.velocity = velocity;
-        this.droneAngle = vector.getAngle();
-        this.gimbal.update();
-        if(scanner.hasTarget() &&
-            scanner.angleToTarget() > -this.gimbal.angleLimit - 0.1 &&
-            scanner.angleToTarget() < this.gimbal.angleLimit + 0.1) {
+    update(drone) {
+        this.position.x = drone.position.x;
+        this.position.y = drone.position.y;
+        this.velocity = drone.velocity;
+        this.droneAngle = drone.vector.getAngle();
+        this.gimbal.trackTarget(drone);
+        if(drone.scanner.hasTarget() &&
+            drone.scanner.angleToTarget() > -this.gimbal.angleLimit - 0.2 &&
+            drone.scanner.angleToTarget() < this.gimbal.angleLimit + 0.2) {
             this.fireIfReady();
         }
     }
