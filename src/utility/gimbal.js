@@ -1,4 +1,5 @@
 import Vector from '../service/vector';
+import { angleTo } from '../functions';
 
 export default class Gimbal {
 
@@ -9,13 +10,32 @@ export default class Gimbal {
         this.rotation = 'right';
         this._angleLimit = angleLimit;
         this.turningSpeed = turningSpeed;
+        this.lead = 0.2;
     }
 
     get angleLimit() {
         return this._angleLimit;
     }
 
-    update() {
+    trackTarget(drone) {
+        if(drone.scanner.hasTarget()) {
+            switch(true) {
+                case (angleTo(drone.angle + this.vector.getAngle(),
+                    drone.scanner.angleToTarget()) > 0.05):
+                    this.rotation = 'left';
+                    break;
+                case (angleTo(drone.angle + this.vector.getAngle(),
+                    drone.scanner.angleToTarget()) < -0.05):
+                    this.rotation = 'right';
+                    break;
+                default:
+                    return;
+            }
+        }
+        this.turn();
+    }
+
+    turn() {
         switch(true) {
             case this.rotation === 'right' &&
             this.vector.getAngle() < this._angleLimit:

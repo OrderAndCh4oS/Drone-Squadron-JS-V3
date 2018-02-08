@@ -38,18 +38,6 @@ export default class Thruster {
         }
     }
 
-    targetIsBehind(drone) {
-        return drone.scanner.hasTarget() &&
-            distanceTo(drone, drone.scanner.target) < 300 &&
-            !angleBetweenRange(drone, Math.PI / 2);
-    }
-
-    targetIsTooClose(drone) {
-        return drone.scanner.hasTarget() &&
-            distanceTo(drone, drone.scanner.target) < 30 &&
-            angleBetweenRange(drone, 0.6);
-    }
-
     startThrusting(power) {
         this.drone.velocity.setLength(this.thrust * power);
     }
@@ -60,6 +48,18 @@ export default class Thruster {
 
     isThrusting() {
         return this.thrusterPower > 0;
+    }
+
+    targetIsBehind(drone) {
+        return drone.scanner.hasTarget() &&
+            distanceTo(drone, drone.scanner.target) < 300 &&
+            !angleBetweenRange(drone, Math.PI / 2);
+    }
+
+    targetIsTooClose(drone) {
+        return drone.scanner.hasTarget() &&
+            distanceTo(drone, drone.scanner.target) < 30 &&
+            angleBetweenRange(drone, 0.6);
     }
 
     getPowerFromDistance(drone) {
