@@ -1,4 +1,4 @@
-import { angleTo, distanceTo } from '../functions';
+import { angleBetweenRange, distanceTo } from '../functions';
 
 export default class Thruster {
     constructor(thrust) {
@@ -7,33 +7,47 @@ export default class Thruster {
 
     setPower(drone) {
         this.drone = drone;
-        if(drone.scanner.hasTarget() &&
-            distanceTo(drone, drone.scanner.target) < 30 &&
-            this.angleBetweenRange(drone, 0.4)) {
-            this.stopThrusting();
-            return;
-        }
-        if(drone.scanner.hasTarget() &&
-            distanceTo(drone, drone.scanner.target) < 300 &&
-            !this.angleBetweenRange(drone, 0.7)) {
-            this.startThrusting(1);
-            return;
-        }
-        if(this.angleBetweenRange(drone, 0.6)) {
-            this.startThrusting(0.5);
-        } else if(this.angleBetweenRange(drone, 0.3)) {
-            this.startThrusting(0.8);
-        } else if(this.angleBetweenRange(drone, 0.2)) {
-            this.startThrusting(1);
-        } else {
-            this.startThrusting(0.7);
+        let power = 1;
+        switch(true) {
+            case this.targetIsTooClose(drone):
+                this.stopThrusting();
+                break;
+            case this.targetIsBehind(drone):
+                this.startThrusting(1);
+                break;
+            case drone.scanner.hasTarget() &&
+            angleBetweenRange(drone.angle, drone.scanner.angleToTarget(),
+                0.2):
+                power = this.getPowerFromDistance(drone);
+                this.startThrusting(power);
+                break;
+            case drone.scanner.hasTarget() &&
+            angleBetweenRange(drone.angle, drone.scanner.angleToTarget(),
+                0.3):
+                power = this.getPowerFromDistance(drone);
+                this.startThrusting(0.8 * power);
+                break;
+            case drone.scanner.hasTarget() &&
+            angleBetweenRange(drone.angle, drone.scanner.angleToTarget(),
+                0.6):
+                this.startThrusting(0.4);
+                break;
+            default:
+                this.startThrusting(0.5);
+
         }
     }
 
-    angleBetweenRange(drone, range) {
-        return angleTo(drone.angle, drone.scanner.angleToTarget()) <= range /
-            2 &&
-            angleTo(drone.angle, drone.scanner.angleToTarget()) >= -(range / 2);
+    targetIsBehind(drone) {
+        return drone.scanner.hasTarget() &&
+            distanceTo(drone, drone.scanner.target) < 300 &&
+            !angleBetweenRange(drone, Math.PI / 2);
+    }
+
+    targetIsTooClose(drone) {
+        return drone.scanner.hasTarget() &&
+            distanceTo(drone, drone.scanner.target) < 30 &&
+            angleBetweenRange(drone, 0.6);
     }
 
     startThrusting(power) {
@@ -46,5 +60,20 @@ export default class Thruster {
 
     isThrusting() {
         return this.thrusterPower > 0;
+    }
+
+    getPowerFromDistance(drone) {
+        switch(true) {
+            case distanceTo(drone, drone.scanner.target) > 800:
+                return 1;
+            case distanceTo(drone, drone.scanner.target) > 600:
+                return 0.8;
+            case distanceTo(drone, drone.scanner.target) > 300:
+                return 0.6;
+            case distanceTo(drone, drone.scanner.target) > 200:
+                return 0.4;
+            case distanceTo(drone, drone.scanner.target) > 100:
+                return 0.2;
+        }
     }
 }

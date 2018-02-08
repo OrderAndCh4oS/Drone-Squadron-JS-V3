@@ -42,3 +42,8 @@ export function didCollide(p1, p2) {
 export function randomItem(items) {
     return items[Math.floor(Math.random() * items.length)];
 }
+
+export function angleBetweenRange(angleOne, angleTwo, range) {
+    return angleTo(angleOne, angleTwo) <= range / 2 &&
+        angleTo(angleOne, angleTwo) >= -(range / 2);
+}

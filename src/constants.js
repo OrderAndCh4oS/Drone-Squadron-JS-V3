@@ -3,6 +3,11 @@ import DroneManager from './manager/drone-manager';
 import GameGrid from './game-grid';
 
 const canvas = document.getElementById('canvas');
+export const colours = {
+    red: '#cd4535',
+    green: '#80bf32',
+    blue: '#345b77',
+};
 export const context = canvas.getContext('2d');
 export const canvasWidth = canvas.width = window.innerWidth;
 export const canvasHeight = canvas.height = window.innerHeight;

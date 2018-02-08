@@ -1,4 +1,11 @@
-import { canvasHeight, canvasWidth, context, dm, pm } from './constants';
+import {
+    canvasHeight,
+    canvasWidth,
+    colours,
+    context,
+    dm,
+    pm,
+} from './constants';
 import { deltaTime } from './service/delta-time';
 import Drone from './drone';
 import Shotgun from './weapon/shotgun';
@@ -30,17 +37,17 @@ for(let i = 0; i < 5; i++) {
     const steeringTwo = new Steering(Math.random() * 0.9 + 0.4);
     const steeringThree = new Steering(Math.random() * 0.9 + 0.4);
 
-    const droneOne = new Drone(1, '#345b77', Math.random() *
+    const droneOne = new Drone(1, colours.blue, Math.random() *
         canvasWidth, Math.random() *
         canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
         gimbalOne,
         scannerOne, thrusterOne, steeringOne);
-    const droneTwo = new Drone(2, '#cd4535', Math.random() *
+    const droneTwo = new Drone(2, colours.red, Math.random() *
         canvasWidth, Math.random() *
         canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
         gimbalTwo,
         scannerTwo, thrusterTwo, steeringTwo);
-    const droneThree = new Drone(3, '#80bf32', Math.random() *
+    const droneThree = new Drone(3, colours.green, Math.random() *
         canvasWidth, Math.random() *
         canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
         gimbalThree,
