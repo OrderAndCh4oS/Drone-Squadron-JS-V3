@@ -10,7 +10,7 @@ export default class Drone extends Particle {
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
         this.weapon = new weapon(id, x, y, angle, gimbal);
-        this._health = 10;
+        this._health = 100;
         this._color = color;
         this.scanner = scanner;
         this.thruster = thruster;
@@ -56,6 +56,7 @@ export default class Drone extends Particle {
         context.fill();
         context.resetTransform();
         this.scanner.draw(this);
+        this.thruster.draw(this);
         this.weapon.draw();
     }
 }

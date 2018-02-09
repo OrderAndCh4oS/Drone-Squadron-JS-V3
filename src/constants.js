@@ -4,6 +4,7 @@ import GameGrid from './game-grid';
 
 const canvas = document.getElementById('canvas');
 export const colours = {
+    orange: '#cd7831',
     red: '#cd4535',
     green: '#80bf32',
     blue: '#345b77',
