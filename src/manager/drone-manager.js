@@ -1,7 +1,6 @@
 import { returnToCanvas } from '../functions';
 
 export default class DroneManager {
-
     constructor() {
         this._drones = [];
     }
