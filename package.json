@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "watch": "webpack-dev-server --watch --inline"
+    "watch": "webpack-dev-server --watch --inline --open"
   },
   "keywords": [],
   "author": "",

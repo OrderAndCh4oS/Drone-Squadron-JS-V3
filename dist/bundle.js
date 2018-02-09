@@ -71,9 +71,9 @@
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-exports.pm = exports.dm = exports.grid = exports.canvasHeight = exports.canvasWidth = exports.context = undefined;
+exports.pm = exports.dm = exports.grid = exports.canvasHeight = exports.canvasWidth = exports.context = exports.colours = undefined;
 
 var _particleManager = __webpack_require__(9);
 
@@ -90,6 +90,11 @@ var _gameGrid2 = _interopRequireDefault(_gameGrid);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.getElementById('canvas');
+var colours = exports.colours = {
+    red: '#cd4535',
+    green: '#80bf32',
+    blue: '#345b77'
+};
 var context = exports.context = canvas.getContext('2d');
 var canvasWidth = exports.canvasWidth = canvas.width = window.innerWidth;
 var canvasHeight = exports.canvasHeight = canvas.height = window.innerHeight;
@@ -113,6 +118,7 @@ exports.distanceTo = distanceTo;
 exports.angleTo = angleTo;
 exports.didCollide = didCollide;
 exports.randomItem = randomItem;
+exports.angleBetweenRange = angleBetweenRange;
 
 var _constants = __webpack_require__(0);
 
@@ -151,6 +157,10 @@ function didCollide(p1, p2) {
 
 function randomItem(items) {
     return items[Math.floor(Math.random() * items.length)];
+}
+
+function angleBetweenRange(angleOne, angleTwo, range) {
+    return angleTo(angleOne, angleTwo) <= range / 2 && angleTo(angleOne, angleTwo) >= -(range / 2);
 }
 
 /***/ }),
@@ -735,7 +745,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var weaponsArray = [_shotgun2.default, _uzi2.default, _rifle2.default];
 
-for (var i = 0; i < 5; i++) {
+for (var i = 0; i < 50; i++) {
 
     var gimbalOne = new _gimbal2.default(Math.random() * 0.9 + 0.3, 0.01);
     var gimbalTwo = new _gimbal2.default(Math.random() * 0.9 + 0.3, 0.01);
@@ -753,9 +763,9 @@ for (var i = 0; i < 5; i++) {
     var steeringTwo = new _steering2.default(Math.random() * 0.9 + 0.4);
     var steeringThree = new _steering2.default(Math.random() * 0.9 + 0.4);
 
-    var droneOne = new _drone2.default(1, '#345b77', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalOne, scannerOne, thrusterOne, steeringOne);
-    var droneTwo = new _drone2.default(2, '#cd4535', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalTwo, scannerTwo, thrusterTwo, steeringTwo);
-    var droneThree = new _drone2.default(3, '#80bf32', Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalThree, scannerThree, thrusterThree, steeringThree);
+    var droneOne = new _drone2.default(1, _constants.colours.blue, Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalOne, scannerOne, thrusterOne, steeringOne);
+    var droneTwo = new _drone2.default(2, _constants.colours.red, Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalTwo, scannerTwo, thrusterTwo, steeringTwo);
+    var droneThree = new _drone2.default(3, _constants.colours.green, Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, (0, _functions.randomItem)(weaponsArray), gimbalThree, scannerThree, thrusterThree, steeringThree);
 
     _constants.dm.addDrone(droneOne);
     _constants.dm.addDrone(droneTwo);
@@ -1575,6 +1585,7 @@ var Steering = function () {
 
         this.turningSpeed = turningSpeed;
         this.roaming = { callback: null, count: 0 };
+        this.evading = { callback: null, count: 0 };
     }
 
     _createClass(Steering, [{
@@ -1583,6 +1594,10 @@ var Steering = function () {
             this.drone = drone;
             if (!drone.scanner.hasTarget()) {
                 this.roam();
+            }
+            if (drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 100 && !(0, _functions.angleBetweenRange)(drone, Math.PI / 2)) {
+                this.evade();
+                return;
             }
             switch (true) {
                 case (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) >= 0.6:
@@ -1639,6 +1654,17 @@ var Steering = function () {
                 this.roaming.callback = Math.random() > 0.5 ? this.turnRight.bind(this) : this.turnLeft.bind(this);
             }
         }
+    }, {
+        key: 'evade',
+        value: function evade() {
+            if (this.evading.count > 0) {
+                this.evading.callback(0.13);
+                this.evading.count--;
+            } else {
+                this.evading.count = Math.floor(Math.random() * 20 + 5);
+                this.evading.callback = Math.random() > 0.5 ? this.turnRight.bind(this) : this.turnLeft.bind(this);
+            }
+        }
     }]);
 
     return Steering;
@@ -1674,28 +1700,29 @@ var Thruster = function () {
         key: 'setPower',
         value: function setPower(drone) {
             this.drone = drone;
-            if (drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 30 && this.angleBetweenRange(drone, 0.4)) {
-                this.stopThrusting();
-                return;
+            var power = 1;
+            switch (true) {
+                case this.targetIsTooClose(drone):
+                    this.stopThrusting();
+                    break;
+                case this.targetIsBehind(drone):
+                    this.startThrusting(1);
+                    break;
+                case drone.scanner.hasTarget() && (0, _functions.angleBetweenRange)(drone.angle, drone.scanner.angleToTarget(), 0.2):
+                    power = this.getPowerFromDistance(drone);
+                    this.startThrusting(power);
+                    break;
+                case drone.scanner.hasTarget() && (0, _functions.angleBetweenRange)(drone.angle, drone.scanner.angleToTarget(), 0.3):
+                    power = this.getPowerFromDistance(drone);
+                    this.startThrusting(0.8 * power);
+                    break;
+                case drone.scanner.hasTarget() && (0, _functions.angleBetweenRange)(drone.angle, drone.scanner.angleToTarget(), 0.6):
+                    this.startThrusting(0.4);
+                    break;
+                default:
+                    this.startThrusting(0.5);
+
             }
-            if (drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 300 && !this.angleBetweenRange(drone, 0.7)) {
-                this.startThrusting(1);
-                return;
-            }
-            if (this.angleBetweenRange(drone, 0.6)) {
-                this.startThrusting(0.5);
-            } else if (this.angleBetweenRange(drone, 0.3)) {
-                this.startThrusting(0.8);
-            } else if (this.angleBetweenRange(drone, 0.2)) {
-                this.startThrusting(1);
-            } else {
-                this.startThrusting(0.7);
-            }
-        }
-    }, {
-        key: 'angleBetweenRange',
-        value: function angleBetweenRange(drone, range) {
-            return (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) <= range / 2 && (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget()) >= -(range / 2);
         }
     }, {
         key: 'startThrusting',
@@ -1711,6 +1738,32 @@ var Thruster = function () {
         key: 'isThrusting',
         value: function isThrusting() {
             return this.thrusterPower > 0;
+        }
+    }, {
+        key: 'targetIsBehind',
+        value: function targetIsBehind(drone) {
+            return drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 300 && !(0, _functions.angleBetweenRange)(drone, Math.PI / 2);
+        }
+    }, {
+        key: 'targetIsTooClose',
+        value: function targetIsTooClose(drone) {
+            return drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 30 && (0, _functions.angleBetweenRange)(drone, 0.6);
+        }
+    }, {
+        key: 'getPowerFromDistance',
+        value: function getPowerFromDistance(drone) {
+            switch (true) {
+                case (0, _functions.distanceTo)(drone, drone.scanner.target) > 800:
+                    return 1;
+                case (0, _functions.distanceTo)(drone, drone.scanner.target) > 600:
+                    return 0.8;
+                case (0, _functions.distanceTo)(drone, drone.scanner.target) > 300:
+                    return 0.6;
+                case (0, _functions.distanceTo)(drone, drone.scanner.target) > 200:
+                    return 0.4;
+                case (0, _functions.distanceTo)(drone, drone.scanner.target) > 100:
+                    return 0.2;
+            }
         }
     }]);
 

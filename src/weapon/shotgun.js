@@ -4,7 +4,7 @@ import Shot from '../ammo/shot';
 
 export default class Shotgun extends Weapon {
     constructor(id, x, y, angle, gimbal) {
-        const fireRate = 11;
+        const fireRate = 10;
         const round = Shot;
         super(id, '#664', x, y, angle, gimbal, round, fireRate);
     }
