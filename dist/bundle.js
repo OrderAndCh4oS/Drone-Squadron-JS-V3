@@ -91,6 +91,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var canvas = document.getElementById('canvas');
 var colours = exports.colours = {
+    orange: '#cd7831',
     red: '#cd4535',
     green: '#80bf32',
     blue: '#345b77'
@@ -411,13 +412,13 @@ var Weapon = function () {
         }
     }, {
         key: 'update',
-        value: function update(position, vector, velocity, scanner) {
-            this.position.x = position.x;
-            this.position.y = position.y;
-            this.velocity = velocity;
-            this.droneAngle = vector.getAngle();
-            this.gimbal.update();
-            if (scanner.hasTarget() && scanner.angleToTarget() > -this.gimbal.angleLimit - 0.1 && scanner.angleToTarget() < this.gimbal.angleLimit + 0.1) {
+        value: function update(drone) {
+            this.position.x = drone.position.x;
+            this.position.y = drone.position.y;
+            this.velocity = drone.velocity;
+            this.droneAngle = drone.vector.getAngle();
+            this.gimbal.trackTarget(drone);
+            if (drone.scanner.hasTarget() && drone.scanner.angleToTarget() > -this.gimbal.angleLimit - 0.2 && drone.scanner.angleToTarget() < this.gimbal.angleLimit + 0.2) {
                 this.fireIfReady();
             }
         }
@@ -545,7 +546,7 @@ var Drone = function (_Particle) {
         _this.vector = new _vector2.default(x, y);
         _this.vector.setAngle(angle);
         _this.weapon = new weapon(id, x, y, angle, gimbal);
-        _this._health = 10;
+        _this._health = 100;
         _this._color = color;
         _this.scanner = scanner;
         _this.thruster = thruster;
@@ -566,7 +567,7 @@ var Drone = function (_Particle) {
             this.steering.turn(this);
             this.velocity.setAngle(this.vector.getAngle());
             this.move();
-            this.weapon.update(this.position, this.vector, this.velocity, this.scanner, this.gimbal);
+            this.weapon.update(this);
         }
     }, {
         key: 'draw',
@@ -584,6 +585,7 @@ var Drone = function (_Particle) {
             _constants.context.fill();
             _constants.context.resetTransform();
             this.scanner.draw(this);
+            this.thruster.draw(this);
             this.weapon.draw();
         }
     }, {
@@ -745,19 +747,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var weaponsArray = [_shotgun2.default, _uzi2.default, _rifle2.default];
 
-for (var i = 0; i < 50; i++) {
+for (var i = 0; i < 10; i++) {
 
-    var gimbalOne = new _gimbal2.default(Math.random() * 0.9 + 0.3, 0.01);
-    var gimbalTwo = new _gimbal2.default(Math.random() * 0.9 + 0.3, 0.01);
-    var gimbalThree = new _gimbal2.default(Math.random() * 0.9 + 0.3, 0.01);
+    var gimbalOne = new _gimbal2.default(Math.random() * Math.PI + 0.3, 0.02);
+    var gimbalTwo = new _gimbal2.default(Math.random() * Math.PI + 0.3, 0.02);
+    var gimbalThree = new _gimbal2.default(Math.random() * Math.PI + 0.3, 0.02);
 
     var scannerOne = new _scanner2.default(Math.random() * 600 + 200);
     var scannerTwo = new _scanner2.default(Math.random() * 600 + 200);
     var scannerThree = new _scanner2.default(Math.random() * 600 + 200);
 
-    var thrusterOne = new _thruster2.default(Math.random() * 20 + 20);
-    var thrusterTwo = new _thruster2.default(Math.random() * 20 + 20);
-    var thrusterThree = new _thruster2.default(Math.random() * 20 + 20);
+    var thrusterOne = new _thruster2.default(Math.random() * 20 + 10);
+    var thrusterTwo = new _thruster2.default(Math.random() * 20 + 10);
+    var thrusterThree = new _thruster2.default(Math.random() * 20 + 10);
 
     var steeringOne = new _steering2.default(Math.random() * 0.9 + 0.4);
     var steeringTwo = new _steering2.default(Math.random() * 0.9 + 0.4);
@@ -1084,7 +1086,7 @@ var Shotgun = function (_Weapon) {
     function Shotgun(id, x, y, angle, gimbal) {
         _classCallCheck(this, Shotgun);
 
-        var fireRate = 11;
+        var fireRate = 10;
         var round = _shot2.default;
         return _possibleConstructorReturn(this, (Shotgun.__proto__ || Object.getPrototypeOf(Shotgun)).call(this, id, '#664', x, y, angle, gimbal, round, fireRate));
     }
@@ -1147,7 +1149,7 @@ var Shot = function (_Bullet) {
     function Shot(id, x, y, angle, velocity) {
         _classCallCheck(this, Shot);
 
-        return _possibleConstructorReturn(this, (Shot.__proto__ || Object.getPrototypeOf(Shot)).call(this, id, x, y, 40, 0.5, angle, velocity, 1));
+        return _possibleConstructorReturn(this, (Shot.__proto__ || Object.getPrototypeOf(Shot)).call(this, id, x, y, 38, 0.5, angle, velocity, 1));
     }
 
     return Shot;
@@ -1372,6 +1374,8 @@ var _vector = __webpack_require__(2);
 
 var _vector2 = _interopRequireDefault(_vector);
 
+var _functions = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1386,11 +1390,29 @@ var Gimbal = function () {
         this.rotation = 'right';
         this._angleLimit = angleLimit;
         this.turningSpeed = turningSpeed;
+        this.lead = 0.2;
     }
 
     _createClass(Gimbal, [{
-        key: 'update',
-        value: function update() {
+        key: 'trackTarget',
+        value: function trackTarget(drone) {
+            if (drone.scanner.hasTarget()) {
+                switch (true) {
+                    case (0, _functions.angleTo)(drone.angle + this.vector.getAngle(), drone.scanner.angleToTarget()) > 0.05:
+                        this.rotation = 'left';
+                        break;
+                    case (0, _functions.angleTo)(drone.angle + this.vector.getAngle(), drone.scanner.angleToTarget()) < -0.05:
+                        this.rotation = 'right';
+                        break;
+                    default:
+                        return;
+                }
+            }
+            this.turn();
+        }
+    }, {
+        key: 'turn',
+        value: function turn() {
             switch (true) {
                 case this.rotation === 'right' && this.vector.getAngle() < this._angleLimit:
                     this.vector.setAngle(this.vector.getAngle() + this.turningSpeed);
@@ -1687,6 +1709,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _functions = __webpack_require__(1);
 
+var _constants = __webpack_require__(0);
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Thruster = function () {
@@ -1694,76 +1718,117 @@ var Thruster = function () {
         _classCallCheck(this, Thruster);
 
         this.thrust = thrust;
+        this.roaming = { callback: null, count: 0 };
     }
 
     _createClass(Thruster, [{
         key: 'setPower',
         value: function setPower(drone) {
             this.drone = drone;
-            var power = 1;
+            this.power = 1;
             switch (true) {
                 case this.targetIsTooClose(drone):
                     this.stopThrusting();
                     break;
-                case this.targetIsBehind(drone):
+                case this.targetIsCloseBehind(drone):
                     this.startThrusting(1);
                     break;
                 case drone.scanner.hasTarget() && (0, _functions.angleBetweenRange)(drone.angle, drone.scanner.angleToTarget(), 0.2):
-                    power = this.getPowerFromDistance(drone);
-                    this.startThrusting(power);
+                    this.power = this.getPowerFromDistance(drone);
+                    this.startThrusting(this.power);
                     break;
                 case drone.scanner.hasTarget() && (0, _functions.angleBetweenRange)(drone.angle, drone.scanner.angleToTarget(), 0.3):
-                    power = this.getPowerFromDistance(drone);
-                    this.startThrusting(0.8 * power);
+                    this.power = 0.8 * this.getPowerFromDistance(drone);
+                    this.startThrusting();
                     break;
                 case drone.scanner.hasTarget() && (0, _functions.angleBetweenRange)(drone.angle, drone.scanner.angleToTarget(), 0.6):
-                    this.startThrusting(0.4);
+                    this.power = 0.4;
+                    this.startThrusting();
                     break;
                 default:
-                    this.startThrusting(0.5);
-
+                    if (this.roaming.count === 0) {
+                        this.roaming.count = Math.random() * 20 + 10;
+                        this.roaming.callback = Math.random() > 0.5 ? this.startThrusting.bind(this) : this.stopThrusting.bind(this);
+                    }
+                    this.power = 0.5;
+                    this.roaming.callback();
+                    this.roaming.count--;
             }
         }
     }, {
         key: 'startThrusting',
-        value: function startThrusting(power) {
-            this.drone.velocity.setLength(this.thrust * power);
+        value: function startThrusting() {
+            this.drone.velocity.setLength(this.thrust * this.power);
         }
     }, {
         key: 'stopThrusting',
         value: function stopThrusting() {
-            this.thrustPower = 0;
+            this.power = 0;
         }
     }, {
         key: 'isThrusting',
         value: function isThrusting() {
-            return this.thrusterPower > 0;
+            return this.power > 0;
         }
     }, {
-        key: 'targetIsBehind',
-        value: function targetIsBehind(drone) {
-            return drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 300 && !(0, _functions.angleBetweenRange)(drone, Math.PI / 2);
+        key: 'draw',
+        value: function draw(drone) {
+            if (this.isThrusting()) {
+                _constants.context.translate(drone.position.x, drone.position.y);
+                _constants.context.rotate(drone.vector.getAngle());
+                _constants.context.beginPath();
+                _constants.context.moveTo(-10, -2);
+                _constants.context.lineTo(-14, Math.floor(Math.random() * 2) - 3);
+                _constants.context.lineTo(-12, -1);
+                _constants.context.lineTo(-16, Math.floor(Math.random() * 3) - 1);
+                _constants.context.lineTo(-12, 1);
+                _constants.context.lineTo(-14, Math.floor(Math.random() * 2) + 2);
+                _constants.context.lineTo(-10, 2);
+                _constants.context.strokeWidth = 0.5;
+                _constants.context.strokeStyle = _constants.colours.orange;
+                _constants.context.stroke();
+                _constants.context.fillStyle = _constants.colours.red;
+                _constants.context.fill();
+                _constants.context.resetTransform();
+            }
+        }
+    }, {
+        key: 'targetIsCloseBehind',
+        value: function targetIsCloseBehind() {
+            return this.drone.scanner.hasTarget() && (0, _functions.distanceTo)(this.drone, this.drone.scanner.target) < 300 && this.targetIsBehind(this.drone);
         }
     }, {
         key: 'targetIsTooClose',
-        value: function targetIsTooClose(drone) {
-            return drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 30 && (0, _functions.angleBetweenRange)(drone, 0.6);
+        value: function targetIsTooClose() {
+            return this.drone.scanner.hasTarget() && (0, _functions.distanceTo)(this.drone, this.drone.scanner.target) < 30 && (0, _functions.angleBetweenRange)(this.drone, 0.6);
         }
     }, {
         key: 'getPowerFromDistance',
         value: function getPowerFromDistance(drone) {
             switch (true) {
                 case (0, _functions.distanceTo)(drone, drone.scanner.target) > 800:
-                    return 1;
+                    return this.targetIsAhead(drone) ? 1 : 0;
                 case (0, _functions.distanceTo)(drone, drone.scanner.target) > 600:
-                    return 0.8;
+                    return this.targetIsAhead(drone) ? 0.8 : 0.2;
                 case (0, _functions.distanceTo)(drone, drone.scanner.target) > 300:
-                    return 0.6;
+                    return this.targetIsAhead(drone) ? 0.6 : 0.4;
                 case (0, _functions.distanceTo)(drone, drone.scanner.target) > 200:
-                    return 0.4;
+                    return this.targetIsAhead(drone) ? 0.4 : 0.6;
                 case (0, _functions.distanceTo)(drone, drone.scanner.target) > 100:
-                    return 0.2;
+                    return this.targetIsAhead(drone) ? 0.2 : 0.8;
+                default:
+                    return this.targetIsAhead(drone) ? 0.1 : 0.9;
             }
+        }
+    }, {
+        key: 'targetIsAhead',
+        value: function targetIsAhead(target) {
+            return (0, _functions.angleBetweenRange)(target, Math.PI / 2);
+        }
+    }, {
+        key: 'targetIsBehind',
+        value: function targetIsBehind(target) {
+            return !(0, _functions.angleBetweenRange)(target, Math.PI / 2);
         }
     }]);
 
