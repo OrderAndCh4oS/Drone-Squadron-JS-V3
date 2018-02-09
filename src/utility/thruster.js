@@ -36,14 +36,17 @@ export default class Thruster {
                 this.startThrusting();
                 break;
             default:
+                if(this.roaming.count === 0) {
+                    this.roaming.count = Math.random() * 20 + 10;
+                    this.roaming.callback = Math.random() > 0.5 ? this.startThrusting.bind(this) : this.stopThrusting.bind(this);
+                }
                 this.power = 0.5;
-                this.startThrusting();
-
+                this.roaming.callback();
+                this.roaming.count--
         }
     }
 
     startThrusting() {
-
         this.drone.velocity.setLength(this.thrust * this.power);
     }
 
@@ -61,16 +64,16 @@ export default class Thruster {
             context.rotate(drone.vector.getAngle());
             context.beginPath();
             context.moveTo(-10, -2);
-            context.lineTo(-14, Math.round(Math.random() * -1) - 2);
-            context.lineTo(-11, -1);
-            context.lineTo(-16, Math.round(Math.random() - 1));
+            context.lineTo(-14, Math.floor(Math.random() * 2) - 3);
+            context.lineTo(-12, -1);
+            context.lineTo(-16, Math.floor(Math.random() * 3) - 1);
             context.lineTo(-12, 1);
-            context.lineTo(-14, Math.round(Math.random()) + 1);
+            context.lineTo(-14, Math.floor(Math.random() * 2) + 2);
             context.lineTo(-10, 2);
-            context.strokeWidth = 0.25;
-            context.strokeStyle = colours.red;
+            context.strokeWidth = 0.5;
+            context.strokeStyle = colours.orange;
             context.stroke();
-            context.fillStyle = colours.orange;
+            context.fillStyle = colours.red;
             context.fill();
             context.resetTransform();
         }
