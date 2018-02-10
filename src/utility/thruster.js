@@ -36,9 +36,11 @@ export default class Thruster {
                 this.startThrusting();
                 break;
             default:
-                if(this.roaming.count === 0) {
-                    this.roaming.count = Math.random() * 20 + 10;
-                    this.roaming.callback = Math.random() > 0.5 ? this.startThrusting.bind(this) : this.stopThrusting.bind(this);
+                if(this.roaming.count <= 0) {
+                    this.roaming.count = Math.random() * 25 + 5;
+                    this.roaming.callback = Math.random() > 0.4
+                        ? this.startThrusting.bind(this)
+                        : this.stopThrusting.bind(this);
                 }
                 this.power = 0.5;
                 this.roaming.callback();
