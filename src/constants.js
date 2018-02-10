@@ -9,6 +9,7 @@ export const colours = {
     green: '#80bf32',
     blue: '#345b77',
 };
+export const friction = 0.95;
 export const context = canvas.getContext('2d');
 export const canvasWidth = canvas.width = window.innerWidth;
 export const canvasHeight = canvas.height = window.innerHeight;

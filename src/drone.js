@@ -37,7 +37,9 @@ export default class Drone extends Particle {
         this.scanner.findTarget(this);
         this.thruster.setPower(this);
         this.steering.turn(this);
-        this.velocity.setAngle(this.vector.getAngle());
+        if(this.thruster.isThrusting()) {
+            this.velocity.setAngle(this.vector.getAngle());
+        }
         this.move();
         this.weapon.update(this);
     }
