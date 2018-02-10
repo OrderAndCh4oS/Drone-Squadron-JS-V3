@@ -3,7 +3,6 @@ import { colours, context } from '../constants';
 export default class Heath {
     constructor(health) {
         this._health = health;
-        console.log('_health');
     }
 
     get health() {
@@ -33,8 +32,8 @@ export default class Heath {
     drawHealthBox(width = 100) {
         context.beginPath();
         context.moveTo(0, 0);
-        context.lineTo(12 * width / 100, 0);
-        context.lineTo(12 * width / 100, 4);
+        context.lineTo(16 * width / 100, 0);
+        context.lineTo(16 * width / 100, 4);
         context.lineTo(0, 4);
         context.lineTo(0, 0);
     }

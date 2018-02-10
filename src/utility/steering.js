@@ -3,6 +3,7 @@ import { angleBetweenRange, angleTo, distanceTo } from '../functions';
 export default class Steering {
     constructor(turningSpeed) {
         this.turningSpeed = turningSpeed;
+        this.turnAmount = 0;
         this.roaming = {callback: null, count: 0};
         this.evading = {callback: null, count: 0};
     }
@@ -11,6 +12,7 @@ export default class Steering {
         this.drone = drone;
         if(!drone.scanner.hasTarget()) {
             this.roam();
+            return;
         }
         if(drone.scanner.hasTarget() &&
             distanceTo(drone, drone.scanner.target) < 100 &&
@@ -20,26 +22,32 @@ export default class Steering {
         }
         switch(true) {
             case (angleTo(drone.angle, drone.scanner.angleToTarget()) >= 0.6):
-                this.turnLeft(this.turningSpeed * 0.1);
+                this.turnAmount = this.turningSpeed * 0.1;
+                this.turnLeft();
                 break;
             case (angleTo(drone.angle, drone.scanner.angleToTarget()) >= 0.4):
-                this.turnLeft(this.turningSpeed * 0.1 / 3 * 2);
+                this.turnAmount = this.turningSpeed * 0.066;
+                this.turnLeft();
                 break;
             case (angleTo(drone.angle, drone.scanner.angleToTarget()) >= 0.2):
-                this.turnLeft(this.turningSpeed * 0.1 / 3);
+                this.turnAmount = this.turningSpeed * 0.033;
+                this.turnLeft();
                 break;
             case (angleTo(drone.angle, drone.scanner.angleToTarget()) > 0):
                 this.turnLeft(
                     angleTo(drone.angle, drone.scanner.angleToTarget()));
                 break;
             case (angleTo(drone.angle, drone.scanner.angleToTarget()) <= -0.6):
-                this.turnRight(this.turningSpeed * 0.1);
+                this.turnAmount = this.turningSpeed * 0.1;
+                this.turnRight();
                 break;
             case (angleTo(drone.angle, drone.scanner.angleToTarget()) <= -0.4):
-                this.turnRight(this.turningSpeed * 0.1 / 3 * 2);
+                this.turnAmount = this.turningSpeed * 0.066;
+                this.turnRight();
                 break;
             case (angleTo(drone.angle, drone.scanner.angleToTarget()) <= -0.2):
-                this.turnRight(this.turningSpeed * 0.1 / 3);
+                this.turnAmount = this.turningSpeed * 0.033;
+                this.turnRight();
                 break;
             case (angleTo(drone.angle, drone.scanner.angleToTarget()) < 0):
                 this.turnRight(
@@ -48,14 +56,12 @@ export default class Steering {
         }
     }
 
-    turnLeft(turnSpeed) {
-        let turn = turnSpeed * this.turningSpeed;
-        this.incrementAngle(-turn);
+    turnLeft() {
+        this.incrementAngle(-this.turnAmount);
     }
 
-    turnRight(turnSpeed) {
-        const turn = turnSpeed * this.turningSpeed;
-        this.incrementAngle(turn);
+    turnRight() {
+        this.incrementAngle(this.turnAmount);
     }
 
     incrementAngle(increment) {
@@ -64,7 +70,8 @@ export default class Steering {
 
     roam() {
         if(this.roaming.count > 0) {
-            this.roaming.callback(0.1);
+            this.turnAmount = this.turningSpeed * 0.033;
+            this.roaming.callback();
             this.roaming.count--;
         } else {
             this.roaming.count = Math.floor(Math.random() * 60 + 20);
@@ -75,7 +82,8 @@ export default class Steering {
 
     evade() {
         if(this.evading.count > 0) {
-            this.evading.callback(0.13);
+            this.turnAmount = this.turningSpeed * 0.1;
+            this.evading.callback();
             this.evading.count--;
         } else {
             this.evading.count = Math.floor(Math.random() * 20 + 5);
