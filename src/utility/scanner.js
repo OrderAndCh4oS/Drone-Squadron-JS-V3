@@ -26,7 +26,8 @@ export default class Scanner {
             for(let j = this.gridRange.start[1]; j <
             this.gridRange.end[1]; j++) {
                 grid.grid[i][j].map((item) => {
-                    if(!(item instanceof Drone) || item.id === drone.id) {
+                    if(!(item instanceof Drone) ||
+                        item.squadId === drone.squadId) {
                         return;
                     }
                     const distanceTo = this.distanceToTarget(item);

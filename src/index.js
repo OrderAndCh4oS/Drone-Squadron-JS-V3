@@ -1,66 +1,82 @@
-import {
-    canvasHeight,
-    canvasWidth,
-    colours,
-    context,
-    dm,
-    pm,
-} from './constants';
+import { canvasHeight, canvasWidth, context, dm, pm, } from './constants';
 import { deltaTime } from './service/delta-time';
 import Drone from './drone';
-import Shotgun from './weapon/shotgun';
-import Uzi from './weapon/uzi';
-import Rifle from './weapon/rifle';
-import Gimbal from './utility/gimbal';
-import Scanner from './utility/scanner';
-import Steering from './utility/steering';
-import Thrust from './utility/thruster';
-import { randomItem } from './functions';
+import { gimbals, scanners, steering, thrusters } from './constants/utilities';
+import { weapons } from './constants/weapons';
 
-const weaponsArray = [Shotgun, Uzi, Rifle];
-
-for(let i = 0; i < 10; i++) {
-
-    const gimbalOne = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
-    const gimbalTwo = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
-    const gimbalThree = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
-
-    const scannerOne = new Scanner(Math.random() * 600 + 200);
-    const scannerTwo = new Scanner(Math.random() * 600 + 200);
-    const scannerThree = new Scanner(Math.random() * 600 + 200);
-
-    const thrusterOne = new Thrust(Math.random() * 20 + 10);
-    const thrusterTwo = new Thrust(Math.random() * 20 + 10);
-    const thrusterThree = new Thrust(Math.random() * 20 + 10);
-
-    const steeringOne = new Steering(Math.random() * 0.9 + 0.4);
-    const steeringTwo = new Steering(Math.random() * 0.9 + 0.4);
-    const steeringThree = new Steering(Math.random() * 0.9 + 0.4);
-
-    const droneOne = new Drone(1, colours.blue, Math.random() *
-        canvasWidth, Math.random() *
-        canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
-        gimbalOne,
-        scannerOne, thrusterOne, steeringOne);
-    const droneTwo = new Drone(2, colours.red, Math.random() *
-        canvasWidth, Math.random() *
-        canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
-        gimbalTwo,
-        scannerTwo, thrusterTwo, steeringTwo);
-    const droneThree = new Drone(3, colours.green, Math.random() *
-        canvasWidth, Math.random() *
-        canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
-        gimbalThree,
-        scannerThree, thrusterThree, steeringThree);
-
-    dm.addDrone(droneOne);
-    dm.addDrone(droneTwo);
-    dm.addDrone(droneThree);
-}
-
+// const weaponsArray = [Shotgun, Uzi, Rifle];
+//
+// for(let i = 0; i < 10; i++) {
+//
+//     const gimbalOne = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
+//     const gimbalTwo = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
+//     const gimbalThree = new Gimbal(Math.random() * Math.PI + 0.3, 0.02);
+//
+//     const scannerOne = new Scanner(Math.random() * 600 + 200);
+//     const scannerTwo = new Scanner(Math.random() * 600 + 200);
+//     const scannerThree = new Scanner(Math.random() * 600 + 200);
+//
+//     const thrusterOne = new Thrust(Math.random() * 20 + 10);
+//     const thrusterTwo = new Thrust(Math.random() * 20 + 10);
+//     const thrusterThree = new Thrust(Math.random() * 20 + 10);
+//
+//     const steeringOne = new Steering(Math.random() * 0.9 + 0.4);
+//     const steeringTwo = new Steering(Math.random() * 0.9 + 0.4);
+//     const steeringThree = new Steering(Math.random() * 0.9 + 0.4);
+//
+//     const droneOne = new Drone(1, colours.blue, Math.random() *
+//         canvasWidth, Math.random() *
+//         canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
+//         gimbalOne,
+//         scannerOne, thrusterOne, steeringOne);
+//     const droneTwo = new Drone(2, colours.red, Math.random() *
+//         canvasWidth, Math.random() *
+//         canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
+//         gimbalTwo,
+//         scannerTwo, thrusterTwo, steeringTwo);
+//     const droneThree = new Drone(3, colours.green, Math.random() *
+//         canvasWidth, Math.random() *
+//         canvasHeight, 0, Math.random() * Math.PI * 2, randomItem(weaponsArray),
+//         gimbalThree,
+//         scannerThree, thrusterThree, steeringThree);
+//
+//     dm.addDrone(droneOne);
+//     dm.addDrone(droneTwo);
+//     dm.addDrone(droneThree);
+// }
 let fpsInterval, startTime, now, then, elapsed;
 
-startAnimating(30);
+function setupDrones(data) {
+    console.log(data);
+    data.squadrons.map((s) => {
+        s.drones.map((d) => {
+            console.log(d.scanner);
+            console.log(scanners[d.scanner]);
+            const drone = new Drone(
+                d.id,
+                s.id,
+                s.colour,
+                Math.random() * canvasWidth,
+                Math.random() * canvasHeight,
+                0,
+                Math.random() * Math.PI * 2,
+                weapons[d.weapon],
+                gimbals[d.gimbal],
+                scanners[d.scanner],
+                thrusters[d.thruster],
+                steering[d.steering],
+            );
+            dm.addDrone(drone);
+        });
+    });
+}
+
+fetch('http://localhost:4000/data/squads.json')
+    .then(resp => resp.json())
+    .then((data) => {
+        setupDrones(data.data);
+        startAnimating(30);
+    });
 
 function startAnimating(fps) {
     fpsInterval = 1000 / fps;

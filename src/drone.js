@@ -4,18 +4,25 @@ import Particle from './abstract/particle';
 import Health from './service/health';
 
 export default class Drone extends Particle {
+
     constructor(
-        id, color, x, y, speed, angle, weapon, gimbal, scanner, thruster,
+        id, squadId, color, x, y, speed, angle, weapon, gimbal, scanner,
+        thruster,
         steering) {
         super(id, x, y, speed, 10, angle);
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
         this.weapon = new weapon(id, x, y, angle, gimbal);
         this._color = color;
-        this.scanner = scanner;
-        this.thruster = thruster;
-        this.steering = steering;
+        this.scanner = new scanner();
+        this.thruster = new thruster();
+        this.steering = new steering();
         this.health = new Health(100);
+        this._squadId = squadId;
+    }
+
+    get squadId() {
+        return this._squadId;
     }
 
     get angle() {

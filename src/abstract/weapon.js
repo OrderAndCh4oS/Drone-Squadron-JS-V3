@@ -10,7 +10,7 @@ export default class Weapon {
         this.velocity = 0;
         this.fireRate = fireRate;
         this.lastFired = 0;
-        this.gimbal = gimbal;
+        this.gimbal = new gimbal();
         this.round = round;
     }
 
