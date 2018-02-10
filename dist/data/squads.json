@@ -1,0 +1,110 @@
+{
+  "data": {
+    "squadrons": [
+      {
+        "id": 1,
+        "name": "Squadron One",
+        "colour": "blue",
+        "drones": [
+          {
+            "id": 1,
+            "name": "Spot",
+            "weapon": "Shotgun",
+            "gimbal": "G60",
+            "scanner": "SC200",
+            "steering": "S8",
+            "thruster": "T18"
+          },
+          {
+            "id": 2,
+            "name": "Spet",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC600",
+            "steering": "S8",
+            "thruster": "T12"
+          },
+          {
+            "id": 3,
+            "name": "Poppet",
+            "weapon": "Rifle",
+            "gimbal": "G240",
+            "scanner": "SC900",
+            "steering": "S4",
+            "thruster": "T10"
+          },
+          {
+            "id": 4,
+            "name": "Dot",
+            "weapon": "Uzi",
+            "gimbal": "G40",
+            "scanner": "SC400",
+            "steering": "S6",
+            "thruster": "T12"
+          },
+          {
+            "id": 5,
+            "name": "Dottox",
+            "weapon": "Rifle",
+            "gimbal": "G120",
+            "scanner": "SC400",
+            "steering": "S12",
+            "thruster": "T15"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Squadron Two",
+        "colour": "green",
+        "drones": [
+          {
+            "id": 6,
+            "name": "Sarcoma",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC400",
+            "steering": "S10",
+            "thruster": "T12"
+          },
+          {
+            "id": 7,
+            "name": "Kostoglotov",
+            "weapon": "Shotgun",
+            "gimbal": "G90",
+            "scanner": "SC600",
+            "steering": "S12",
+            "thruster": "T12"
+          },
+          {
+            "id": 8,
+            "name": "Denisovich",
+            "weapon": "Rifle",
+            "gimbal": "G240",
+            "scanner": "SC600",
+            "steering": "S6",
+            "thruster": "T10"
+          },
+          {
+            "id": 9,
+            "name": "Raskolnikov",
+            "weapon": "Shotgun",
+            "gimbal": "G120",
+            "scanner": "SC900",
+            "steering": "S4",
+            "thruster": "T10"
+          },
+          {
+            "id": 10,
+            "name": "Illyic",
+            "weapon": "Rifle",
+            "gimbal": "G120",
+            "scanner": "SC600",
+            "steering": "S8",
+            "thruster": "T12"
+          }
+        ]
+      }
+    ]
+  }
+}
