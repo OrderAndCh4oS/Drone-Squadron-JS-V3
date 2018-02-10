@@ -1,6 +1,7 @@
 import { context } from './constants';
 import Vector from './service/vector';
 import Particle from './abstract/particle';
+import Health from './service/health';
 
 export default class Drone extends Particle {
     constructor(
@@ -10,15 +11,11 @@ export default class Drone extends Particle {
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
         this.weapon = new weapon(id, x, y, angle, gimbal);
-        this._health = 100;
         this._color = color;
         this.scanner = scanner;
         this.thruster = thruster;
         this.steering = steering;
-    }
-
-    get health() {
-        return this._health;
+        this.health = new Health(100);
     }
 
     get angle() {
@@ -27,10 +24,6 @@ export default class Drone extends Particle {
 
     set angle(angle) {
         this.vector.setAngle(angle);
-    }
-
-    takeDamage(damage) {
-        this._health -= damage;
     }
 
     update() {
@@ -57,6 +50,7 @@ export default class Drone extends Particle {
         context.fillStyle = this._color;
         context.fill();
         context.resetTransform();
+        this.health.draw(this);
         this.scanner.draw(this);
         this.thruster.draw(this);
         this.weapon.draw();

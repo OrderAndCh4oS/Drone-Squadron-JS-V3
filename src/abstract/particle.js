@@ -1,4 +1,4 @@
-import { context, grid } from '../constants';
+import { context, friction, grid } from '../constants';
 
 import Vector from '../service/vector';
 import { deltaTime } from '../service/delta-time';
@@ -34,7 +34,7 @@ export default class Particle {
 
     move() {
         let distanceByDeltaTime = this.velocity.multiply(deltaTime.getTime());
-        this.velocity.multiply(0.5);
+        this.velocity.multiply(friction);
         const gridX = Math.floor(this.position.x / grid.gridBlockSize);
         const gridY = Math.floor(this.position.y / grid.gridBlockSize);
         grid.removeParticle(this, gridX, gridY);

@@ -40,7 +40,7 @@ export default class Scanner {
         }
         if(nearestTarget.target !== null &&
             nearestTarget.distance < this.radius &&
-            nearestTarget.target.health > 0) {
+            nearestTarget.target.health.health > 0) {
             this._target = nearestTarget.target;
         } else {
             this._target = null;

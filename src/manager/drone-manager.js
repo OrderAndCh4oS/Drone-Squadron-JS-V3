@@ -19,6 +19,6 @@ export default class DroneManager {
             d.update();
             returnToCanvas(d);
             return d;
-        }).filter((d) => d.health > 0);
+        }).filter((d) => d.health.health > 0);
     }
 }
