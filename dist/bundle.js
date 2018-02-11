@@ -1307,7 +1307,7 @@ function setupDrones(data) {
     });
 }
 
-fetch('http://localhost:4000/data/squads.json').then(function (resp) {
+fetch('/data/squads.json').then(function (resp) {
     return resp.json();
 }).then(function (data) {
     setupDrones(data.data);
