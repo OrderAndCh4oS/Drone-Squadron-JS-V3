@@ -79,8 +79,8 @@ export default class GameGrid {
                         const item = this._grid[i][j][k];
                         const text = item instanceof Drone ? 'Drone:' +
                             item.name : item.id;
-                        context.fillText(text, i * this._gridBlockSize + 10, j *
-                            this._gridBlockSize + (10 * k + 10));
+                        context.fillText(text, i * this._gridBlockSize + 4, j *
+                            this._gridBlockSize + (10 * k + 14));
                     }
                 }
             }
