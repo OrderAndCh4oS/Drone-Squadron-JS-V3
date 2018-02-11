@@ -5,6 +5,7 @@ import {
     context,
     debug,
     dm,
+    grid,
     pm,
 } from './constants';
 import { deltaTime } from './service/delta-time';
@@ -101,6 +102,8 @@ function animate() {
     deltaTime.update();
     dm.update();
     pm.update();
+    grid.draw();
+    grid.log();
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;

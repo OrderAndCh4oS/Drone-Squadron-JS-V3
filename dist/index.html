@@ -88,14 +88,20 @@
             color: darkslategrey;
             border: floralwhite wave 1px;
         }
+        .separator {
+            color: floralwhite;
+        }
     </style>
 </head>
 <body>
 <canvas id="canvas"></canvas>
 <div class="debug-bar">
+    <button id="game-grid-toggle" class="button">Grid</button>
     <button id="scanner-radius-toggle" class="button">Scanner Radius</button>
     <button id="scanner-path-toggle" class="button">Scanner Path</button>
     <button id="name-toggle" class="button">Names</button>
+    <span class="separator">|</span>
+    <button id="game-grid-log" class="button">Log Grid</button>
 </div>
 <script src="./bundle.js"></script>
 <div class="logo" style="position: fixed; bottom: 50px; right:30px;">

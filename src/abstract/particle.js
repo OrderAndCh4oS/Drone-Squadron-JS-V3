@@ -4,7 +4,6 @@ import Vector from '../service/vector';
 import { deltaTime } from '../service/delta-time';
 
 export default class Particle {
-
     constructor(id, x, y, speed, radius, angle) {
         this._id = id;
         this.radius = radius;
@@ -14,6 +13,24 @@ export default class Particle {
         this.velocity.setAngle(angle);
         this._remove = false;
         this._color = '#000';
+        this._gridX = Math.floor(this.position.x / grid.gridBlockSize);
+        this._gridY = Math.floor(this.position.y / grid.gridBlockSize);
+    }
+
+    get gridY() {
+        return this._gridY;
+    }
+
+    set gridY(value) {
+        this._gridY = value;
+    }
+
+    get gridX() {
+        return this._gridX;
+    }
+
+    set gridX(value) {
+        this._gridX = value;
     }
 
     get remove() {
@@ -35,11 +52,9 @@ export default class Particle {
     move() {
         let distanceByDeltaTime = this.velocity.multiply(deltaTime.getTime());
         this.velocity.multiply(friction);
-        const gridX = Math.floor(this.position.x / grid.gridBlockSize);
-        const gridY = Math.floor(this.position.y / grid.gridBlockSize);
-        grid.removeParticle(this, gridX, gridY);
+        grid.removeParticle(this);
         this.position.addTo(distanceByDeltaTime);
-        grid.addParticle(this, gridX, gridY);
+        grid.addParticle(this);
     }
 
     removeParticle() {

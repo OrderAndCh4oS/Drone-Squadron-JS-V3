@@ -18,6 +18,9 @@ export default class DroneManager {
             d.draw();
             d.update();
             returnToCanvas(d);
+            if(d.health.health <= 0) {
+                d.removeParticle();
+            }
             return d;
         }).filter((d) => d.health.health > 0);
     }

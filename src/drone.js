@@ -67,7 +67,6 @@ export default class Drone extends Particle {
 
     drawName() {
         if(debug.droneNameToggle) {
-            context.font = '9px Tahoma';
             context.textAlign = 'center';
             context.fillStyle = this._color;
             context.fillText(this.name, 0, -18);

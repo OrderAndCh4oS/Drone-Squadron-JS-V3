@@ -80,15 +80,16 @@ export default class Scanner {
     }
 
     findGridRange() {
-        const x = this._drone.position.x;
-        const y = this._drone.position.y;
+        const x = this._drone.position.x / grid.gridBlockSize;
+        const y = this._drone.position.y / grid.gridBlockSize;
+        const blockRadius = (this.radius / grid.gridBlockSize) + 1;
         this.gridRange = {
             start: [
-                Math.floor((x - this.radius) / grid.gridBlockSize) - 1,
-                Math.floor((y - this.radius) / grid.gridBlockSize) - 1],
+                Math.floor(x - blockRadius),
+                Math.floor(y - blockRadius)],
             end: [
-                Math.ceil((x + this.radius) / grid.gridBlockSize) + 1,
-                Math.ceil((y + this.radius) / grid.gridBlockSize) + 1],
+                Math.ceil(x + blockRadius),
+                Math.ceil(y + blockRadius)],
         };
     }
 
