@@ -708,7 +708,7 @@ var Scanner = function () {
                     });
                 }
             }
-            if (nearestTarget.target !== null && nearestTarget.distance < this.radius && nearestTarget.target.health.health > 0) {
+            if (nearestTarget.target !== null && nearestTarget.distance <= this.radius && nearestTarget.target.health.health > 0) {
                 this._target = nearestTarget.target;
             } else {
                 this._target = null;
@@ -752,7 +752,7 @@ var Scanner = function () {
             var y = this._drone.position.y;
             this.gridRange = {
                 start: [Math.floor((x - this.radius) / _constants.grid.gridBlockSize) - 1, Math.floor((y - this.radius) / _constants.grid.gridBlockSize) - 1],
-                end: [Math.round((x + this.radius) / _constants.grid.gridBlockSize) + 1, Math.round((y + this.radius) / _constants.grid.gridBlockSize) + 1]
+                end: [Math.ceil((x + this.radius) / _constants.grid.gridBlockSize) + 1, Math.ceil((y + this.radius) / _constants.grid.gridBlockSize) + 1]
             };
         }
     }, {
@@ -766,7 +766,7 @@ var Scanner = function () {
                 _constants.context.moveTo(5, -5);
                 _constants.context.lineTo(-5, 5);
                 _constants.context.strokeStyle = drone.color;
-                _constants.context.strokeWidth = 3;
+                _constants.context.strokeWidth = 5;
                 _constants.context.stroke();
                 _constants.context.resetTransform();
                 this.drawScannerPath(drone);
@@ -1475,7 +1475,7 @@ var GameGrid = function () {
 
         this._gridBlockSize = 100;
         this._rows = Math.floor(_constants.canvasWidth / this._gridBlockSize);
-        this._columns = Math.floor(_constants.canvasWidth / this._gridBlockSize);
+        this._columns = Math.floor(_constants.canvasHeight / this._gridBlockSize);
         this._grid = new Array(this._rows);
         for (var i = 0; i < this._grid.length; i++) {
             this._grid[i] = new Array(this._columns);

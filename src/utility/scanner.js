@@ -40,7 +40,7 @@ export default class Scanner {
             }
         }
         if(nearestTarget.target !== null &&
-            nearestTarget.distance < this.radius &&
+            nearestTarget.distance <= this.radius &&
             nearestTarget.target.health.health > 0) {
             this._target = nearestTarget.target;
         } else {
@@ -87,8 +87,8 @@ export default class Scanner {
                 Math.floor((x - this.radius) / grid.gridBlockSize) - 1,
                 Math.floor((y - this.radius) / grid.gridBlockSize) - 1],
             end: [
-                Math.round((x + this.radius) / grid.gridBlockSize) + 1,
-                Math.round((y + this.radius) / grid.gridBlockSize) + 1],
+                Math.ceil((x + this.radius) / grid.gridBlockSize) + 1,
+                Math.ceil((y + this.radius) / grid.gridBlockSize) + 1],
         };
     }
 
@@ -102,7 +102,7 @@ export default class Scanner {
             context.moveTo(5, -5);
             context.lineTo(-5, 5);
             context.strokeStyle = drone.color;
-            context.strokeWidth = 3;
+            context.strokeWidth = 5;
             context.stroke();
             context.resetTransform();
             this.drawScannerPath(drone);
