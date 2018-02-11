@@ -80,7 +80,7 @@ function setupDrones(data) {
     });
 }
 
-fetch('http://localhost:4000/data/squads.json')
+fetch('/data/squads.json')
     .then(resp => resp.json())
     .then((data) => {
         setupDrones(data.data);
