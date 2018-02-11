@@ -4,7 +4,7 @@ import SevenSixTwoMM from '../ammo/seven-six-two-mm';
 
 export default class Rifle extends Weapon {
     constructor(id, x, y, angle, gimbal) {
-        const fireRate = 9;
+        const fireRate = 10;
         const round = SevenSixTwoMM;
         super(id, '#577', x, y, angle, gimbal, round, fireRate);
     }

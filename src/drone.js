@@ -48,6 +48,7 @@ export default class Drone extends Particle {
     draw() {
         context.translate(this.position.x, this.position.y);
         this.drawName();
+        this.drawData();
         context.rotate(this.vector.getAngle());
         context.beginPath();
         context.moveTo(10, 0);
@@ -70,6 +71,21 @@ export default class Drone extends Particle {
             context.textAlign = 'center';
             context.fillStyle = this._color;
             context.fillText(this.name, 0, -18);
+        }
+    }
+
+    drawData() {
+        if(debug.droneDataToggle) {
+            context.textAlign = 'left';
+            context.fillStyle = this._color;
+            context.fillText('ID: ' + this.id, 25, -10);
+            context.fillText('SquadID: ' + this.squadId, 25, 0);
+            context.fillText('Health: ' + this.health.health, 25, 10);
+            const positionText = `Position: (${Math.round(
+                this.position.x)}, ${Math.round(this.position.y)})`;
+            context.fillText(positionText, 25, 20);
+            const gridText = `Grid: (${this.gridX}, ${this.gridY})`;
+            context.fillText(gridText, 25, 30);
         }
     }
 }
