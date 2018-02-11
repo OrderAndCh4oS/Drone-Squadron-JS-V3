@@ -87,7 +87,7 @@ var _gameGrid = __webpack_require__(15);
 
 var _gameGrid2 = _interopRequireDefault(_gameGrid);
 
-var _debug = __webpack_require__(16);
+var _debug = __webpack_require__(18);
 
 var _debug2 = _interopRequireDefault(_debug);
 
@@ -385,7 +385,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _point = __webpack_require__(17);
+var _point = __webpack_require__(16);
 
 var _point2 = _interopRequireDefault(_point);
 
@@ -662,7 +662,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _drone = __webpack_require__(10);
+var _drone = __webpack_require__(7);
 
 var _drone2 = _interopRequireDefault(_drone);
 
@@ -723,11 +723,11 @@ var Scanner = function () {
             if (this.gridRange.start[1] < 0) {
                 this.gridRange.start[1] = 0;
             }
-            if (this.gridRange.end[0] > _constants.grid.rows) {
-                this.gridRange.end[0] = _constants.grid.rows;
+            if (this.gridRange.end[0] > _constants.grid.columns) {
+                this.gridRange.end[0] = _constants.grid.columns;
             }
-            if (this.gridRange.end[1] > _constants.grid.columns) {
-                this.gridRange.end[1] = _constants.grid.columns;
+            if (this.gridRange.end[1] > _constants.grid.rows) {
+                this.gridRange.end[1] = _constants.grid.rows;
             }
         }
     }, {
@@ -748,11 +748,12 @@ var Scanner = function () {
     }, {
         key: 'findGridRange',
         value: function findGridRange() {
-            var x = this._drone.position.x;
-            var y = this._drone.position.y;
+            var x = this._drone.position.x / _constants.grid.gridBlockSize;
+            var y = this._drone.position.y / _constants.grid.gridBlockSize;
+            var blockRadius = this.radius / _constants.grid.gridBlockSize + 2;
             this.gridRange = {
-                start: [Math.floor((x - this.radius) / _constants.grid.gridBlockSize) - 1, Math.floor((y - this.radius) / _constants.grid.gridBlockSize) - 1],
-                end: [Math.ceil((x + this.radius) / _constants.grid.gridBlockSize) + 1, Math.ceil((y + this.radius) / _constants.grid.gridBlockSize) + 1]
+                start: [Math.floor(x - blockRadius), Math.floor(y - blockRadius)],
+                end: [Math.ceil(x + blockRadius), Math.ceil(y + blockRadius)]
             };
         }
     }, {
@@ -823,214 +824,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DeltaTime = function () {
-    function DeltaTime() {
-        _classCallCheck(this, DeltaTime);
-
-        this.startTime = Date.now();
-        this.lastTime = Date.now();
-        this.currentTime = Date.now();
-        this.deltaTime = 0;
-    }
-
-    _createClass(DeltaTime, [{
-        key: "update",
-        value: function update() {
-            this.currentTime = Date.now();
-            this.deltaTime = this.currentTime - this.lastTime;
-            this.lastTime = this.currentTime;
-        }
-    }, {
-        key: "getTime",
-        value: function getTime() {
-            return this.deltaTime / 100;
-        }
-    }, {
-        key: "getOffsetTime",
-        value: function getOffsetTime(offset) {
-            return this.deltaTime / 100 + offset;
-        }
-    }, {
-        key: "getElapsedTime",
-        value: function getElapsedTime() {
-            return (this.currentTime - this.startTime) / 100;
-        }
-    }, {
-        key: "getOffsetElapsedTime",
-        value: function getOffsetElapsedTime(offset) {
-            return (this.currentTime - this.startTime) / 100 + offset;
-        }
-    }]);
-
-    return DeltaTime;
-}();
-
-var deltaTime = exports.deltaTime = new DeltaTime();
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _constants = __webpack_require__(0);
-
-var _deltaTime = __webpack_require__(7);
-
-var _vector = __webpack_require__(4);
-
-var _vector2 = _interopRequireDefault(_vector);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Weapon = function () {
-    function Weapon(id, color, x, y, angle, gimbal, round, fireRate) {
-        _classCallCheck(this, Weapon);
-
-        this.id = id;
-        this.color = color;
-        this.position = new _vector2.default(x, y);
-        this.velocity = 0;
-        this.fireRate = fireRate;
-        this.lastFired = 0;
-        this.gimbal = new gimbal();
-        this.round = round;
-    }
-
-    _createClass(Weapon, [{
-        key: 'draw',
-        value: function draw() {
-            _constants.context.translate(this.position.x, this.position.y);
-            _constants.context.rotate(this.gimbal.vector.getAngle() + this.droneAngle);
-            _constants.context.beginPath();
-            _constants.context.lineTo(10, -2);
-            _constants.context.lineTo(10, 2);
-            _constants.context.lineTo(0, 2);
-            _constants.context.lineTo(0, -2);
-            _constants.context.strokeStyle = this.color;
-            _constants.context.stroke();
-            _constants.context.fillStyle = this.color;
-            _constants.context.fill();
-            _constants.context.resetTransform();
-        }
-    }, {
-        key: 'update',
-        value: function update(drone) {
-            this.position.x = drone.position.x;
-            this.position.y = drone.position.y;
-            this.velocity = drone.velocity;
-            this.droneAngle = drone.vector.getAngle();
-            this.gimbal.trackTarget(drone);
-            if (drone.scanner.hasTarget() && drone.scanner.angleToTarget() > -this.gimbal.angleLimit - 0.2 && drone.scanner.angleToTarget() < this.gimbal.angleLimit + 0.2) {
-                this.fireIfReady();
-            }
-        }
-    }, {
-        key: 'fireIfReady',
-        value: function fireIfReady() {
-            if (_deltaTime.deltaTime.getElapsedTime() - this.lastFired > this.fireRate) {
-                this.fire();
-                this.lastFired = _deltaTime.deltaTime.getElapsedTime();
-            }
-        }
-    }, {
-        key: 'fire',
-        value: function fire() {
-            _constants.pm.addParticle(new this.round(this.id, this.position.x, this.position.y, this.gimbal.vector.getAngle() + this.droneAngle, this.velocity));
-        }
-    }, {
-        key: 'applyFill',
-        value: function applyFill() {
-            _constants.context.fillStyle = this.color;
-            _constants.context.fill();
-        }
-    }, {
-        key: 'applyStroke',
-        value: function applyStroke() {
-            _constants.context.strokeStyle = this.color;
-            _constants.context.stroke();
-        }
-    }]);
-
-    return Weapon;
-}();
-
-exports.default = Weapon;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _particle = __webpack_require__(11);
-
-var _particle2 = _interopRequireDefault(_particle);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Bullet = function (_Particle) {
-    _inherits(Bullet, _Particle);
-
-    function Bullet(id, x, y, speed, radius, angle, velocity, damage) {
-        _classCallCheck(this, Bullet);
-
-        var _this = _possibleConstructorReturn(this, (Bullet.__proto__ || Object.getPrototypeOf(Bullet)).call(this, id, x, y, speed, radius, angle));
-
-        _this._damage = damage;
-        _this.velocity.addTo(velocity);
-        return _this;
-    }
-
-    _createClass(Bullet, [{
-        key: 'damage',
-        get: function get() {
-            return this._damage;
-        }
-    }]);
-
-    return Bullet;
-}(_particle2.default);
-
-exports.default = Bullet;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _constants = __webpack_require__(0);
 
 var _vector = __webpack_require__(4);
@@ -1041,7 +834,7 @@ var _particle = __webpack_require__(11);
 
 var _particle2 = _interopRequireDefault(_particle);
 
-var _health = __webpack_require__(18);
+var _health = __webpack_require__(17);
 
 var _health2 = _interopRequireDefault(_health);
 
@@ -1091,6 +884,7 @@ var Drone = function (_Particle) {
         value: function draw() {
             _constants.context.translate(this.position.x, this.position.y);
             this.drawName();
+            this.drawData();
             _constants.context.rotate(this.vector.getAngle());
             _constants.context.beginPath();
             _constants.context.moveTo(10, 0);
@@ -1111,10 +905,24 @@ var Drone = function (_Particle) {
         key: 'drawName',
         value: function drawName() {
             if (_constants.debug.droneNameToggle) {
-                _constants.context.font = '9px Tahoma';
                 _constants.context.textAlign = 'center';
                 _constants.context.fillStyle = this._color;
                 _constants.context.fillText(this.name, 0, -18);
+            }
+        }
+    }, {
+        key: 'drawData',
+        value: function drawData() {
+            if (_constants.debug.droneDataToggle) {
+                _constants.context.textAlign = 'left';
+                _constants.context.fillStyle = this._color;
+                _constants.context.fillText('ID: ' + this.id, 25, -10);
+                _constants.context.fillText('SquadID: ' + this.squadId, 25, 0);
+                _constants.context.fillText('Health: ' + this.health.health, 25, 10);
+                var positionText = 'Position: (' + Math.round(this.position.x) + ', ' + Math.round(this.position.y) + ')';
+                _constants.context.fillText(positionText, 25, 20);
+                var gridText = 'Grid: (' + this.gridX + ', ' + this.gridY + ')';
+                _constants.context.fillText(gridText, 25, 30);
             }
         }
     }, {
@@ -1138,6 +946,214 @@ var Drone = function (_Particle) {
 exports.default = Drone;
 
 /***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var DeltaTime = function () {
+    function DeltaTime() {
+        _classCallCheck(this, DeltaTime);
+
+        this.startTime = Date.now();
+        this.lastTime = Date.now();
+        this.currentTime = Date.now();
+        this.deltaTime = 0;
+    }
+
+    _createClass(DeltaTime, [{
+        key: "update",
+        value: function update() {
+            this.currentTime = Date.now();
+            this.deltaTime = this.currentTime - this.lastTime;
+            this.lastTime = this.currentTime;
+        }
+    }, {
+        key: "getTime",
+        value: function getTime() {
+            return this.deltaTime / 100;
+        }
+    }, {
+        key: "getOffsetTime",
+        value: function getOffsetTime(offset) {
+            return this.deltaTime / 100 + offset;
+        }
+    }, {
+        key: "getElapsedTime",
+        value: function getElapsedTime() {
+            return (this.currentTime - this.startTime) / 100;
+        }
+    }, {
+        key: "getOffsetElapsedTime",
+        value: function getOffsetElapsedTime(offset) {
+            return (this.currentTime - this.startTime) / 100 + offset;
+        }
+    }]);
+
+    return DeltaTime;
+}();
+
+var deltaTime = exports.deltaTime = new DeltaTime();
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _constants = __webpack_require__(0);
+
+var _deltaTime = __webpack_require__(8);
+
+var _vector = __webpack_require__(4);
+
+var _vector2 = _interopRequireDefault(_vector);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Weapon = function () {
+    function Weapon(id, color, x, y, angle, gimbal, round, fireRate) {
+        _classCallCheck(this, Weapon);
+
+        this.id = id;
+        this.color = color;
+        this.position = new _vector2.default(x, y);
+        this.velocity = 0;
+        this.fireRate = fireRate;
+        this.lastFired = 0;
+        this.gimbal = new gimbal();
+        this.round = round;
+    }
+
+    _createClass(Weapon, [{
+        key: 'draw',
+        value: function draw() {
+            _constants.context.translate(this.position.x, this.position.y);
+            _constants.context.rotate(this.gimbal.vector.getAngle() + this.droneAngle);
+            _constants.context.beginPath();
+            _constants.context.lineTo(10, -2);
+            _constants.context.lineTo(10, 2);
+            _constants.context.lineTo(0, 2);
+            _constants.context.lineTo(0, -2);
+            _constants.context.strokeStyle = this.color;
+            _constants.context.stroke();
+            _constants.context.fillStyle = this.color;
+            _constants.context.fill();
+            _constants.context.resetTransform();
+        }
+    }, {
+        key: 'update',
+        value: function update(drone) {
+            this.position.x = drone.position.x;
+            this.position.y = drone.position.y;
+            this.velocity = drone.velocity;
+            this.droneAngle = drone.vector.getAngle();
+            this.gimbal.trackTarget(drone);
+            if (drone.scanner.hasTarget()) {
+                this.fireIfReady();
+            }
+        }
+    }, {
+        key: 'fireIfReady',
+        value: function fireIfReady() {
+            if (_deltaTime.deltaTime.getElapsedTime() - this.lastFired > this.fireRate) {
+                this.fire();
+                this.lastFired = _deltaTime.deltaTime.getElapsedTime();
+            }
+        }
+    }, {
+        key: 'fire',
+        value: function fire() {
+            _constants.pm.addParticle(new this.round(this.id, this.position.x, this.position.y, this.gimbal.vector.getAngle() + this.droneAngle, this.velocity));
+        }
+    }, {
+        key: 'applyFill',
+        value: function applyFill() {
+            _constants.context.fillStyle = this.color;
+            _constants.context.fill();
+        }
+    }, {
+        key: 'applyStroke',
+        value: function applyStroke() {
+            _constants.context.strokeStyle = this.color;
+            _constants.context.stroke();
+        }
+    }]);
+
+    return Weapon;
+}();
+
+exports.default = Weapon;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _particle = __webpack_require__(11);
+
+var _particle2 = _interopRequireDefault(_particle);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Bullet = function (_Particle) {
+    _inherits(Bullet, _Particle);
+
+    function Bullet(id, x, y, speed, radius, angle, velocity, damage) {
+        _classCallCheck(this, Bullet);
+
+        var _this = _possibleConstructorReturn(this, (Bullet.__proto__ || Object.getPrototypeOf(Bullet)).call(this, id, x, y, speed, radius, angle));
+
+        _this._damage = damage;
+        _this.velocity.addTo(velocity);
+        return _this;
+    }
+
+    _createClass(Bullet, [{
+        key: 'damage',
+        get: function get() {
+            return this._damage;
+        }
+    }]);
+
+    return Bullet;
+}(_particle2.default);
+
+exports.default = Bullet;
+
+/***/ }),
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1156,7 +1172,7 @@ var _vector = __webpack_require__(4);
 
 var _vector2 = _interopRequireDefault(_vector);
 
-var _deltaTime = __webpack_require__(7);
+var _deltaTime = __webpack_require__(8);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1174,6 +1190,8 @@ var Particle = function () {
         this.velocity.setAngle(angle);
         this._remove = false;
         this._color = '#000';
+        this._gridX = Math.floor(this.position.x / _constants.grid.gridBlockSize);
+        this._gridY = Math.floor(this.position.y / _constants.grid.gridBlockSize);
     }
 
     _createClass(Particle, [{
@@ -1186,11 +1204,9 @@ var Particle = function () {
         value: function move() {
             var distanceByDeltaTime = this.velocity.multiply(_deltaTime.deltaTime.getTime());
             this.velocity.multiply(_constants.friction);
-            var gridX = Math.floor(this.position.x / _constants.grid.gridBlockSize);
-            var gridY = Math.floor(this.position.y / _constants.grid.gridBlockSize);
-            _constants.grid.removeParticle(this, gridX, gridY);
+            _constants.grid.removeParticle(this);
             this.position.addTo(distanceByDeltaTime);
-            _constants.grid.addParticle(this, gridX, gridY);
+            _constants.grid.addParticle(this);
         }
     }, {
         key: 'removeParticle',
@@ -1205,6 +1221,22 @@ var Particle = function () {
             _constants.context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
             _constants.context.strokeStyle = this._color;
             _constants.context.stroke();
+        }
+    }, {
+        key: 'gridY',
+        get: function get() {
+            return this._gridY;
+        },
+        set: function set(value) {
+            this._gridY = value;
+        }
+    }, {
+        key: 'gridX',
+        get: function get() {
+            return this._gridX;
+        },
+        set: function set(value) {
+            this._gridX = value;
         }
     }, {
         key: 'remove',
@@ -1237,9 +1269,9 @@ exports.default = Particle;
 
 var _constants = __webpack_require__(0);
 
-var _deltaTime = __webpack_require__(7);
+var _deltaTime = __webpack_require__(8);
 
-var _drone = __webpack_require__(10);
+var _drone = __webpack_require__(7);
 
 var _drone2 = _interopRequireDefault(_drone);
 
@@ -1328,6 +1360,8 @@ function animate() {
     _deltaTime.deltaTime.update();
     _constants.dm.update();
     _constants.pm.update();
+    _constants.grid.draw();
+    _constants.grid.log();
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;
@@ -1376,6 +1410,9 @@ var ParticleManager = function () {
                 p.draw();
                 p.update();
                 _this.collisionDetection(p);
+                if ((0, _functions.isOffCanvas)(p)) {
+                    p.removeParticle();
+                }
                 return p;
             }).filter(function (p) {
                 return !p.remove && !(0, _functions.isOffCanvas)(p);
@@ -1388,7 +1425,6 @@ var ParticleManager = function () {
                 if ((0, _functions.didCollide)(p, d)) {
                     d.health.takeDamage(p.damage);
                     p.removeParticle();
-                    // dm.drones.map((d) => console.log(d.id + ': ' + d.health));
                 }
             });
         }
@@ -1435,6 +1471,9 @@ var DroneManager = function () {
                 d.draw();
                 d.update();
                 (0, _functions.returnToCanvas)(d);
+                if (d.health.health <= 0) {
+                    d.removeParticle();
+                }
                 return d;
             }).filter(function (d) {
                 return d.health.health > 0;
@@ -1467,6 +1506,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
+var _drone = __webpack_require__(7);
+
+var _drone2 = _interopRequireDefault(_drone);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GameGrid = function () {
@@ -1474,11 +1519,11 @@ var GameGrid = function () {
         _classCallCheck(this, GameGrid);
 
         this._gridBlockSize = 100;
-        this._rows = Math.floor(_constants.canvasWidth / this._gridBlockSize);
-        this._columns = Math.floor(_constants.canvasHeight / this._gridBlockSize);
-        this._grid = new Array(this._rows);
+        this._columns = Math.round(_constants.canvasWidth / this._gridBlockSize);
+        this._rows = Math.round(_constants.canvasHeight / this._gridBlockSize);
+        this._grid = new Array(this._columns);
         for (var i = 0; i < this._grid.length; i++) {
-            this._grid[i] = new Array(this._columns);
+            this._grid[i] = new Array(this._rows);
             for (var j = 0; j < this._grid.length; j++) {
                 this._grid[i][j] = [];
             }
@@ -1488,25 +1533,80 @@ var GameGrid = function () {
     _createClass(GameGrid, [{
         key: 'gridHasKeys',
         value: function gridHasKeys(x, y) {
-            return x >= 0 && x < this._rows && y >= 0 && y < this._columns;
+            return x >= 0 && x < this._columns && y >= 0 && y < this._rows;
         }
     }, {
         key: 'addParticle',
-        value: function addParticle(particle, x, y) {
-            if (!this.gridHasKeys(x, y)) {
+        value: function addParticle(particle) {
+            particle.gridX = Math.floor(particle.position.x / this.gridBlockSize);
+            particle.gridY = Math.floor(particle.position.y / this.gridBlockSize);
+            if (!this.gridHasKeys(particle.gridX, particle.gridY)) {
                 return;
             }
-            this._grid[x][y].push(particle);
+            this._grid[particle.gridX][particle.gridY].push(particle);
         }
     }, {
         key: 'removeParticle',
-        value: function removeParticle(particle, x, y) {
-            if (!this.gridHasKeys(x, y)) {
+        value: function removeParticle(particle) {
+            if (!this.gridHasKeys(particle.gridX, particle.gridY)) {
                 return;
             }
-            this._grid[x][y] = this._grid[x][y].filter(function (p) {
+            this._grid[particle.gridX][particle.gridY] = this._grid[particle.gridX][particle.gridY].filter(function (p) {
                 return p.id !== particle.id;
             });
+        }
+    }, {
+        key: 'log',
+        value: function log() {
+            if (_constants.debug.gameGridLog) {
+                _constants.debug.gameGridLog = false;
+                console.log(this.grid);
+            }
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            this.drawGrid();
+            this.drawGridContent();
+        }
+    }, {
+        key: 'drawGridContent',
+        value: function drawGridContent() {
+            _constants.context.textAlign = 'left';
+            if (_constants.debug.gameGridToggle) {
+                for (var i = 0; i < this._grid.length; i++) {
+                    for (var j = 0; j < this._grid[i].length; j++) {
+                        for (var k = 0; k < this._grid[i][j].length; k++) {
+                            var item = this._grid[i][j][k];
+                            var text = item instanceof _drone2.default ? 'Drone:' + item.name : item.id;
+                            _constants.context.fillText(text, i * this._gridBlockSize + 4, j * this._gridBlockSize + (10 * k + 14));
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'drawGrid',
+        value: function drawGrid() {
+            if (_constants.debug.gameGridToggle) {
+                _constants.context.setLineDash([1, 7]);
+                _constants.context.strokeStyle = _constants.colours.black;
+                for (var i = 0; i < this._columns; i++) {
+                    _constants.context.fillText(i, i * this._gridBlockSize, 10);
+                    _constants.context.beginPath();
+                    _constants.context.moveTo(i * this._gridBlockSize, 0);
+                    _constants.context.lineTo(i * this._gridBlockSize, _constants.canvasHeight);
+                    _constants.context.stroke();
+                }
+                for (var _i = 0; _i < this._rows; _i++) {
+                    _constants.context.fillText(_i, 0, _i * this._gridBlockSize + 10);
+                    _constants.context.beginPath();
+                    _constants.context.moveTo(0, _i * this._gridBlockSize);
+                    _constants.context.lineTo(_constants.canvasWidth, _i * this._gridBlockSize);
+                    _constants.context.stroke();
+                }
+                _constants.context.setLineDash([0]);
+            }
         }
     }, {
         key: 'gridBlockSize',
@@ -1537,98 +1637,6 @@ exports.default = GameGrid;
 
 /***/ }),
 /* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Debug = function () {
-    function Debug() {
-        _classCallCheck(this, Debug);
-
-        this._scannerRadiusToggle = false;
-        this._scannerPathToggle = false;
-        this._droneNameToggle = false;
-    }
-
-    _createClass(Debug, [{
-        key: 'initialiseListeners',
-        value: function initialiseListeners() {
-            this.addScannerRadiusToggleListener();
-            this.addScannerPathToggleListener();
-            this.addNameToggleListener();
-        }
-    }, {
-        key: 'addScannerRadiusToggleListener',
-        value: function addScannerRadiusToggleListener() {
-            var _this = this;
-
-            document.getElementById('scanner-radius-toggle').addEventListener('click', function (e) {
-                e.target.classList.toggle('toggled');
-                _this._scannerRadiusToggle = !_this._scannerRadiusToggle;
-            });
-        }
-    }, {
-        key: 'addScannerPathToggleListener',
-        value: function addScannerPathToggleListener() {
-            var _this2 = this;
-
-            document.getElementById('scanner-path-toggle').addEventListener('click', function (e) {
-                e.target.classList.toggle('toggled');
-                _this2._scannerPathToggle = !_this2._scannerPathToggle;
-            });
-        }
-    }, {
-        key: 'addNameToggleListener',
-        value: function addNameToggleListener() {
-            var _this3 = this;
-
-            document.getElementById('name-toggle').addEventListener('click', function (e) {
-                e.target.classList.toggle('toggled');
-                _this3._droneNameToggle = !_this3._droneNameToggle;
-            });
-        }
-    }, {
-        key: 'droneNameToggle',
-        get: function get() {
-            return this._droneNameToggle;
-        },
-        set: function set(value) {
-            this._droneNameToggle = value;
-        }
-    }, {
-        key: 'scannerPathToggle',
-        get: function get() {
-            return this._scannerPathToggle;
-        },
-        set: function set(value) {
-            this._scannerPathToggle = value;
-        }
-    }, {
-        key: 'scannerRadiusToggle',
-        get: function get() {
-            return this._scannerRadiusToggle;
-        },
-        set: function set(value) {
-            this._scannerRadiusToggle = value;
-        }
-    }]);
-
-    return Debug;
-}();
-
-exports.default = Debug;
-
-/***/ }),
-/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1674,7 +1682,7 @@ var Point = function () {
 exports.default = Point;
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1743,6 +1751,157 @@ var Heath = function () {
 }();
 
 exports.default = Heath;
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Debug = function () {
+    function Debug() {
+        _classCallCheck(this, Debug);
+
+        this._gameGridToggle = false;
+        this._scannerRadiusToggle = false;
+        this._scannerPathToggle = false;
+        this._droneNameToggle = false;
+        this._droneDataToggle = false;
+        this._gameGridLog = false;
+    }
+
+    _createClass(Debug, [{
+        key: 'initialiseListeners',
+        value: function initialiseListeners() {
+            this.addGameGridToggleListener();
+            this.addScannerRadiusToggleListener();
+            this.addScannerPathToggleListener();
+            this.addNameToggleListener();
+            this.addDataToggleListener();
+            this.addGameGridLogListener();
+        }
+    }, {
+        key: 'addGameGridLogListener',
+        value: function addGameGridLogListener() {
+            var _this = this;
+
+            document.getElementById('game-grid-log').addEventListener('click', function (e) {
+                _this._gameGridLog = !_this._gameGridLog;
+            });
+        }
+    }, {
+        key: 'addGameGridToggleListener',
+        value: function addGameGridToggleListener() {
+            var _this2 = this;
+
+            document.getElementById('game-grid-toggle').addEventListener('click', function (e) {
+                e.target.classList.toggle('toggled');
+                _this2._gameGridToggle = !_this2._gameGridToggle;
+            });
+        }
+    }, {
+        key: 'addScannerRadiusToggleListener',
+        value: function addScannerRadiusToggleListener() {
+            var _this3 = this;
+
+            document.getElementById('scanner-radius-toggle').addEventListener('click', function (e) {
+                e.target.classList.toggle('toggled');
+                _this3._scannerRadiusToggle = !_this3._scannerRadiusToggle;
+            });
+        }
+    }, {
+        key: 'addScannerPathToggleListener',
+        value: function addScannerPathToggleListener() {
+            var _this4 = this;
+
+            document.getElementById('scanner-path-toggle').addEventListener('click', function (e) {
+                e.target.classList.toggle('toggled');
+                _this4._scannerPathToggle = !_this4._scannerPathToggle;
+            });
+        }
+    }, {
+        key: 'addNameToggleListener',
+        value: function addNameToggleListener() {
+            var _this5 = this;
+
+            document.getElementById('name-toggle').addEventListener('click', function (e) {
+                e.target.classList.toggle('toggled');
+                _this5._droneNameToggle = !_this5._droneNameToggle;
+            });
+        }
+    }, {
+        key: 'addDataToggleListener',
+        value: function addDataToggleListener() {
+            var _this6 = this;
+
+            document.getElementById('data-toggle').addEventListener('click', function (e) {
+                e.target.classList.toggle('toggled');
+                _this6._droneDataToggle = !_this6._droneDataToggle;
+            });
+        }
+    }, {
+        key: 'droneDataToggle',
+        get: function get() {
+            return this._droneDataToggle;
+        },
+        set: function set(value) {
+            this._droneDataToggle = value;
+        }
+    }, {
+        key: 'gameGridLog',
+        get: function get() {
+            return this._gameGridLog;
+        },
+        set: function set(value) {
+            this._gameGridLog = value;
+        }
+    }, {
+        key: 'gameGridToggle',
+        get: function get() {
+            return this._gameGridToggle;
+        },
+        set: function set(value) {
+            this._gameGridToggle = value;
+        }
+    }, {
+        key: 'droneNameToggle',
+        get: function get() {
+            return this._droneNameToggle;
+        },
+        set: function set(value) {
+            this._droneNameToggle = value;
+        }
+    }, {
+        key: 'scannerPathToggle',
+        get: function get() {
+            return this._scannerPathToggle;
+        },
+        set: function set(value) {
+            this._scannerPathToggle = value;
+        }
+    }, {
+        key: 'scannerRadiusToggle',
+        get: function get() {
+            return this._scannerRadiusToggle;
+        },
+        set: function set(value) {
+            this._scannerRadiusToggle = value;
+        }
+    }]);
+
+    return Debug;
+}();
+
+exports.default = Debug;
 
 /***/ }),
 /* 19 */
@@ -2613,7 +2772,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(8);
+var _weapon = __webpack_require__(9);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
@@ -2674,7 +2833,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(9);
+var _bullet = __webpack_require__(10);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -2713,7 +2872,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(8);
+var _weapon = __webpack_require__(9);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
@@ -2737,7 +2896,7 @@ var Shotgun = function (_Weapon) {
     function Shotgun(id, x, y, angle, gimbal) {
         _classCallCheck(this, Shotgun);
 
-        var fireRate = 10;
+        var fireRate = 7;
         var round = _shot2.default;
         return _possibleConstructorReturn(this, (Shotgun.__proto__ || Object.getPrototypeOf(Shotgun)).call(this, id, '#664', x, y, angle, gimbal, round, fireRate));
     }
@@ -2782,7 +2941,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(9);
+var _bullet = __webpack_require__(10);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -2821,7 +2980,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(8);
+var _weapon = __webpack_require__(9);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
@@ -2845,7 +3004,7 @@ var Rifle = function (_Weapon) {
     function Rifle(id, x, y, angle, gimbal) {
         _classCallCheck(this, Rifle);
 
-        var fireRate = 9;
+        var fireRate = 10;
         var round = _sevenSixTwoMm2.default;
         return _possibleConstructorReturn(this, (Rifle.__proto__ || Object.getPrototypeOf(Rifle)).call(this, id, '#577', x, y, angle, gimbal, round, fireRate));
     }
@@ -2882,7 +3041,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(9);
+var _bullet = __webpack_require__(10);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -2900,7 +3059,7 @@ var SevenSixTwoMM = function (_Bullet) {
     function SevenSixTwoMM(id, x, y, angle, velocity) {
         _classCallCheck(this, SevenSixTwoMM);
 
-        return _possibleConstructorReturn(this, (SevenSixTwoMM.__proto__ || Object.getPrototypeOf(SevenSixTwoMM)).call(this, id, x, y, 50, 2, angle, velocity, 17));
+        return _possibleConstructorReturn(this, (SevenSixTwoMM.__proto__ || Object.getPrototypeOf(SevenSixTwoMM)).call(this, id, x, y, 50, 2, angle, velocity, 18));
     }
 
     return SevenSixTwoMM;
