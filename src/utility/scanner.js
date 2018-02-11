@@ -55,11 +55,11 @@ export default class Scanner {
         if(this.gridRange.start[1] < 0) {
             this.gridRange.start[1] = 0;
         }
-        if(this.gridRange.end[0] > grid.rows) {
-            this.gridRange.end[0] = grid.rows;
+        if(this.gridRange.end[0] > grid.columns) {
+            this.gridRange.end[0] = grid.columns;
         }
-        if(this.gridRange.end[1] > grid.columns) {
-            this.gridRange.end[1] = grid.columns;
+        if(this.gridRange.end[1] > grid.rows) {
+            this.gridRange.end[1] = grid.rows;
         }
     }
 

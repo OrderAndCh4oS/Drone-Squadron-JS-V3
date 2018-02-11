@@ -11,7 +11,7 @@
             "name": "Spot",
             "weapon": "Shotgun",
             "gimbal": "G60",
-            "scanner": "SC200",
+            "scanner": "SC900",
             "steering": "S8",
             "thruster": "T18"
           },
@@ -28,9 +28,9 @@
             "id": 3,
             "name": "Poppet",
             "weapon": "Rifle",
-            "gimbal": "G240",
+            "gimbal": "G360",
             "scanner": "SC900",
-            "steering": "S4",
+            "steering": "S6",
             "thruster": "T10"
           },
           {
@@ -47,9 +47,9 @@
             "name": "Dottox",
             "weapon": "Rifle",
             "gimbal": "G120",
-            "scanner": "SC400",
+            "scanner": "SC600",
             "steering": "S12",
-            "thruster": "T15"
+            "thruster": "T12"
           }
         ]
       },
