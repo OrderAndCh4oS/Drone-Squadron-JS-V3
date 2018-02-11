@@ -1,8 +1,18 @@
-import { canvasHeight, canvasWidth, context, dm, pm, } from './constants';
+import {
+    canvasHeight,
+    canvasWidth,
+    colours,
+    context,
+    debug,
+    dm,
+    pm,
+} from './constants';
 import { deltaTime } from './service/delta-time';
 import Drone from './drone';
 import { gimbals, scanners, steering, thrusters } from './constants/utilities';
 import { weapons } from './constants/weapons';
+
+debug.initialiseListeners();
 
 // const weaponsArray = [Shotgun, Uzi, Rifle];
 //
@@ -50,12 +60,11 @@ function setupDrones(data) {
     console.log(data);
     data.squadrons.map((s) => {
         s.drones.map((d) => {
-            console.log(d.scanner);
-            console.log(scanners[d.scanner]);
             const drone = new Drone(
                 d.id,
                 s.id,
-                s.colour,
+                d.name,
+                colours[s.colour],
                 Math.random() * canvasWidth,
                 Math.random() * canvasHeight,
                 0,
