@@ -35,9 +35,7 @@ export default class Weapon {
         this.velocity = drone.velocity;
         this.droneAngle = drone.vector.getAngle();
         this.gimbal.trackTarget(drone);
-        if(drone.scanner.hasTarget() &&
-            drone.scanner.angleToTarget() > -this.gimbal.angleLimit - 0.2 &&
-            drone.scanner.angleToTarget() < this.gimbal.angleLimit + 0.2) {
+        if(drone.scanner.hasTarget()) {
             this.fireIfReady();
         }
     }

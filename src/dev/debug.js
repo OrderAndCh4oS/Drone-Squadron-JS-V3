@@ -4,7 +4,16 @@ export default class Debug {
         this._scannerRadiusToggle = false;
         this._scannerPathToggle = false;
         this._droneNameToggle = false;
+        this._droneDataToggle = false;
         this._gameGridLog = false;
+    }
+
+    get droneDataToggle() {
+        return this._droneDataToggle;
+    }
+
+    set droneDataToggle(value) {
+        this._droneDataToggle = value;
     }
 
     get gameGridLog() {
@@ -52,6 +61,7 @@ export default class Debug {
         this.addScannerRadiusToggleListener();
         this.addScannerPathToggleListener();
         this.addNameToggleListener();
+        this.addDataToggleListener();
         this.addGameGridLogListener();
     }
 
@@ -91,6 +101,14 @@ export default class Debug {
             .addEventListener('click', (e) => {
                 e.target.classList.toggle('toggled');
                 this._droneNameToggle = !this._droneNameToggle;
+            });
+    }
+
+    addDataToggleListener() {
+        document.getElementById('data-toggle')
+            .addEventListener('click', (e) => {
+                e.target.classList.toggle('toggled');
+                this._droneDataToggle = !this._droneDataToggle;
             });
     }
 }
