@@ -16,6 +16,9 @@ export default class ParticleManager {
                 p.draw();
                 p.update();
                 this.collisionDetection(p);
+                if(isOffCanvas(p)) {
+                    p.removeParticle();
+                }
                 return p;
             })
             .filter(p => !p.remove && !isOffCanvas(p));
