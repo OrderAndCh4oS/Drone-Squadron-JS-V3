@@ -1,4 +1,4 @@
-import { context, grid } from '../constants';
+import { colours, context, debug, grid } from '../constants';
 import Drone from '../drone';
 
 export default class Scanner {
@@ -105,14 +105,37 @@ export default class Scanner {
             context.strokeWidth = 3;
             context.stroke();
             context.resetTransform();
-            // context.setLineDash([1, 2]);
-            // context.beginPath();
-            // context.moveTo(drone.position.x, drone.position.y);
-            // context.lineTo(this.target.position.x,
-            //     this.target.position.y);
-            // context.strokeStyle = drone.color;
-            // context.strokeWidth = 0.25;
-            // context.stroke();
+            this.drawScannerPath(drone);
+        }
+        this.drawScannerRadius(drone);
+    }
+
+    drawScannerPath(drone) {
+        if(debug.scannerPathToggle) {
+            context.setLineDash([1, 5]);
+            context.beginPath();
+            context.moveTo(drone.position.x, drone.position.y);
+            context.lineTo(this.target.position.x,
+                this.target.position.y);
+            context.strokeStyle = colours.black;
+            context.stroke();
+            context.setLineDash([0]);
+        }
+    }
+
+    drawScannerRadius(drone) {
+        if(debug.scannerRadiusToggle) {
+            context.setLineDash([1, 5]);
+            context.beginPath();
+            context.arc(
+                drone.position.x,
+                drone.position.y,
+                this.radius,
+                0,
+                2 * Math.PI);
+            context.strokeStyle = colours.black;
+            context.stroke();
+            context.setLineDash([0]);
         }
     }
 }

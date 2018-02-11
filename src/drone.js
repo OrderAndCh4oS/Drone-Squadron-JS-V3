@@ -1,4 +1,4 @@
-import { context } from './constants';
+import { context, debug } from './constants';
 import Vector from './service/vector';
 import Particle from './abstract/particle';
 import Health from './service/health';
@@ -6,10 +6,11 @@ import Health from './service/health';
 export default class Drone extends Particle {
 
     constructor(
-        id, squadId, color, x, y, speed, angle, weapon, gimbal, scanner,
+        id, squadId, name, color, x, y, speed, angle, weapon, gimbal, scanner,
         thruster,
         steering) {
         super(id, x, y, speed, 10, angle);
+        this.name = name;
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
         this.weapon = new weapon(id, x, y, angle, gimbal);
@@ -46,6 +47,7 @@ export default class Drone extends Particle {
 
     draw() {
         context.translate(this.position.x, this.position.y);
+        this.drawName();
         context.rotate(this.vector.getAngle());
         context.beginPath();
         context.moveTo(10, 0);
@@ -61,5 +63,14 @@ export default class Drone extends Particle {
         this.scanner.draw(this);
         this.thruster.draw(this);
         this.weapon.draw();
+    }
+
+    drawName() {
+        if(debug.droneNameToggle) {
+            context.font = '9px Tahoma';
+            context.textAlign = 'center';
+            context.fillStyle = this._color;
+            context.fillText(this.name, 0, -18);
+        }
     }
 }
