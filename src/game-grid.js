@@ -1,10 +1,10 @@
-import {canvasWidth} from './constants';
+import { canvasHeight, canvasWidth } from './constants';
 
 export default class GameGrid {
     constructor() {
         this._gridBlockSize = 100;
         this._rows = Math.floor(canvasWidth / this._gridBlockSize);
-        this._columns = Math.floor(canvasWidth / this._gridBlockSize);
+        this._columns = Math.floor(canvasHeight / this._gridBlockSize);
         this._grid = new Array(this._rows);
         for (let i = 0; i < this._grid.length; i++) {
             this._grid[i] = new Array(this._columns);
