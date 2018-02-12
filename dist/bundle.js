@@ -87,7 +87,7 @@ var _gameGrid = __webpack_require__(15);
 
 var _gameGrid2 = _interopRequireDefault(_gameGrid);
 
-var _debug = __webpack_require__(18);
+var _debug = __webpack_require__(19);
 
 var _debug2 = _interopRequireDefault(_debug);
 
@@ -96,10 +96,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var canvas = document.getElementById('canvas');
 var colours = exports.colours = {
     black: '#2a2e34',
-    orange: '#cd7831',
-    red: '#cd4535',
+    white: '#b3dce2',
+    orange: '#ffaa39',
+    red: '#e62429',
     green: '#80bf32',
-    blue: '#345b77'
+    blue: '#3b9ec7'
 };
 var friction = exports.friction = 0.8;
 var context = exports.context = canvas.getContext('2d');
@@ -587,13 +588,13 @@ var Thruster = function () {
                 _constants.context.translate(drone.position.x, drone.position.y);
                 _constants.context.rotate(drone.vector.getAngle());
                 _constants.context.beginPath();
-                _constants.context.moveTo(-10, -2);
-                _constants.context.lineTo(-14, Math.floor(Math.random() * 2) - 3);
-                _constants.context.lineTo(-12, -1);
-                _constants.context.lineTo(-16, Math.floor(Math.random() * 3) - 1);
-                _constants.context.lineTo(-12, 1);
-                _constants.context.lineTo(-14, Math.floor(Math.random() * 2) + 2);
-                _constants.context.lineTo(-10, 2);
+                _constants.context.moveTo(-0, -2);
+                _constants.context.lineTo(-8, Math.floor(Math.random() * 2) - 3);
+                _constants.context.lineTo(-6, -1);
+                _constants.context.lineTo(-10, Math.floor(Math.random() * 3) - 1);
+                _constants.context.lineTo(-6, 1);
+                _constants.context.lineTo(-8, Math.floor(Math.random() * 2) + 2);
+                _constants.context.lineTo(-4, 2);
                 _constants.context.strokeWidth = 0.5;
                 _constants.context.strokeStyle = _constants.colours.orange;
                 _constants.context.stroke();
@@ -782,7 +783,7 @@ var Scanner = function () {
                 _constants.context.beginPath();
                 _constants.context.moveTo(drone.position.x, drone.position.y);
                 _constants.context.lineTo(this.target.position.x, this.target.position.y);
-                _constants.context.strokeStyle = _constants.colours.black;
+                _constants.context.strokeStyle = _constants.colours.white;
                 _constants.context.stroke();
                 _constants.context.setLineDash([0]);
             }
@@ -794,7 +795,7 @@ var Scanner = function () {
                 _constants.context.setLineDash([1, 5]);
                 _constants.context.beginPath();
                 _constants.context.arc(drone.position.x, drone.position.y, this.radius, 0, 2 * Math.PI);
-                _constants.context.strokeStyle = _constants.colours.black;
+                _constants.context.strokeStyle = _constants.colours.white;
                 _constants.context.stroke();
                 _constants.context.setLineDash([0]);
             }
@@ -837,6 +838,8 @@ var _particle2 = _interopRequireDefault(_particle);
 var _health = __webpack_require__(17);
 
 var _health2 = _interopRequireDefault(_health);
+
+var _sprites = __webpack_require__(18);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -882,10 +885,21 @@ var Drone = function (_Particle) {
     }, {
         key: 'draw',
         value: function draw() {
+            this.weapon.draw();
+            this.thruster.draw(this);
             _constants.context.translate(this.position.x, this.position.y);
             this.drawName();
             this.drawData();
-            _constants.context.rotate(this.vector.getAngle());
+            _constants.context.rotate(this.vector.getAngle() + Math.PI / 180 * 90);
+            _constants.context.translate(-12.5, -14);
+            _constants.context.drawImage(_sprites.drones[this._color], 0, 0);
+            _constants.context.resetTransform();
+            this.health.draw(this);
+            this.scanner.draw(this);
+        }
+    }, {
+        key: 'drawShip',
+        value: function drawShip() {
             _constants.context.beginPath();
             _constants.context.moveTo(10, 0);
             _constants.context.lineTo(-10, -7);
@@ -895,18 +909,13 @@ var Drone = function (_Particle) {
             _constants.context.stroke();
             _constants.context.fillStyle = this._color;
             _constants.context.fill();
-            _constants.context.resetTransform();
-            this.health.draw(this);
-            this.scanner.draw(this);
-            this.thruster.draw(this);
-            this.weapon.draw();
         }
     }, {
         key: 'drawName',
         value: function drawName() {
             if (_constants.debug.droneNameToggle) {
                 _constants.context.textAlign = 'center';
-                _constants.context.fillStyle = this._color;
+                _constants.context.fillStyle = _constants.colours[this._color];
                 _constants.context.fillText(this.name, 0, -18);
             }
         }
@@ -915,7 +924,7 @@ var Drone = function (_Particle) {
         value: function drawData() {
             if (_constants.debug.droneDataToggle) {
                 _constants.context.textAlign = 'left';
-                _constants.context.fillStyle = this._color;
+                _constants.context.fillStyle = _constants.colours[this._color];
                 _constants.context.fillText('ID: ' + this.id, 25, -10);
                 _constants.context.fillText('SquadID: ' + this.squadId, 25, 0);
                 _constants.context.fillText('Health: ' + this.health.health, 25, 10);
@@ -1189,7 +1198,7 @@ var Particle = function () {
         this.velocity.setLength(speed);
         this.velocity.setAngle(angle);
         this._remove = false;
-        this._color = '#000';
+        this._color = _constants.colours.white;
         this._gridX = Math.floor(this.position.x / _constants.grid.gridBlockSize);
         this._gridY = Math.floor(this.position.y / _constants.grid.gridBlockSize);
     }
@@ -1219,6 +1228,8 @@ var Particle = function () {
         value: function draw() {
             _constants.context.beginPath();
             _constants.context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
+            _constants.context.fillStyle = this._color;
+            _constants.context.fill();
             _constants.context.strokeStyle = this._color;
             _constants.context.stroke();
         }
@@ -1275,9 +1286,9 @@ var _drone = __webpack_require__(7);
 
 var _drone2 = _interopRequireDefault(_drone);
 
-var _utilities = __webpack_require__(19);
+var _utilities = __webpack_require__(20);
 
-var _weapons = __webpack_require__(39);
+var _weapons = __webpack_require__(40);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1333,7 +1344,7 @@ function setupDrones(data) {
     console.log(data);
     data.squadrons.map(function (s) {
         s.drones.map(function (d) {
-            var drone = new _drone2.default(d.id, s.id, d.name, _constants.colours[s.colour], Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, _weapons.weapons[d.weapon], _utilities.gimbals[d.gimbal], _utilities.scanners[d.scanner], _utilities.thrusters[d.thruster], _utilities.steering[d.steering]);
+            var drone = new _drone2.default(d.id, s.id, d.name, s.colour, Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, _weapons.weapons[d.weapon], _utilities.gimbals[d.gimbal], _utilities.scanners[d.scanner], _utilities.thrusters[d.thruster], _utilities.steering[d.steering]);
             _constants.dm.addDrone(drone);
         });
     });
@@ -1355,7 +1366,7 @@ function startAnimating(fps) {
 
 function animate() {
     _constants.context.clearRect(0, 0, _constants.canvasWidth, _constants.canvasHeight);
-    _constants.context.fillStyle = '#FFD700';
+    _constants.context.fillStyle = '#303135';
     _constants.context.fillRect(0, 0, _constants.canvasWidth, _constants.canvasHeight);
     _deltaTime.deltaTime.update();
     _constants.dm.update();
@@ -1573,6 +1584,7 @@ var GameGrid = function () {
         key: 'drawGridContent',
         value: function drawGridContent() {
             _constants.context.textAlign = 'left';
+            _constants.context.fillStyle = _constants.colours.green;
             if (_constants.debug.gameGridToggle) {
                 for (var i = 0; i < this._grid.length; i++) {
                     for (var j = 0; j < this._grid[i].length; j++) {
@@ -1590,7 +1602,7 @@ var GameGrid = function () {
         value: function drawGrid() {
             if (_constants.debug.gameGridToggle) {
                 _constants.context.setLineDash([1, 7]);
-                _constants.context.strokeStyle = _constants.colours.black;
+                _constants.context.strokeStyle = _constants.colours.white;
                 for (var i = 0; i < this._columns; i++) {
                     _constants.context.fillText(i, i * this._gridBlockSize, 10);
                     _constants.context.beginPath();
@@ -1724,7 +1736,7 @@ var Heath = function () {
             _constants.context.fillStyle = this._health > 15 ? _constants.colours.green : _constants.colours.red;
             _constants.context.fill();
             this.drawHealthBox();
-            _constants.context.strokeStyle = _constants.colours.black;
+            _constants.context.strokeStyle = _constants.colours.white;
             _constants.context.stroke();
             _constants.context.resetTransform();
         }
@@ -1754,6 +1766,27 @@ exports.default = Heath;
 
 /***/ }),
 /* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var blueDrone = new Image();
+var redDrone = new Image();
+
+blueDrone.src = 'data:image/gif;base64,R0lGODdhGQAaAFcAACH5BAkKAAAALAAAAAAZABoAwgAAAAJIawJL2QJy7//+F8CHRwNnmgEmYQOOCLrc/k0MUaoUUAk5jvdCIHzeMGGMaWaKOrBMiMLLNhiEIePG6XAeR8BRmtBkNMiJYEvWVDIojGOoFGTWnjEmIdVEC5IP4HKSVcmh+YFcp6LuloBAuL7Mts31MmPZelGAfT8SOHUydAWCbF0HVToijyUbESZeBzIHAGJbAEBBX30fJihAZgekC2U0q3EPCQA7';
+redDrone.src = 'data:image/gif;base64,R0lGODdhGQAaAFcAACH5BAkKAAAALAAAAAAZABoAwgAAAFsbI4cmHcYhHf///3282ZwsWQAAAAORCLrc/k0MUaoUUAk5gjeBEAagN0wYc56Zsg4tI6bxsg0GYcy5gTocjyMwDJxomVkNgiLclrbVTBrjGCqFGdY3iUg8Qk1oATZuXCso4LUkqh/Kt2yGVE8IhCxMfdtkL3UQNz5ThIFzOHhZIYqGcF8kBTshVyU/MidlACMim2BHUR1hYkifXQBBakana2k1bHIZCQA7';
+
+var drones = exports.drones = {
+    blue: blueDrone,
+    red: redDrone
+};
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1904,7 +1937,7 @@ var Debug = function () {
 exports.default = Debug;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1915,79 +1948,79 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.thrusters = exports.steering = exports.scanners = exports.gimbals = undefined;
 
-var _T = __webpack_require__(20);
+var _T = __webpack_require__(21);
 
 var _T2 = _interopRequireDefault(_T);
 
-var _T3 = __webpack_require__(21);
+var _T3 = __webpack_require__(22);
 
 var _T4 = _interopRequireDefault(_T3);
 
-var _T5 = __webpack_require__(22);
+var _T5 = __webpack_require__(23);
 
 var _T6 = _interopRequireDefault(_T5);
 
-var _T7 = __webpack_require__(23);
+var _T7 = __webpack_require__(24);
 
 var _T8 = _interopRequireDefault(_T7);
 
-var _S = __webpack_require__(24);
+var _S = __webpack_require__(25);
 
 var _S2 = _interopRequireDefault(_S);
 
-var _S3 = __webpack_require__(25);
+var _S3 = __webpack_require__(26);
 
 var _S4 = _interopRequireDefault(_S3);
 
-var _S5 = __webpack_require__(26);
+var _S5 = __webpack_require__(27);
 
 var _S6 = _interopRequireDefault(_S5);
 
-var _S7 = __webpack_require__(27);
+var _S7 = __webpack_require__(28);
 
 var _S8 = _interopRequireDefault(_S7);
 
-var _S9 = __webpack_require__(28);
+var _S9 = __webpack_require__(29);
 
 var _S10 = _interopRequireDefault(_S9);
 
-var _SC = __webpack_require__(29);
+var _SC = __webpack_require__(30);
 
 var _SC2 = _interopRequireDefault(_SC);
 
-var _SC3 = __webpack_require__(30);
+var _SC3 = __webpack_require__(31);
 
 var _SC4 = _interopRequireDefault(_SC3);
 
-var _SC5 = __webpack_require__(31);
+var _SC5 = __webpack_require__(32);
 
 var _SC6 = _interopRequireDefault(_SC5);
 
-var _SC7 = __webpack_require__(32);
+var _SC7 = __webpack_require__(33);
 
 var _SC8 = _interopRequireDefault(_SC7);
 
-var _G = __webpack_require__(33);
+var _G = __webpack_require__(34);
 
 var _G2 = _interopRequireDefault(_G);
 
-var _G3 = __webpack_require__(34);
+var _G3 = __webpack_require__(35);
 
 var _G4 = _interopRequireDefault(_G3);
 
-var _G5 = __webpack_require__(35);
+var _G5 = __webpack_require__(36);
 
 var _G6 = _interopRequireDefault(_G5);
 
-var _G7 = __webpack_require__(36);
+var _G7 = __webpack_require__(37);
 
 var _G8 = _interopRequireDefault(_G7);
 
-var _G9 = __webpack_require__(37);
+var _G9 = __webpack_require__(38);
 
 var _G10 = _interopRequireDefault(_G9);
 
-var _G11 = __webpack_require__(38);
+var _G11 = __webpack_require__(39);
 
 var _G12 = _interopRequireDefault(_G11);
 
@@ -2025,7 +2058,7 @@ var thrusters = exports.thrusters = {
 };
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2062,7 +2095,7 @@ var T18 = function (_Thruster) {
 exports.default = T18;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2099,7 +2132,7 @@ var T15 = function (_Thruster) {
 exports.default = T15;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2136,7 +2169,7 @@ var T12 = function (_Thruster) {
 exports.default = T12;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2173,7 +2206,7 @@ var T10 = function (_Thruster) {
 exports.default = T10;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2210,7 +2243,7 @@ var S12 = function (_Steering) {
 exports.default = S12;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2247,7 +2280,7 @@ var S10 = function (_Steering) {
 exports.default = S10;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2284,7 +2317,7 @@ var S8 = function (_Steering) {
 exports.default = S8;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2321,7 +2354,7 @@ var S6 = function (_Steering) {
 exports.default = S6;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2358,7 +2391,7 @@ var S4 = function (_Steering) {
 exports.default = S4;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2395,7 +2428,7 @@ var SC900 = function (_Scanner) {
 exports.default = SC900;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2432,7 +2465,7 @@ var SC600 = function (_Scanner) {
 exports.default = SC600;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2469,7 +2502,7 @@ var SC400 = function (_Scanner) {
 exports.default = SC400;
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2506,7 +2539,7 @@ var SC200 = function (_Scanner) {
 exports.default = SC200;
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2543,7 +2576,7 @@ var G360 = function (_Gimbal) {
 exports.default = G360;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2580,7 +2613,7 @@ var G240 = function (_Gimbal) {
 exports.default = G240;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2617,7 +2650,7 @@ var G120 = function (_Gimbal) {
 exports.default = G120;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2654,7 +2687,7 @@ var G90 = function (_Gimbal) {
 exports.default = G90;
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2691,7 +2724,7 @@ var G60 = function (_Gimbal) {
 exports.default = G60;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2728,7 +2761,7 @@ var G40 = function (_Gimbal) {
 exports.default = G40;
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2739,15 +2772,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.weapons = undefined;
 
-var _uzi = __webpack_require__(40);
+var _uzi = __webpack_require__(41);
 
 var _uzi2 = _interopRequireDefault(_uzi);
 
-var _shotgun = __webpack_require__(42);
+var _shotgun = __webpack_require__(43);
 
 var _shotgun2 = _interopRequireDefault(_shotgun);
 
-var _rifle = __webpack_require__(44);
+var _rifle = __webpack_require__(45);
 
 var _rifle2 = _interopRequireDefault(_rifle);
 
@@ -2760,7 +2793,7 @@ var weapons = exports.weapons = {
 };
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2776,7 +2809,7 @@ var _weapon = __webpack_require__(9);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
-var _nineMm = __webpack_require__(41);
+var _nineMm = __webpack_require__(42);
 
 var _nineMm2 = _interopRequireDefault(_nineMm);
 
@@ -2823,7 +2856,7 @@ var Uzi = function (_Weapon) {
 exports.default = Uzi;
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2836,6 +2869,8 @@ Object.defineProperty(exports, "__esModule", {
 var _bullet = __webpack_require__(10);
 
 var _bullet2 = _interopRequireDefault(_bullet);
+
+var _constants = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2851,7 +2886,10 @@ var NineMM = function (_Bullet) {
     function NineMM(id, x, y, angle, velocity) {
         _classCallCheck(this, NineMM);
 
-        return _possibleConstructorReturn(this, (NineMM.__proto__ || Object.getPrototypeOf(NineMM)).call(this, id, x, y, 45, 1, angle, velocity, 3));
+        var _this = _possibleConstructorReturn(this, (NineMM.__proto__ || Object.getPrototypeOf(NineMM)).call(this, id, x, y, 45, 1, angle, velocity, 3));
+
+        _this._color = _constants.colours.orange;
+        return _this;
     }
 
     return NineMM;
@@ -2860,7 +2898,7 @@ var NineMM = function (_Bullet) {
 exports.default = NineMM;
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2878,7 +2916,7 @@ var _weapon2 = _interopRequireDefault(_weapon);
 
 var _constants = __webpack_require__(0);
 
-var _shot = __webpack_require__(43);
+var _shot = __webpack_require__(44);
 
 var _shot2 = _interopRequireDefault(_shot);
 
@@ -2931,7 +2969,7 @@ var Shotgun = function (_Weapon) {
 exports.default = Shotgun;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2968,7 +3006,7 @@ var Shot = function (_Bullet) {
 exports.default = Shot;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2986,7 +3024,7 @@ var _weapon2 = _interopRequireDefault(_weapon);
 
 var _constants = __webpack_require__(0);
 
-var _sevenSixTwoMm = __webpack_require__(45);
+var _sevenSixTwoMm = __webpack_require__(46);
 
 var _sevenSixTwoMm2 = _interopRequireDefault(_sevenSixTwoMm);
 
@@ -3031,7 +3069,7 @@ var Rifle = function (_Weapon) {
 exports.default = Rifle;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3044,6 +3082,8 @@ Object.defineProperty(exports, "__esModule", {
 var _bullet = __webpack_require__(10);
 
 var _bullet2 = _interopRequireDefault(_bullet);
+
+var _constants = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3059,7 +3099,10 @@ var SevenSixTwoMM = function (_Bullet) {
     function SevenSixTwoMM(id, x, y, angle, velocity) {
         _classCallCheck(this, SevenSixTwoMM);
 
-        return _possibleConstructorReturn(this, (SevenSixTwoMM.__proto__ || Object.getPrototypeOf(SevenSixTwoMM)).call(this, id, x, y, 50, 2, angle, velocity, 18));
+        var _this = _possibleConstructorReturn(this, (SevenSixTwoMM.__proto__ || Object.getPrototypeOf(SevenSixTwoMM)).call(this, id, x, y, 50, 2, angle, velocity, 18));
+
+        _this._color = _constants.colours.green;
+        return _this;
     }
 
     return SevenSixTwoMM;
