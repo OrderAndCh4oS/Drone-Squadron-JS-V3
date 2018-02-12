@@ -10,7 +10,7 @@ export default class Drone extends Particle {
         id, squadId, name, color, x, y, speed, angle, weapon, gimbal, scanner,
         thruster,
         steering) {
-        super(id, x, y, speed, 10, angle);
+        super(id, x, y, speed, 13, angle);
         this.name = name;
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);

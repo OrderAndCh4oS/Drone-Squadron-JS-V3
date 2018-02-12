@@ -856,7 +856,7 @@ var Drone = function (_Particle) {
     function Drone(id, squadId, name, color, x, y, speed, angle, weapon, gimbal, scanner, thruster, steering) {
         _classCallCheck(this, Drone);
 
-        var _this = _possibleConstructorReturn(this, (Drone.__proto__ || Object.getPrototypeOf(Drone)).call(this, id, x, y, speed, 10, angle));
+        var _this = _possibleConstructorReturn(this, (Drone.__proto__ || Object.getPrototypeOf(Drone)).call(this, id, x, y, speed, 13, angle));
 
         _this.name = name;
         _this.vector = new _vector2.default(x, y);
