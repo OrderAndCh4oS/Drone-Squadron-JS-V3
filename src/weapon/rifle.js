@@ -3,10 +3,10 @@ import { context } from '../constants';
 import SevenSixTwoMM from '../ammo/seven-six-two-mm';
 
 export default class Rifle extends Weapon {
-    constructor(id, x, y, angle, gimbal) {
+    constructor(id, squadId, x, y, angle, gimbal) {
         const fireRate = 10;
         const round = SevenSixTwoMM;
-        super(id, '#577', x, y, angle, gimbal, round, fireRate);
+        super(id, squadId, '#577', x, y, angle, gimbal, round, fireRate);
     }
 
     draw() {

@@ -14,7 +14,7 @@ export default class Drone extends Particle {
         this.name = name;
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
-        this.weapon = new weapon(id, x, y, angle, gimbal);
+        this.weapon = new weapon(id, squadId, x, y, angle, gimbal);
         this._color = color;
         this.scanner = new scanner();
         this.thruster = new thruster();
@@ -52,15 +52,19 @@ export default class Drone extends Particle {
         context.translate(this.position.x, this.position.y);
         this.drawName();
         this.drawData();
-        context.rotate(this.vector.getAngle() + (Math.PI / 180) * 90);
-        context.translate(-12.5, -14);
-        context.drawImage(drones[this._color], 0, 0);
+        this.drawSprite();
         context.resetTransform();
         this.health.draw(this);
         this.scanner.draw(this);
     }
 
-    drawShip() {
+    drawSprite() {
+        context.rotate(this.vector.getAngle() + (Math.PI / 180) * 90);
+        context.translate(-12.5, -14);
+        context.drawImage(drones[this._color], 0, 0);
+    }
+
+    drawDrone() {
         context.beginPath();
         context.moveTo(10, 0);
         context.lineTo(-10, -7);
