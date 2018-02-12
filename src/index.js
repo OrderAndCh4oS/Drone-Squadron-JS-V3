@@ -1,7 +1,6 @@
 import {
     canvasHeight,
     canvasWidth,
-    colours,
     context,
     debug,
     dm,
@@ -65,7 +64,7 @@ function setupDrones(data) {
                 d.id,
                 s.id,
                 d.name,
-                colours[s.colour],
+                s.colour,
                 Math.random() * canvasWidth,
                 Math.random() * canvasHeight,
                 0,
@@ -97,7 +96,7 @@ function startAnimating(fps) {
 
 function animate() {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
-    context.fillStyle = '#FFD700';
+    context.fillStyle = '#303135';
     context.fillRect(0, 0, canvasWidth, canvasHeight);
     deltaTime.update();
     dm.update();

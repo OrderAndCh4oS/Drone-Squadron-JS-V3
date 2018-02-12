@@ -6,10 +6,11 @@ import Debug from './dev/debug';
 const canvas = document.getElementById('canvas');
 export const colours = {
     black: '#2a2e34',
-    orange: '#cd7831',
-    red: '#cd4535',
+    white: '#b3dce2',
+    orange: '#ffaa39',
+    red: '#e62429',
     green: '#80bf32',
-    blue: '#345b77',
+    blue: '#3b9ec7',
 };
 export const friction = 0.8;
 export const context = canvas.getContext('2d');

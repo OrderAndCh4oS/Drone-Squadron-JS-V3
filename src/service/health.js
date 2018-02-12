@@ -24,7 +24,7 @@ export default class Heath {
         context.fillStyle = this._health > 15 ? colours.green : colours.red;
         context.fill();
         this.drawHealthBox();
-        context.strokeStyle = colours.black;
+        context.strokeStyle = colours.white;
         context.stroke();
         context.resetTransform();
     }

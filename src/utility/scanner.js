@@ -118,7 +118,7 @@ export default class Scanner {
             context.moveTo(drone.position.x, drone.position.y);
             context.lineTo(this.target.position.x,
                 this.target.position.y);
-            context.strokeStyle = colours.black;
+            context.strokeStyle = colours.white;
             context.stroke();
             context.setLineDash([0]);
         }
@@ -134,7 +134,7 @@ export default class Scanner {
                 this.radius,
                 0,
                 2 * Math.PI);
-            context.strokeStyle = colours.black;
+            context.strokeStyle = colours.white;
             context.stroke();
             context.setLineDash([0]);
         }

@@ -8,7 +8,7 @@
         "drones": [
           {
             "id": 1,
-            "name": "Spot",
+            "name": "Rewayn",
             "weapon": "Shotgun",
             "gimbal": "G60",
             "scanner": "SC900",
@@ -17,7 +17,7 @@
           },
           {
             "id": 2,
-            "name": "Spet",
+            "name": "Bertev",
             "weapon": "Uzi",
             "gimbal": "G90",
             "scanner": "SC600",
@@ -26,7 +26,7 @@
           },
           {
             "id": 3,
-            "name": "Poppet",
+            "name": "Jackeith",
             "weapon": "Rifle",
             "gimbal": "G360",
             "scanner": "SC900",
@@ -35,7 +35,7 @@
           },
           {
             "id": 4,
-            "name": "Dot",
+            "name": "Saura",
             "weapon": "Uzi",
             "gimbal": "G40",
             "scanner": "SC400",
@@ -44,23 +44,16 @@
           },
           {
             "id": 5,
-            "name": "Dottox",
+            "name": "Jamy",
             "weapon": "Rifle",
             "gimbal": "G120",
             "scanner": "SC600",
             "steering": "S12",
             "thruster": "T12"
-          }
-        ]
-      },
-      {
-        "id": 2,
-        "name": "Squadron Two",
-        "colour": "green",
-        "drones": [
+          },
           {
             "id": 6,
-            "name": "Sarcoma",
+            "name": "Kathrie",
             "weapon": "Uzi",
             "gimbal": "G90",
             "scanner": "SC400",
@@ -69,7 +62,7 @@
           },
           {
             "id": 7,
-            "name": "Kostoglotov",
+            "name": "Borea",
             "weapon": "Shotgun",
             "gimbal": "G90",
             "scanner": "SC600",
@@ -78,7 +71,7 @@
           },
           {
             "id": 8,
-            "name": "Denisovich",
+            "name": "Scarlie",
             "weapon": "Rifle",
             "gimbal": "G240",
             "scanner": "SC600",
@@ -87,7 +80,7 @@
           },
           {
             "id": 9,
-            "name": "Raskolnikov",
+            "name": "Juane",
             "weapon": "Shotgun",
             "gimbal": "G120",
             "scanner": "SC900",
@@ -96,11 +89,108 @@
           },
           {
             "id": 10,
+            "name": "Benjoe",
+            "weapon": "Rifle",
+            "gimbal": "G120",
+            "scanner": "SC600",
+            "steering": "S8",
+            "thruster": "T12"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Squadron Two",
+        "colour": "red",
+        "drones": [
+          {
+            "id": 11,
+            "name": "Sarcoma",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC400",
+            "steering": "S10",
+            "thruster": "T12"
+          },
+          {
+            "id": 12,
+            "name": "Kostoglotov",
+            "weapon": "Shotgun",
+            "gimbal": "G90",
+            "scanner": "SC600",
+            "steering": "S12",
+            "thruster": "T12"
+          },
+          {
+            "id": 13,
+            "name": "Denisovich",
+            "weapon": "Rifle",
+            "gimbal": "G240",
+            "scanner": "SC600",
+            "steering": "S6",
+            "thruster": "T10"
+          },
+          {
+            "id": 14,
+            "name": "Raskolnikov",
+            "weapon": "Shotgun",
+            "gimbal": "G120",
+            "scanner": "SC900",
+            "steering": "S4",
+            "thruster": "T10"
+          },
+          {
+            "id": 15,
             "name": "Illyic",
             "weapon": "Rifle",
             "gimbal": "G120",
             "scanner": "SC600",
             "steering": "S8",
+            "thruster": "T12"
+          },
+          {
+            "id": 16,
+            "name": "Spot",
+            "weapon": "Shotgun",
+            "gimbal": "G60",
+            "scanner": "SC900",
+            "steering": "S8",
+            "thruster": "T18"
+          },
+          {
+            "id": 17,
+            "name": "Spet",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC600",
+            "steering": "S8",
+            "thruster": "T12"
+          },
+          {
+            "id": 18,
+            "name": "Poppet",
+            "weapon": "Rifle",
+            "gimbal": "G360",
+            "scanner": "SC900",
+            "steering": "S6",
+            "thruster": "T10"
+          },
+          {
+            "id": 19,
+            "name": "Dot",
+            "weapon": "Uzi",
+            "gimbal": "G40",
+            "scanner": "SC400",
+            "steering": "S6",
+            "thruster": "T12"
+          },
+          {
+            "id": 20,
+            "name": "Dottox",
+            "weapon": "Rifle",
+            "gimbal": "G120",
+            "scanner": "SC600",
+            "steering": "S12",
             "thruster": "T12"
           }
         ]

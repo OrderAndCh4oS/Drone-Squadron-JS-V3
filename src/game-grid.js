@@ -72,6 +72,7 @@ export default class GameGrid {
 
     drawGridContent() {
         context.textAlign = 'left';
+        context.fillStyle = colours.green;
         if(debug.gameGridToggle) {
             for(let i = 0; i < this._grid.length; i++) {
                 for(let j = 0; j < this._grid[i].length; j++) {
@@ -90,7 +91,7 @@ export default class GameGrid {
     drawGrid() {
         if(debug.gameGridToggle) {
             context.setLineDash([1, 7]);
-            context.strokeStyle = colours.black;
+            context.strokeStyle = colours.white;
             for(let i = 0; i < this._columns; i++) {
                 context.fillText(i, i * this._gridBlockSize, 10);
                 context.beginPath();
