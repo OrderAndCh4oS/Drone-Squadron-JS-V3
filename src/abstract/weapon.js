@@ -1,10 +1,12 @@
 import { context, pm } from '../constants';
 import { deltaTime } from '../service/delta-time';
 import Vector from '../service/vector';
+import { angleTo } from '../functions';
 
 export default class Weapon {
-    constructor(id, color, x, y, angle, gimbal, round, fireRate) {
+    constructor(id, squadId, color, x, y, angle, gimbal, round, fireRate) {
         this.id = id;
+        this.squadId = squadId;
         this.color = color;
         this.position = new Vector(x, y);
         this.velocity = 0;
@@ -35,7 +37,13 @@ export default class Weapon {
         this.velocity = drone.velocity;
         this.droneAngle = drone.vector.getAngle();
         this.gimbal.trackTarget(drone);
-        if(drone.scanner.hasTarget()) {
+        const angleToTarget = angleTo(drone.angle,
+            drone.scanner.angleToTarget());
+        if(
+            drone.scanner.hasTarget() &&
+            angleToTarget <= this.gimbal.angleLimit &&
+            angleToTarget >= -this.gimbal.angleLimit
+        ) {
             this.fireIfReady();
         }
     }
@@ -51,6 +59,7 @@ export default class Weapon {
         pm.addParticle(
             new this.round(
                 this.id,
+                this.squadId,
                 this.position.x,
                 this.position.y,
                 this.gimbal.vector.getAngle() + this.droneAngle,

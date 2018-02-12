@@ -20,38 +20,40 @@ export default class Steering {
             this.evade();
             return;
         }
+        const angleToTarget = angleTo(drone.angle,
+            drone.scanner.angleToTarget());
         switch(true) {
-            case (angleTo(drone.angle, drone.scanner.angleToTarget()) >= 0.6):
+            case (angleToTarget >= 0.6):
                 this.turnAmount = this.turningSpeed * 0.1;
                 this.turnLeft();
                 break;
-            case (angleTo(drone.angle, drone.scanner.angleToTarget()) >= 0.4):
+            case (angleToTarget >= 0.4):
                 this.turnAmount = this.turningSpeed * 0.066;
                 this.turnLeft();
                 break;
-            case (angleTo(drone.angle, drone.scanner.angleToTarget()) >= 0.2):
+            case (angleToTarget >= 0.2):
                 this.turnAmount = this.turningSpeed * 0.033;
                 this.turnLeft();
                 break;
-            case (angleTo(drone.angle, drone.scanner.angleToTarget()) > 0):
+            case (angleToTarget > 0):
                 this.turnLeft(
-                    angleTo(drone.angle, drone.scanner.angleToTarget()));
+                    angleToTarget);
                 break;
-            case (angleTo(drone.angle, drone.scanner.angleToTarget()) <= -0.6):
+            case (angleToTarget <= -0.6):
                 this.turnAmount = this.turningSpeed * 0.1;
                 this.turnRight();
                 break;
-            case (angleTo(drone.angle, drone.scanner.angleToTarget()) <= -0.4):
+            case (angleToTarget <= -0.4):
                 this.turnAmount = this.turningSpeed * 0.066;
                 this.turnRight();
                 break;
-            case (angleTo(drone.angle, drone.scanner.angleToTarget()) <= -0.2):
+            case (angleToTarget <= -0.2):
                 this.turnAmount = this.turningSpeed * 0.033;
                 this.turnRight();
                 break;
-            case (angleTo(drone.angle, drone.scanner.angleToTarget()) < 0):
+            case (angleToTarget < 0):
                 this.turnRight(
-                    angleTo(drone.angle, drone.scanner.angleToTarget()));
+                    angleToTarget);
                 break;
         }
     }

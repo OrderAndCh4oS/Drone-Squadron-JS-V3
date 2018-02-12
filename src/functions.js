@@ -36,7 +36,8 @@ export function angleTo(angleOne, angleTwo) {
 }
 
 export function didCollide(p1, p2) {
-    return !(p1.id === p2.id) && distanceTo(p1, p2) < p1.radius + p2.radius;
+    return !(p1.squadId === p2.squadId) && distanceTo(p1, p2) < p1.radius +
+        p2.radius;
 }
 
 export function randomItem(items) {
