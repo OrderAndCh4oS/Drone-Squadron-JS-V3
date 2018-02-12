@@ -1,4 +1,4 @@
-import { context, friction, grid } from '../constants';
+import { colours, context, friction, grid } from '../constants';
 
 import Vector from '../service/vector';
 import { deltaTime } from '../service/delta-time';
@@ -12,7 +12,7 @@ export default class Particle {
         this.velocity.setLength(speed);
         this.velocity.setAngle(angle);
         this._remove = false;
-        this._color = '#000';
+        this._color = colours.white;
         this._gridX = Math.floor(this.position.x / grid.gridBlockSize);
         this._gridY = Math.floor(this.position.y / grid.gridBlockSize);
     }
@@ -70,6 +70,8 @@ export default class Particle {
             this.radius,
             0,
             2 * Math.PI);
+        context.fillStyle = this._color;
+        context.fill();
         context.strokeStyle = this._color;
         context.stroke();
     }
