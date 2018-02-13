@@ -1,4 +1,6 @@
 import { returnToCanvas } from '../functions';
+import Explosion from '../abstract/explosion';
+import { pm } from '../constants';
 
 export default class DroneManager {
     constructor() {
@@ -19,6 +21,8 @@ export default class DroneManager {
             d.update();
             returnToCanvas(d);
             if(d.health.health <= 0) {
+                const explosion = new Explosion(-1, d.position.x, d.position.y);
+                pm.addParticle(explosion);
                 d.removeParticle();
             }
             return d;
