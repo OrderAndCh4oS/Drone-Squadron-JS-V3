@@ -28,7 +28,9 @@ export default class ParticleManager {
         dm.drones.map((d) => {
             if(didCollide(p, d)) {
                 d.health.takeDamage(p.damage);
-                p.removeParticle();
+                if(p.id !== -1) {
+                    p.removeParticle();
+                }
             }
         });
     }
