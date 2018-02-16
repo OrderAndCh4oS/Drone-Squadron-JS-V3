@@ -285,22 +285,24 @@ var Steering = function () {
         this.turnAmount = 0;
         this.roaming = { callback: null, count: 0 };
         this.evading = { callback: null, count: 0 };
+        this.dodging = { callback: null, count: 0 };
     }
 
     _createClass(Steering, [{
         key: 'turn',
         value: function turn(drone) {
             this.drone = drone;
-            if (!drone.scanner.hasTarget()) {
-                this.roam();
-                return;
-            }
-            if (drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 100 && !(0, _functions.angleBetweenRange)(drone, Math.PI / 2)) {
-                this.evade();
-                return;
-            }
             var angleToTarget = (0, _functions.angleTo)(drone.angle, drone.scanner.angleToTarget());
             switch (true) {
+                case this.hasTargetCloseBehind(drone):
+                    this.evade();
+                    break;
+                case this.hasThreats(drone):
+                    this.dodge();
+                    break;
+                case this.hasNoTarget(drone):
+                    this.roam();
+                    break;
                 case angleToTarget >= 0.6:
                     this.turnAmount = this.turningSpeed * 0.1;
                     this.turnLeft();
@@ -332,6 +334,21 @@ var Steering = function () {
                     this.turnRight(angleToTarget);
                     break;
             }
+        }
+    }, {
+        key: 'hasTargetCloseBehind',
+        value: function hasTargetCloseBehind(drone) {
+            return drone.scanner.hasTarget() && (0, _functions.distanceTo)(drone, drone.scanner.target) < 200 && !(0, _functions.angleBetweenRange)(drone, Math.PI / 2);
+        }
+    }, {
+        key: 'hasThreats',
+        value: function hasThreats(drone) {
+            return drone.scanner.threats > 0;
+        }
+    }, {
+        key: 'hasNoTarget',
+        value: function hasNoTarget(drone) {
+            return !drone.scanner.hasTarget();
         }
     }, {
         key: 'turnLeft',
@@ -368,8 +385,20 @@ var Steering = function () {
                 this.evading.callback();
                 this.evading.count--;
             } else {
-                this.evading.count = Math.floor(Math.random() * 20 + 5);
+                this.evading.count = Math.floor(Math.random() * 35 + 15);
                 this.evading.callback = Math.random() > 0.5 ? this.turnRight.bind(this) : this.turnLeft.bind(this);
+            }
+        }
+    }, {
+        key: 'dodge',
+        value: function dodge() {
+            if (this.dodging.count > 0) {
+                this.turnAmount = this.turningSpeed * 0.06;
+                this.dodging.callback();
+                this.dodging.count--;
+            } else {
+                this.dodging.count = Math.floor(Math.random() * 10 + 5);
+                this.dodging.callback = Math.random() > 0.5 ? this.turnRight.bind(this) : this.turnLeft.bind(this);
             }
         }
     }]);
@@ -524,6 +553,62 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _particle = __webpack_require__(8);
+
+var _particle2 = _interopRequireDefault(_particle);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Bullet = function (_Particle) {
+    _inherits(Bullet, _Particle);
+
+    function Bullet(id, squadId, x, y, speed, radius, angle, velocity, damage) {
+        _classCallCheck(this, Bullet);
+
+        var _this = _possibleConstructorReturn(this, (Bullet.__proto__ || Object.getPrototypeOf(Bullet)).call(this, id, x, y, speed, radius, angle));
+
+        _this._squadId = squadId;
+        _this._damage = damage;
+        _this.velocity.addTo(velocity);
+        return _this;
+    }
+
+    _createClass(Bullet, [{
+        key: 'squadId',
+        get: function get() {
+            return this._squadId;
+        }
+    }, {
+        key: 'damage',
+        get: function get() {
+            return this._damage;
+        }
+    }]);
+
+    return Bullet;
+}(_particle2.default);
+
+exports.default = Bullet;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _functions = __webpack_require__(1);
 
 var _constants = __webpack_require__(0);
@@ -544,11 +629,11 @@ var Thruster = function () {
             this.drone = drone;
             this.power = 1;
             switch (true) {
+                case this.targetIsCloseBehind(drone) || this.hasThreats(drone):
+                    this.startThrusting(1);
+                    break;
                 case this.targetIsTooClose(drone):
                     this.stopThrusting();
-                    break;
-                case this.targetIsCloseBehind(drone):
-                    this.startThrusting(1);
                     break;
                 case drone.scanner.hasTarget() && (0, _functions.angleBetweenRange)(drone.angle, drone.scanner.angleToTarget(), 0.2):
                     this.power = this.getPowerFromDistance(drone);
@@ -612,7 +697,7 @@ var Thruster = function () {
     }, {
         key: 'targetIsCloseBehind',
         value: function targetIsCloseBehind() {
-            return this.drone.scanner.hasTarget() && (0, _functions.distanceTo)(this.drone, this.drone.scanner.target) < 300 && this.targetIsBehind(this.drone);
+            return this.drone.scanner.hasTarget() && (0, _functions.distanceTo)(this.drone, this.drone.scanner.target) < 400 && this.targetIsBehind(this.drone);
         }
     }, {
         key: 'targetIsTooClose',
@@ -647,6 +732,11 @@ var Thruster = function () {
         value: function targetIsBehind(target) {
             return !(0, _functions.angleBetweenRange)(target, Math.PI / 2);
         }
+    }, {
+        key: 'hasThreats',
+        value: function hasThreats(drone) {
+            return drone.scanner.threats > 0;
+        }
     }]);
 
     return Thruster;
@@ -655,7 +745,7 @@ var Thruster = function () {
 exports.default = Thruster;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -669,9 +759,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _drone = __webpack_require__(9);
+var _drone = __webpack_require__(10);
 
 var _drone2 = _interopRequireDefault(_drone);
+
+var _bullet = __webpack_require__(5);
+
+var _bullet2 = _interopRequireDefault(_bullet);
+
+var _functions = __webpack_require__(1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -684,6 +780,7 @@ var Scanner = function () {
         this.radius = radius;
         this._target = null;
         this._drone = null;
+        this._threats = 0;
     }
 
     _createClass(Scanner, [{
@@ -692,76 +789,73 @@ var Scanner = function () {
             return this._target !== null;
         }
     }, {
-        key: 'findTarget',
-        value: function findTarget(drone) {
-            var _this = this;
-
+        key: 'scanArea',
+        value: function scanArea(drone) {
+            this._threats = 0;
             this._drone = drone;
             this._target = null;
-            var nearestTarget = { target: null, distance: null };
-            this.findGridRange();
-            this.forceRangeToGridRowsColumns();
+            this.nearestTarget = { target: null, distance: null };
+            this.gridRange = _constants.grid.findGridRange(drone, this.radius);
+            this.scanGridRange(drone, this.nearestTarget);
+            this.selectTargetIfValid();
+        }
+    }, {
+        key: 'scanGridRange',
+        value: function scanGridRange() {
+            var _this = this;
+
             for (var i = this.gridRange.start[0]; i < this.gridRange.end[0]; i++) {
                 for (var j = this.gridRange.start[1]; j < this.gridRange.end[1]; j++) {
                     _constants.grid.grid[i][j].map(function (item) {
-                        if (!(item instanceof _drone2.default) || item.squadId === drone.squadId) {
-                            return;
+                        var angleToItem = (0, _functions.angleTo)(_this._drone.angle, _this.angleToTarget(item));
+                        if (item instanceof _bullet2.default && item.squadId !== _this._drone.squadId && _this.distanceToParticle(item) < 300 && (angleToItem <= 0.15 || angleToItem >= -0.15)) {
+                            _this._threats++;
                         }
-                        var distanceTo = _this.distanceToTarget(item);
-                        if (nearestTarget.distance === null || distanceTo < nearestTarget.distance) {
-                            nearestTarget.target = item;
-                            nearestTarget.distance = distanceTo;
-                        }
+
+                        _this.findNearestDrone(item);
                     });
                 }
             }
-            if (nearestTarget.target !== null && nearestTarget.distance <= this.radius && nearestTarget.target.health.health > 0) {
-                this._target = nearestTarget.target;
+        }
+    }, {
+        key: 'selectTargetIfValid',
+        value: function selectTargetIfValid() {
+            if (this.nearestTarget.target !== null && this.nearestTarget.distance <= this.radius && this.nearestTarget.target.health.health > 0) {
+                this._target = this.nearestTarget.target;
             } else {
                 this._target = null;
             }
         }
     }, {
-        key: 'forceRangeToGridRowsColumns',
-        value: function forceRangeToGridRowsColumns() {
-            if (this.gridRange.start[0] < 0) {
-                this.gridRange.start[0] = 0;
-            }
-            if (this.gridRange.start[1] < 0) {
-                this.gridRange.start[1] = 0;
-            }
-            if (this.gridRange.end[0] > _constants.grid.columns) {
-                this.gridRange.end[0] = _constants.grid.columns;
-            }
-            if (this.gridRange.end[1] > _constants.grid.rows) {
-                this.gridRange.end[1] = _constants.grid.rows;
+        key: 'findNearestDrone',
+        value: function findNearestDrone(item) {
+            if (item instanceof _drone2.default && item.squadId !== this._drone.squadId) {
+                var distanceTo = this.distanceToParticle(item);
+                if (this.nearestTarget.distance === null || distanceTo < this.nearestTarget.distance) {
+                    this.nearestTarget.target = item;
+                    this.nearestTarget.distance = distanceTo;
+                }
             }
         }
     }, {
         key: 'angleToTarget',
         value: function angleToTarget() {
             if (this.hasTarget()) {
-                return Math.atan2(this._target.position.y - this._drone.position.y, this._target.position.x - this._drone.position.x);
+                return this.angleToParticle(this._target);
             }
             return 0;
         }
     }, {
-        key: 'distanceToTarget',
-        value: function distanceToTarget(droneTwo) {
-            var dx = droneTwo.position.x - this._drone.position.x,
-                dy = droneTwo.position.y - this._drone.position.y;
-            return Math.sqrt(dx * dx + dy * dy);
+        key: 'angleToParticle',
+        value: function angleToParticle(particle) {
+            return Math.atan2(particle.position.y - this._drone.position.y, particle.position.x - this._drone.position.x);
         }
     }, {
-        key: 'findGridRange',
-        value: function findGridRange() {
-            var x = this._drone.position.x / _constants.grid.gridBlockSize;
-            var y = this._drone.position.y / _constants.grid.gridBlockSize;
-            var blockRadius = this.radius / _constants.grid.gridBlockSize + 2;
-            this.gridRange = {
-                start: [Math.floor(x - blockRadius), Math.floor(y - blockRadius)],
-                end: [Math.ceil(x + blockRadius), Math.ceil(y + blockRadius)]
-            };
+        key: 'distanceToParticle',
+        value: function distanceToParticle(particleTwo) {
+            var dx = particleTwo.position.x - this._drone.position.x,
+                dy = particleTwo.position.y - this._drone.position.y;
+            return Math.sqrt(dx * dx + dy * dy);
         }
     }, {
         key: 'draw',
@@ -807,6 +901,11 @@ var Scanner = function () {
             }
         }
     }, {
+        key: 'threats',
+        get: function get() {
+            return this._threats;
+        }
+    }, {
         key: 'target',
         get: function get() {
             return this._target;
@@ -819,7 +918,7 @@ var Scanner = function () {
 exports.default = Scanner;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -837,7 +936,7 @@ var _vector = __webpack_require__(4);
 
 var _vector2 = _interopRequireDefault(_vector);
 
-var _deltaTime = __webpack_require__(8);
+var _deltaTime = __webpack_require__(9);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -928,7 +1027,7 @@ var Particle = function () {
 exports.default = Particle;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -987,7 +1086,7 @@ var DeltaTime = function () {
 var deltaTime = exports.deltaTime = new DeltaTime();
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1005,7 +1104,7 @@ var _vector = __webpack_require__(4);
 
 var _vector2 = _interopRequireDefault(_vector);
 
-var _particle = __webpack_require__(7);
+var _particle = __webpack_require__(8);
 
 var _particle2 = _interopRequireDefault(_particle);
 
@@ -1047,7 +1146,7 @@ var Drone = function (_Particle) {
     _createClass(Drone, [{
         key: 'update',
         value: function update() {
-            this.scanner.findTarget(this);
+            this.scanner.scanArea(this);
             this.thruster.setPower(this);
             this.steering.turn(this);
             if (this.thruster.isThrusting()) {
@@ -1134,7 +1233,7 @@ var Drone = function (_Particle) {
 exports.default = Drone;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1148,7 +1247,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _deltaTime = __webpack_require__(8);
+var _deltaTime = __webpack_require__(9);
 
 var _vector = __webpack_require__(4);
 
@@ -1237,62 +1336,6 @@ var Weapon = function () {
 exports.default = Weapon;
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _particle = __webpack_require__(7);
-
-var _particle2 = _interopRequireDefault(_particle);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Bullet = function (_Particle) {
-    _inherits(Bullet, _Particle);
-
-    function Bullet(id, squadId, x, y, speed, radius, angle, velocity, damage) {
-        _classCallCheck(this, Bullet);
-
-        var _this = _possibleConstructorReturn(this, (Bullet.__proto__ || Object.getPrototypeOf(Bullet)).call(this, id, x, y, speed, radius, angle));
-
-        _this._squadId = squadId;
-        _this._damage = damage;
-        _this.velocity.addTo(velocity);
-        return _this;
-    }
-
-    _createClass(Bullet, [{
-        key: 'squadId',
-        get: function get() {
-            return this._squadId;
-        }
-    }, {
-        key: 'damage',
-        get: function get() {
-            return this._damage;
-        }
-    }]);
-
-    return Bullet;
-}(_particle2.default);
-
-exports.default = Bullet;
-
-/***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1301,19 +1344,15 @@ exports.default = Bullet;
 
 var _constants = __webpack_require__(0);
 
-var _deltaTime = __webpack_require__(8);
+var _deltaTime = __webpack_require__(9);
 
-var _drone = __webpack_require__(9);
+var _droneFactory = __webpack_require__(22);
 
-var _drone2 = _interopRequireDefault(_drone);
-
-var _utilities = __webpack_require__(22);
-
-var _weapons = __webpack_require__(42);
+var _droneFactory2 = _interopRequireDefault(_droneFactory);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_constants.debug.initialiseListeners();
+var droneFactory = new _droneFactory2.default();
 
 var fpsInterval = void 0,
     startTime = void 0,
@@ -1321,7 +1360,14 @@ var fpsInterval = void 0,
     then = void 0,
     elapsed = void 0;
 
-var droneFactory = new droneFactory();
+_constants.debug.initialiseListeners();
+
+fetch('./data/squads.json').then(function (resp) {
+    return resp.json();
+}).then(function (data) {
+    setupDrones(data.data);
+    startAnimating(60);
+});
 
 function setupDrones(data) {
     var s1 = data.squadrons[0];
@@ -1331,13 +1377,6 @@ function setupDrones(data) {
         _constants.dm.addDrone(droneFactory.make(s2.drones[i], s2));
     }
 }
-
-fetch('./data/squads.json').then(function (resp) {
-    return resp.json();
-}).then(function (data) {
-    setupDrones(data.data);
-    startAnimating(30);
-});
 
 function startAnimating(fps) {
     fpsInterval = 1000 / fps;
@@ -1510,7 +1549,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _particle = __webpack_require__(7);
+var _particle = __webpack_require__(8);
 
 var _particle2 = _interopRequireDefault(_particle);
 
@@ -1628,7 +1667,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _drone = __webpack_require__(9);
+var _drone = __webpack_require__(10);
 
 var _drone2 = _interopRequireDefault(_drone);
 
@@ -1676,6 +1715,35 @@ var GameGrid = function () {
             this._grid[particle.gridX][particle.gridY] = this._grid[particle.gridX][particle.gridY].filter(function (p) {
                 return p.id !== particle.id;
             });
+        }
+    }, {
+        key: 'findGridRange',
+        value: function findGridRange(drone, radius) {
+            var x = drone.position.x / this.gridBlockSize;
+            var y = drone.position.y / this.gridBlockSize;
+            var blockRadius = radius / this.gridBlockSize + 2;
+            this.gridRange = {
+                start: [Math.floor(x - blockRadius), Math.floor(y - blockRadius)],
+                end: [Math.ceil(x + blockRadius), Math.ceil(y + blockRadius)]
+            };
+            this.forceRangeToGridRowsColumns();
+            return this.gridRange;
+        }
+    }, {
+        key: 'forceRangeToGridRowsColumns',
+        value: function forceRangeToGridRowsColumns() {
+            if (this.gridRange.start[0] < 0) {
+                this.gridRange.start[0] = 0;
+            }
+            if (this.gridRange.start[1] < 0) {
+                this.gridRange.start[1] = 0;
+            }
+            if (this.gridRange.end[0] > this._columns) {
+                this.gridRange.end[0] = this._columns;
+            }
+            if (this.gridRange.end[1] > this._rows) {
+                this.gridRange.end[1] = this._rows;
+            }
         }
     }, {
         key: 'log',
@@ -2047,7 +2115,7 @@ var Background = function () {
     _createClass(Background, [{
         key: 'draw',
         value: function draw() {
-            for (var i = 0; i < background.stars.length; i++) {
+            for (var i = 0; i < this.background.stars.length; i++) {
                 _constants.context.drawImage(this.background.stars[i].image, this.background.stars[i].x, this.background.stars[i].y);
             }
             _constants.context.drawImage(this.background.moon.image, this.background.moon.x, this.background.moon.y);
@@ -2069,116 +2137,39 @@ exports.default = Background;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.thrusters = exports.steering = exports.scanners = exports.gimbals = undefined;
 
-var _T = __webpack_require__(23);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _T2 = _interopRequireDefault(_T);
+var _drone = __webpack_require__(10);
 
-var _T3 = __webpack_require__(24);
+var _drone2 = _interopRequireDefault(_drone);
 
-var _T4 = _interopRequireDefault(_T3);
+var _weapons = __webpack_require__(23);
 
-var _T5 = __webpack_require__(25);
+var _utilities = __webpack_require__(30);
 
-var _T6 = _interopRequireDefault(_T5);
-
-var _T7 = __webpack_require__(26);
-
-var _T8 = _interopRequireDefault(_T7);
-
-var _S = __webpack_require__(27);
-
-var _S2 = _interopRequireDefault(_S);
-
-var _S3 = __webpack_require__(28);
-
-var _S4 = _interopRequireDefault(_S3);
-
-var _S5 = __webpack_require__(29);
-
-var _S6 = _interopRequireDefault(_S5);
-
-var _S7 = __webpack_require__(30);
-
-var _S8 = _interopRequireDefault(_S7);
-
-var _S9 = __webpack_require__(31);
-
-var _S10 = _interopRequireDefault(_S9);
-
-var _SC = __webpack_require__(32);
-
-var _SC2 = _interopRequireDefault(_SC);
-
-var _SC3 = __webpack_require__(33);
-
-var _SC4 = _interopRequireDefault(_SC3);
-
-var _SC5 = __webpack_require__(34);
-
-var _SC6 = _interopRequireDefault(_SC5);
-
-var _SC7 = __webpack_require__(35);
-
-var _SC8 = _interopRequireDefault(_SC7);
-
-var _G = __webpack_require__(36);
-
-var _G2 = _interopRequireDefault(_G);
-
-var _G3 = __webpack_require__(37);
-
-var _G4 = _interopRequireDefault(_G3);
-
-var _G5 = __webpack_require__(38);
-
-var _G6 = _interopRequireDefault(_G5);
-
-var _G7 = __webpack_require__(39);
-
-var _G8 = _interopRequireDefault(_G7);
-
-var _G9 = __webpack_require__(40);
-
-var _G10 = _interopRequireDefault(_G9);
-
-var _G11 = __webpack_require__(41);
-
-var _G12 = _interopRequireDefault(_G11);
+var _constants = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var gimbals = exports.gimbals = {
-    'G40': _G12.default,
-    'G60': _G10.default,
-    'G90': _G8.default,
-    'G120': _G6.default,
-    'G240': _G4.default,
-    'G360': _G2.default
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var scanners = exports.scanners = {
-    'SC200': _SC8.default,
-    'SC400': _SC6.default,
-    'SC600': _SC4.default,
-    'SC900': _SC2.default
-};
+var DroneFactory = function () {
+    function DroneFactory() {
+        _classCallCheck(this, DroneFactory);
+    }
 
-var steering = exports.steering = {
-    'S4': _S10.default,
-    'S6': _S8.default,
-    'S8': _S6.default,
-    'S10': _S4.default,
-    'S12': _S2.default
-};
+    _createClass(DroneFactory, [{
+        key: 'make',
+        value: function make(drone, squadron) {
+            return new _drone2.default(drone.id, squadron.id, drone.name, squadron.colour, Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2, _weapons.weapons[drone.weapon], _utilities.gimbals[drone.gimbal], _utilities.scanners[drone.scanner], _utilities.thrusters[drone.thruster], _utilities.steering[drone.steering]);
+        }
+    }]);
 
-var thrusters = exports.thrusters = {
-    'T10': _T8.default,
-    'T12': _T6.default,
-    'T15': _T4.default,
-    'T18': _T2.default
-};
+    return DroneFactory;
+}();
+
+exports.default = DroneFactory;
 
 /***/ }),
 /* 23 */
@@ -2190,720 +2181,17 @@ var thrusters = exports.thrusters = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-
-var _thruster = __webpack_require__(5);
-
-var _thruster2 = _interopRequireDefault(_thruster);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var T18 = function (_Thruster) {
-    _inherits(T18, _Thruster);
-
-    function T18() {
-        _classCallCheck(this, T18);
-
-        return _possibleConstructorReturn(this, (T18.__proto__ || Object.getPrototypeOf(T18)).call(this, 18));
-    }
-
-    return T18;
-}(_thruster2.default);
-
-exports.default = T18;
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _thruster = __webpack_require__(5);
-
-var _thruster2 = _interopRequireDefault(_thruster);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var T15 = function (_Thruster) {
-    _inherits(T15, _Thruster);
-
-    function T15() {
-        _classCallCheck(this, T15);
-
-        return _possibleConstructorReturn(this, (T15.__proto__ || Object.getPrototypeOf(T15)).call(this, 15));
-    }
-
-    return T15;
-}(_thruster2.default);
-
-exports.default = T15;
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _thruster = __webpack_require__(5);
-
-var _thruster2 = _interopRequireDefault(_thruster);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var T12 = function (_Thruster) {
-    _inherits(T12, _Thruster);
-
-    function T12() {
-        _classCallCheck(this, T12);
-
-        return _possibleConstructorReturn(this, (T12.__proto__ || Object.getPrototypeOf(T12)).call(this, 12));
-    }
-
-    return T12;
-}(_thruster2.default);
-
-exports.default = T12;
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _thruster = __webpack_require__(5);
-
-var _thruster2 = _interopRequireDefault(_thruster);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var T10 = function (_Thruster) {
-    _inherits(T10, _Thruster);
-
-    function T10() {
-        _classCallCheck(this, T10);
-
-        return _possibleConstructorReturn(this, (T10.__proto__ || Object.getPrototypeOf(T10)).call(this, 10));
-    }
-
-    return T10;
-}(_thruster2.default);
-
-exports.default = T10;
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _steering = __webpack_require__(3);
-
-var _steering2 = _interopRequireDefault(_steering);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var S12 = function (_Steering) {
-    _inherits(S12, _Steering);
-
-    function S12() {
-        _classCallCheck(this, S12);
-
-        return _possibleConstructorReturn(this, (S12.__proto__ || Object.getPrototypeOf(S12)).call(this, 1.2));
-    }
-
-    return S12;
-}(_steering2.default);
-
-exports.default = S12;
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _steering = __webpack_require__(3);
-
-var _steering2 = _interopRequireDefault(_steering);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var S10 = function (_Steering) {
-    _inherits(S10, _Steering);
-
-    function S10() {
-        _classCallCheck(this, S10);
-
-        return _possibleConstructorReturn(this, (S10.__proto__ || Object.getPrototypeOf(S10)).call(this, 1));
-    }
-
-    return S10;
-}(_steering2.default);
-
-exports.default = S10;
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _steering = __webpack_require__(3);
-
-var _steering2 = _interopRequireDefault(_steering);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var S8 = function (_Steering) {
-    _inherits(S8, _Steering);
-
-    function S8() {
-        _classCallCheck(this, S8);
-
-        return _possibleConstructorReturn(this, (S8.__proto__ || Object.getPrototypeOf(S8)).call(this, 0.8));
-    }
-
-    return S8;
-}(_steering2.default);
-
-exports.default = S8;
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _steering = __webpack_require__(3);
-
-var _steering2 = _interopRequireDefault(_steering);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var S6 = function (_Steering) {
-    _inherits(S6, _Steering);
-
-    function S6() {
-        _classCallCheck(this, S6);
-
-        return _possibleConstructorReturn(this, (S6.__proto__ || Object.getPrototypeOf(S6)).call(this, 0.6));
-    }
-
-    return S6;
-}(_steering2.default);
-
-exports.default = S6;
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _steering = __webpack_require__(3);
-
-var _steering2 = _interopRequireDefault(_steering);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var S4 = function (_Steering) {
-    _inherits(S4, _Steering);
-
-    function S4() {
-        _classCallCheck(this, S4);
-
-        return _possibleConstructorReturn(this, (S4.__proto__ || Object.getPrototypeOf(S4)).call(this, 0.4));
-    }
-
-    return S4;
-}(_steering2.default);
-
-exports.default = S4;
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _scanner = __webpack_require__(6);
-
-var _scanner2 = _interopRequireDefault(_scanner);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SC900 = function (_Scanner) {
-    _inherits(SC900, _Scanner);
-
-    function SC900() {
-        _classCallCheck(this, SC900);
-
-        return _possibleConstructorReturn(this, (SC900.__proto__ || Object.getPrototypeOf(SC900)).call(this, 900));
-    }
-
-    return SC900;
-}(_scanner2.default);
-
-exports.default = SC900;
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _scanner = __webpack_require__(6);
-
-var _scanner2 = _interopRequireDefault(_scanner);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SC600 = function (_Scanner) {
-    _inherits(SC600, _Scanner);
-
-    function SC600() {
-        _classCallCheck(this, SC600);
-
-        return _possibleConstructorReturn(this, (SC600.__proto__ || Object.getPrototypeOf(SC600)).call(this, 600));
-    }
-
-    return SC600;
-}(_scanner2.default);
-
-exports.default = SC600;
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _scanner = __webpack_require__(6);
-
-var _scanner2 = _interopRequireDefault(_scanner);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SC400 = function (_Scanner) {
-    _inherits(SC400, _Scanner);
-
-    function SC400() {
-        _classCallCheck(this, SC400);
-
-        return _possibleConstructorReturn(this, (SC400.__proto__ || Object.getPrototypeOf(SC400)).call(this, 400));
-    }
-
-    return SC400;
-}(_scanner2.default);
-
-exports.default = SC400;
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _scanner = __webpack_require__(6);
-
-var _scanner2 = _interopRequireDefault(_scanner);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SC200 = function (_Scanner) {
-    _inherits(SC200, _Scanner);
-
-    function SC200() {
-        _classCallCheck(this, SC200);
-
-        return _possibleConstructorReturn(this, (SC200.__proto__ || Object.getPrototypeOf(SC200)).call(this, 200));
-    }
-
-    return SC200;
-}(_scanner2.default);
-
-exports.default = SC200;
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _gimbal = __webpack_require__(2);
-
-var _gimbal2 = _interopRequireDefault(_gimbal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var G360 = function (_Gimbal) {
-    _inherits(G360, _Gimbal);
-
-    function G360() {
-        _classCallCheck(this, G360);
-
-        return _possibleConstructorReturn(this, (G360.__proto__ || Object.getPrototypeOf(G360)).call(this, 0.175 * 180, 0.2));
-    }
-
-    return G360;
-}(_gimbal2.default);
-
-exports.default = G360;
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _gimbal = __webpack_require__(2);
-
-var _gimbal2 = _interopRequireDefault(_gimbal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var G240 = function (_Gimbal) {
-    _inherits(G240, _Gimbal);
-
-    function G240() {
-        _classCallCheck(this, G240);
-
-        return _possibleConstructorReturn(this, (G240.__proto__ || Object.getPrototypeOf(G240)).call(this, 0.175 * 12, 0.18));
-    }
-
-    return G240;
-}(_gimbal2.default);
-
-exports.default = G240;
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _gimbal = __webpack_require__(2);
-
-var _gimbal2 = _interopRequireDefault(_gimbal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var G120 = function (_Gimbal) {
-    _inherits(G120, _Gimbal);
-
-    function G120() {
-        _classCallCheck(this, G120);
-
-        return _possibleConstructorReturn(this, (G120.__proto__ || Object.getPrototypeOf(G120)).call(this, 0.175 * 6, 0.16));
-    }
-
-    return G120;
-}(_gimbal2.default);
-
-exports.default = G120;
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _gimbal = __webpack_require__(2);
-
-var _gimbal2 = _interopRequireDefault(_gimbal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var G90 = function (_Gimbal) {
-    _inherits(G90, _Gimbal);
-
-    function G90() {
-        _classCallCheck(this, G90);
-
-        return _possibleConstructorReturn(this, (G90.__proto__ || Object.getPrototypeOf(G90)).call(this, 0.175 * 4.5, 0.14));
-    }
-
-    return G90;
-}(_gimbal2.default);
-
-exports.default = G90;
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _gimbal = __webpack_require__(2);
-
-var _gimbal2 = _interopRequireDefault(_gimbal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var G60 = function (_Gimbal) {
-    _inherits(G60, _Gimbal);
-
-    function G60() {
-        _classCallCheck(this, G60);
-
-        return _possibleConstructorReturn(this, (G60.__proto__ || Object.getPrototypeOf(G60)).call(this, 0.175 * 3, 0.12));
-    }
-
-    return G60;
-}(_gimbal2.default);
-
-exports.default = G60;
-
-/***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _gimbal = __webpack_require__(2);
-
-var _gimbal2 = _interopRequireDefault(_gimbal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var G40 = function (_Gimbal) {
-    _inherits(G40, _Gimbal);
-
-    function G40() {
-        _classCallCheck(this, G40);
-
-        return _possibleConstructorReturn(this, (G40.__proto__ || Object.getPrototypeOf(G40)).call(this, 0.175 * 2, 0.1));
-    }
-
-    return G40;
-}(_gimbal2.default);
-
-exports.default = G40;
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
 exports.weapons = undefined;
 
-var _uzi = __webpack_require__(43);
+var _uzi = __webpack_require__(24);
 
 var _uzi2 = _interopRequireDefault(_uzi);
 
-var _shotgun = __webpack_require__(45);
+var _shotgun = __webpack_require__(26);
 
 var _shotgun2 = _interopRequireDefault(_shotgun);
 
-var _rifle = __webpack_require__(47);
+var _rifle = __webpack_require__(28);
 
 var _rifle2 = _interopRequireDefault(_rifle);
 
@@ -2916,7 +2204,7 @@ var weapons = exports.weapons = {
 };
 
 /***/ }),
-/* 43 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2928,11 +2216,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(10);
+var _weapon = __webpack_require__(11);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
-var _nineMm = __webpack_require__(44);
+var _nineMm = __webpack_require__(25);
 
 var _nineMm2 = _interopRequireDefault(_nineMm);
 
@@ -2979,7 +2267,7 @@ var Uzi = function (_Weapon) {
 exports.default = Uzi;
 
 /***/ }),
-/* 44 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2989,7 +2277,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(11);
+var _bullet = __webpack_require__(5);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -3021,7 +2309,7 @@ var NineMM = function (_Bullet) {
 exports.default = NineMM;
 
 /***/ }),
-/* 45 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3033,13 +2321,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(10);
+var _weapon = __webpack_require__(11);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
 var _constants = __webpack_require__(0);
 
-var _shot = __webpack_require__(46);
+var _shot = __webpack_require__(27);
 
 var _shot2 = _interopRequireDefault(_shot);
 
@@ -3092,7 +2380,7 @@ var Shotgun = function (_Weapon) {
 exports.default = Shotgun;
 
 /***/ }),
-/* 46 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3102,7 +2390,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(11);
+var _bullet = __webpack_require__(5);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -3129,7 +2417,7 @@ var Shot = function (_Bullet) {
 exports.default = Shot;
 
 /***/ }),
-/* 47 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3141,13 +2429,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _weapon = __webpack_require__(10);
+var _weapon = __webpack_require__(11);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
 var _constants = __webpack_require__(0);
 
-var _sevenSixTwoMm = __webpack_require__(48);
+var _sevenSixTwoMm = __webpack_require__(29);
 
 var _sevenSixTwoMm2 = _interopRequireDefault(_sevenSixTwoMm);
 
@@ -3192,7 +2480,7 @@ var Rifle = function (_Weapon) {
 exports.default = Rifle;
 
 /***/ }),
-/* 48 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3202,7 +2490,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _bullet = __webpack_require__(11);
+var _bullet = __webpack_require__(5);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
@@ -3232,6 +2520,830 @@ var SevenSixTwoMM = function (_Bullet) {
 }(_bullet2.default);
 
 exports.default = SevenSixTwoMM;
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.thrusters = exports.steering = exports.scanners = exports.gimbals = undefined;
+
+var _T = __webpack_require__(31);
+
+var _T2 = _interopRequireDefault(_T);
+
+var _T3 = __webpack_require__(32);
+
+var _T4 = _interopRequireDefault(_T3);
+
+var _T5 = __webpack_require__(33);
+
+var _T6 = _interopRequireDefault(_T5);
+
+var _T7 = __webpack_require__(34);
+
+var _T8 = _interopRequireDefault(_T7);
+
+var _S = __webpack_require__(35);
+
+var _S2 = _interopRequireDefault(_S);
+
+var _S3 = __webpack_require__(36);
+
+var _S4 = _interopRequireDefault(_S3);
+
+var _S5 = __webpack_require__(37);
+
+var _S6 = _interopRequireDefault(_S5);
+
+var _S7 = __webpack_require__(38);
+
+var _S8 = _interopRequireDefault(_S7);
+
+var _S9 = __webpack_require__(39);
+
+var _S10 = _interopRequireDefault(_S9);
+
+var _SC = __webpack_require__(40);
+
+var _SC2 = _interopRequireDefault(_SC);
+
+var _SC3 = __webpack_require__(41);
+
+var _SC4 = _interopRequireDefault(_SC3);
+
+var _SC5 = __webpack_require__(42);
+
+var _SC6 = _interopRequireDefault(_SC5);
+
+var _SC7 = __webpack_require__(43);
+
+var _SC8 = _interopRequireDefault(_SC7);
+
+var _G = __webpack_require__(44);
+
+var _G2 = _interopRequireDefault(_G);
+
+var _G3 = __webpack_require__(45);
+
+var _G4 = _interopRequireDefault(_G3);
+
+var _G5 = __webpack_require__(46);
+
+var _G6 = _interopRequireDefault(_G5);
+
+var _G7 = __webpack_require__(47);
+
+var _G8 = _interopRequireDefault(_G7);
+
+var _G9 = __webpack_require__(48);
+
+var _G10 = _interopRequireDefault(_G9);
+
+var _G11 = __webpack_require__(49);
+
+var _G12 = _interopRequireDefault(_G11);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var gimbals = exports.gimbals = {
+    'G40': _G12.default,
+    'G60': _G10.default,
+    'G90': _G8.default,
+    'G120': _G6.default,
+    'G240': _G4.default,
+    'G360': _G2.default
+};
+
+var scanners = exports.scanners = {
+    'SC200': _SC8.default,
+    'SC400': _SC6.default,
+    'SC600': _SC4.default,
+    'SC900': _SC2.default
+};
+
+var steering = exports.steering = {
+    'S4': _S10.default,
+    'S6': _S8.default,
+    'S8': _S6.default,
+    'S10': _S4.default,
+    'S12': _S2.default
+};
+
+var thrusters = exports.thrusters = {
+    'T10': _T8.default,
+    'T12': _T6.default,
+    'T15': _T4.default,
+    'T18': _T2.default
+};
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _thruster = __webpack_require__(6);
+
+var _thruster2 = _interopRequireDefault(_thruster);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var T18 = function (_Thruster) {
+    _inherits(T18, _Thruster);
+
+    function T18() {
+        _classCallCheck(this, T18);
+
+        return _possibleConstructorReturn(this, (T18.__proto__ || Object.getPrototypeOf(T18)).call(this, 18));
+    }
+
+    return T18;
+}(_thruster2.default);
+
+exports.default = T18;
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _thruster = __webpack_require__(6);
+
+var _thruster2 = _interopRequireDefault(_thruster);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var T15 = function (_Thruster) {
+    _inherits(T15, _Thruster);
+
+    function T15() {
+        _classCallCheck(this, T15);
+
+        return _possibleConstructorReturn(this, (T15.__proto__ || Object.getPrototypeOf(T15)).call(this, 15));
+    }
+
+    return T15;
+}(_thruster2.default);
+
+exports.default = T15;
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _thruster = __webpack_require__(6);
+
+var _thruster2 = _interopRequireDefault(_thruster);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var T12 = function (_Thruster) {
+    _inherits(T12, _Thruster);
+
+    function T12() {
+        _classCallCheck(this, T12);
+
+        return _possibleConstructorReturn(this, (T12.__proto__ || Object.getPrototypeOf(T12)).call(this, 12));
+    }
+
+    return T12;
+}(_thruster2.default);
+
+exports.default = T12;
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _thruster = __webpack_require__(6);
+
+var _thruster2 = _interopRequireDefault(_thruster);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var T10 = function (_Thruster) {
+    _inherits(T10, _Thruster);
+
+    function T10() {
+        _classCallCheck(this, T10);
+
+        return _possibleConstructorReturn(this, (T10.__proto__ || Object.getPrototypeOf(T10)).call(this, 10));
+    }
+
+    return T10;
+}(_thruster2.default);
+
+exports.default = T10;
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _steering = __webpack_require__(3);
+
+var _steering2 = _interopRequireDefault(_steering);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var S12 = function (_Steering) {
+    _inherits(S12, _Steering);
+
+    function S12() {
+        _classCallCheck(this, S12);
+
+        return _possibleConstructorReturn(this, (S12.__proto__ || Object.getPrototypeOf(S12)).call(this, 1.2));
+    }
+
+    return S12;
+}(_steering2.default);
+
+exports.default = S12;
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _steering = __webpack_require__(3);
+
+var _steering2 = _interopRequireDefault(_steering);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var S10 = function (_Steering) {
+    _inherits(S10, _Steering);
+
+    function S10() {
+        _classCallCheck(this, S10);
+
+        return _possibleConstructorReturn(this, (S10.__proto__ || Object.getPrototypeOf(S10)).call(this, 1));
+    }
+
+    return S10;
+}(_steering2.default);
+
+exports.default = S10;
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _steering = __webpack_require__(3);
+
+var _steering2 = _interopRequireDefault(_steering);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var S8 = function (_Steering) {
+    _inherits(S8, _Steering);
+
+    function S8() {
+        _classCallCheck(this, S8);
+
+        return _possibleConstructorReturn(this, (S8.__proto__ || Object.getPrototypeOf(S8)).call(this, 0.8));
+    }
+
+    return S8;
+}(_steering2.default);
+
+exports.default = S8;
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _steering = __webpack_require__(3);
+
+var _steering2 = _interopRequireDefault(_steering);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var S6 = function (_Steering) {
+    _inherits(S6, _Steering);
+
+    function S6() {
+        _classCallCheck(this, S6);
+
+        return _possibleConstructorReturn(this, (S6.__proto__ || Object.getPrototypeOf(S6)).call(this, 0.6));
+    }
+
+    return S6;
+}(_steering2.default);
+
+exports.default = S6;
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _steering = __webpack_require__(3);
+
+var _steering2 = _interopRequireDefault(_steering);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var S4 = function (_Steering) {
+    _inherits(S4, _Steering);
+
+    function S4() {
+        _classCallCheck(this, S4);
+
+        return _possibleConstructorReturn(this, (S4.__proto__ || Object.getPrototypeOf(S4)).call(this, 0.4));
+    }
+
+    return S4;
+}(_steering2.default);
+
+exports.default = S4;
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _scanner = __webpack_require__(7);
+
+var _scanner2 = _interopRequireDefault(_scanner);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SC900 = function (_Scanner) {
+    _inherits(SC900, _Scanner);
+
+    function SC900() {
+        _classCallCheck(this, SC900);
+
+        return _possibleConstructorReturn(this, (SC900.__proto__ || Object.getPrototypeOf(SC900)).call(this, 900));
+    }
+
+    return SC900;
+}(_scanner2.default);
+
+exports.default = SC900;
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _scanner = __webpack_require__(7);
+
+var _scanner2 = _interopRequireDefault(_scanner);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SC600 = function (_Scanner) {
+    _inherits(SC600, _Scanner);
+
+    function SC600() {
+        _classCallCheck(this, SC600);
+
+        return _possibleConstructorReturn(this, (SC600.__proto__ || Object.getPrototypeOf(SC600)).call(this, 600));
+    }
+
+    return SC600;
+}(_scanner2.default);
+
+exports.default = SC600;
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _scanner = __webpack_require__(7);
+
+var _scanner2 = _interopRequireDefault(_scanner);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SC400 = function (_Scanner) {
+    _inherits(SC400, _Scanner);
+
+    function SC400() {
+        _classCallCheck(this, SC400);
+
+        return _possibleConstructorReturn(this, (SC400.__proto__ || Object.getPrototypeOf(SC400)).call(this, 400));
+    }
+
+    return SC400;
+}(_scanner2.default);
+
+exports.default = SC400;
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _scanner = __webpack_require__(7);
+
+var _scanner2 = _interopRequireDefault(_scanner);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SC200 = function (_Scanner) {
+    _inherits(SC200, _Scanner);
+
+    function SC200() {
+        _classCallCheck(this, SC200);
+
+        return _possibleConstructorReturn(this, (SC200.__proto__ || Object.getPrototypeOf(SC200)).call(this, 200));
+    }
+
+    return SC200;
+}(_scanner2.default);
+
+exports.default = SC200;
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _gimbal = __webpack_require__(2);
+
+var _gimbal2 = _interopRequireDefault(_gimbal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var G360 = function (_Gimbal) {
+    _inherits(G360, _Gimbal);
+
+    function G360() {
+        _classCallCheck(this, G360);
+
+        return _possibleConstructorReturn(this, (G360.__proto__ || Object.getPrototypeOf(G360)).call(this, 0.175 * 180, 0.2));
+    }
+
+    return G360;
+}(_gimbal2.default);
+
+exports.default = G360;
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _gimbal = __webpack_require__(2);
+
+var _gimbal2 = _interopRequireDefault(_gimbal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var G240 = function (_Gimbal) {
+    _inherits(G240, _Gimbal);
+
+    function G240() {
+        _classCallCheck(this, G240);
+
+        return _possibleConstructorReturn(this, (G240.__proto__ || Object.getPrototypeOf(G240)).call(this, 0.175 * 12, 0.18));
+    }
+
+    return G240;
+}(_gimbal2.default);
+
+exports.default = G240;
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _gimbal = __webpack_require__(2);
+
+var _gimbal2 = _interopRequireDefault(_gimbal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var G120 = function (_Gimbal) {
+    _inherits(G120, _Gimbal);
+
+    function G120() {
+        _classCallCheck(this, G120);
+
+        return _possibleConstructorReturn(this, (G120.__proto__ || Object.getPrototypeOf(G120)).call(this, 0.175 * 6, 0.16));
+    }
+
+    return G120;
+}(_gimbal2.default);
+
+exports.default = G120;
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _gimbal = __webpack_require__(2);
+
+var _gimbal2 = _interopRequireDefault(_gimbal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var G90 = function (_Gimbal) {
+    _inherits(G90, _Gimbal);
+
+    function G90() {
+        _classCallCheck(this, G90);
+
+        return _possibleConstructorReturn(this, (G90.__proto__ || Object.getPrototypeOf(G90)).call(this, 0.175 * 4.5, 0.14));
+    }
+
+    return G90;
+}(_gimbal2.default);
+
+exports.default = G90;
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _gimbal = __webpack_require__(2);
+
+var _gimbal2 = _interopRequireDefault(_gimbal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var G60 = function (_Gimbal) {
+    _inherits(G60, _Gimbal);
+
+    function G60() {
+        _classCallCheck(this, G60);
+
+        return _possibleConstructorReturn(this, (G60.__proto__ || Object.getPrototypeOf(G60)).call(this, 0.175 * 3, 0.12));
+    }
+
+    return G60;
+}(_gimbal2.default);
+
+exports.default = G60;
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _gimbal = __webpack_require__(2);
+
+var _gimbal2 = _interopRequireDefault(_gimbal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var G40 = function (_Gimbal) {
+    _inherits(G40, _Gimbal);
+
+    function G40() {
+        _classCallCheck(this, G40);
+
+        return _possibleConstructorReturn(this, (G40.__proto__ || Object.getPrototypeOf(G40)).call(this, 0.175 * 2, 0.1));
+    }
+
+    return G40;
+}(_gimbal2.default);
+
+exports.default = G40;
 
 /***/ })
 /******/ ]);
