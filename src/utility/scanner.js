@@ -1,11 +1,18 @@
 import { colours, context, debug, grid } from '../constants';
 import Drone from '../drone';
+import Bullet from '../abstract/bullet';
+import { angleTo } from '../functions';
 
 export default class Scanner {
     constructor(radius) {
         this.radius = radius;
         this._target = null;
         this._drone = null;
+        this._threats = 0;
+    }
+
+    get threats() {
+        return this._threats;
     }
 
     get target() {
@@ -16,81 +23,77 @@ export default class Scanner {
         return this._target !== null;
     }
 
-    findTarget(drone) {
+    scanArea(drone) {
+        this._threats = 0;
         this._drone = drone;
         this._target = null;
-        let nearestTarget = {target: null, distance: null};
-        this.findGridRange();
-        this.forceRangeToGridRowsColumns();
+        this.nearestTarget = {target: null, distance: null};
+        this.gridRange = grid.findGridRange(drone, this.radius);
+        this.scanGridRange(drone, this.nearestTarget);
+        this.selectTargetIfValid();
+    }
+
+    scanGridRange() {
         for(let i = this.gridRange.start[0]; i < this.gridRange.end[0]; i++) {
             for(let j = this.gridRange.start[1]; j <
             this.gridRange.end[1]; j++) {
                 grid.grid[i][j].map((item) => {
-                    if(!(item instanceof Drone) ||
-                        item.squadId === drone.squadId) {
-                        return;
+                    const angleToItem = angleTo(this._drone.angle,
+                        this.angleToTarget(item));
+                    if((
+                            item instanceof Bullet) &&
+                        item.squadId !== this._drone.squadId &&
+                        this.distanceToParticle(item) < 300 &&
+                        (angleToItem <= 0.15 || angleToItem >= -0.15)
+                    ) {
+                        this._threats++;
                     }
-                    const distanceTo = this.distanceToTarget(item);
-                    if(nearestTarget.distance === null ||
-                        distanceTo < nearestTarget.distance) {
-                        nearestTarget.target = item;
-                        nearestTarget.distance = distanceTo;
-                    }
+
+                    this.findNearestDrone(item);
                 });
             }
         }
-        if(nearestTarget.target !== null &&
-            nearestTarget.distance <= this.radius &&
-            nearestTarget.target.health.health > 0) {
-            this._target = nearestTarget.target;
+    }
+
+    selectTargetIfValid() {
+        if(this.nearestTarget.target !== null &&
+            this.nearestTarget.distance <= this.radius &&
+            this.nearestTarget.target.health.health > 0) {
+            this._target = this.nearestTarget.target;
         } else {
             this._target = null;
         }
     }
 
-    forceRangeToGridRowsColumns() {
-        if(this.gridRange.start[0] < 0) {
-            this.gridRange.start[0] = 0;
-        }
-        if(this.gridRange.start[1] < 0) {
-            this.gridRange.start[1] = 0;
-        }
-        if(this.gridRange.end[0] > grid.columns) {
-            this.gridRange.end[0] = grid.columns;
-        }
-        if(this.gridRange.end[1] > grid.rows) {
-            this.gridRange.end[1] = grid.rows;
+    findNearestDrone(item) {
+        if((item instanceof Drone) && item.squadId !== this._drone.squadId) {
+            const distanceTo = this.distanceToParticle(item);
+            if(this.nearestTarget.distance === null ||
+                distanceTo < this.nearestTarget.distance) {
+                this.nearestTarget.target = item;
+                this.nearestTarget.distance = distanceTo;
+            }
         }
     }
 
     angleToTarget() {
         if(this.hasTarget()) {
-            return Math.atan2(
-                this._target.position.y - this._drone.position.y,
-                this._target.position.x - this._drone.position.x,
-            );
+            return this.angleToParticle(this._target);
         }
         return 0;
     }
 
-    distanceToTarget(droneTwo) {
-        const dx = droneTwo.position.x - this._drone.position.x,
-            dy = droneTwo.position.y - this._drone.position.y;
-        return Math.sqrt(dx * dx + dy * dy);
+    angleToParticle(particle) {
+        return Math.atan2(
+            particle.position.y - this._drone.position.y,
+            particle.position.x - this._drone.position.x,
+        );
     }
 
-    findGridRange() {
-        const x = this._drone.position.x / grid.gridBlockSize;
-        const y = this._drone.position.y / grid.gridBlockSize;
-        const blockRadius = (this.radius / grid.gridBlockSize) + 2;
-        this.gridRange = {
-            start: [
-                Math.floor(x - blockRadius),
-                Math.floor(y - blockRadius)],
-            end: [
-                Math.ceil(x + blockRadius),
-                Math.ceil(y + blockRadius)],
-        };
+    distanceToParticle(particleTwo) {
+        const dx = particleTwo.position.x - this._drone.position.x,
+            dy = particleTwo.position.y - this._drone.position.y;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     draw(drone) {

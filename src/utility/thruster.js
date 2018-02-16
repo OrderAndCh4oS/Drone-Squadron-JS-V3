@@ -11,11 +11,11 @@ export default class Thruster {
         this.drone = drone;
         this.power = 1;
         switch(true) {
+            case this.targetIsCloseBehind(drone) || this.hasThreats(drone):
+                this.startThrusting(1);
+                break;
             case this.targetIsTooClose(drone):
                 this.stopThrusting();
-                break;
-            case this.targetIsCloseBehind(drone):
-                this.startThrusting(1);
                 break;
             case drone.scanner.hasTarget() &&
             angleBetweenRange(drone.angle, drone.scanner.angleToTarget(),
@@ -44,7 +44,7 @@ export default class Thruster {
                 }
                 this.power = 0.5;
                 this.roaming.callback();
-                this.roaming.count--
+                this.roaming.count--;
         }
     }
 
@@ -83,7 +83,7 @@ export default class Thruster {
 
     targetIsCloseBehind() {
         return this.drone.scanner.hasTarget() &&
-            distanceTo(this.drone, this.drone.scanner.target) < 300 &&
+            distanceTo(this.drone, this.drone.scanner.target) < 400 &&
             this.targetIsBehind(this.drone);
     }
 
@@ -116,5 +116,9 @@ export default class Thruster {
 
     targetIsBehind(target) {
         return !angleBetweenRange(target, Math.PI / 2);
+    }
+
+    hasThreats(drone) {
+        return drone.scanner.threats > 0;
     }
 }

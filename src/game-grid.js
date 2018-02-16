@@ -58,6 +58,37 @@ export default class GameGrid {
             (p) => p.id !== particle.id);
     }
 
+    findGridRange(drone, radius) {
+        const x = drone.position.x / this.gridBlockSize;
+        const y = drone.position.y / this.gridBlockSize;
+        const blockRadius = (radius / this.gridBlockSize) + 2;
+        this.gridRange = {
+            start: [
+                Math.floor(x - blockRadius),
+                Math.floor(y - blockRadius)],
+            end: [
+                Math.ceil(x + blockRadius),
+                Math.ceil(y + blockRadius)],
+        };
+        this.forceRangeToGridRowsColumns();
+        return this.gridRange;
+    }
+
+    forceRangeToGridRowsColumns() {
+        if(this.gridRange.start[0] < 0) {
+            this.gridRange.start[0] = 0;
+        }
+        if(this.gridRange.start[1] < 0) {
+            this.gridRange.start[1] = 0;
+        }
+        if(this.gridRange.end[0] > this._columns) {
+            this.gridRange.end[0] = this._columns;
+        }
+        if(this.gridRange.end[1] > this._rows) {
+            this.gridRange.end[1] = this._rows;
+        }
+    }
+
     log() {
         if(debug.gameGridLog) {
             debug.gameGridLog = false;
