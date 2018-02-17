@@ -58,7 +58,7 @@ export default class Scanner {
     selectTargetIfValid() {
         if(this.nearestTarget.target !== null &&
             this.nearestTarget.distance <= this.radius &&
-            this.nearestTarget.target.health.health > 0) {
+            this.nearestTarget.target.health.currentHealth > 0) {
             this._target = this.nearestTarget.target;
         } else {
             this._target = null;

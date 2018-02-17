@@ -8,7 +8,7 @@ export default class Explosion extends Particle {
         this._explosionImage = new Image();
         this._explosionImage.src = this._sprite;
         this._frame = 0;
-        this._damage = 2;
+        this._damage = 0;
     }
 
     get damage() {

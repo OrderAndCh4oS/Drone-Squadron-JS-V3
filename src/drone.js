@@ -117,7 +117,7 @@ export default class Drone extends Particle {
             displayData.addLine('ID: ' + this.id);
             displayData.addLine('SquadID: ' + this.squadId);
             displayData.addLine('Weapon: ' + this.weapon.name);
-            displayData.addLine('Health: ' + this.health.health);
+            displayData.addLine('Health: ' + this.health.currentHealth);
             displayData.addLine('Damage: ' + this._damage);
             displayData.addLine('Kills: ' + this._kills);
             displayData.addLine(positionText);
