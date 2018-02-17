@@ -13,36 +13,39 @@ export default class Squadron {
         return this._name;
     }
 
-    addDrone(drone) {
-        this.drones.push(drone);
-    }
-
-    killCount() {
+    get kills() {
         return this.drones
             .map(d => d.kills)
             .reduce((a, b) => a + b);
     }
 
-    health() {
+    get health() {
         return this.drones
-            .map(d => d.health.currentHealth > 0 ? d.health.currentHealth : 0)
+            .map(d => d.health.currentHealth > 0
+                ? d.health.currentHealth
+                : 0)
             .reduce((a, b) => a + b);
     }
 
-    startHealth() {
-        return this.drones.map(d => d.health.health).reduce((a, b) => a + b);
+    get startHealth() {
+        return this.drones.map(d => d.health.health)
+            .reduce((a, b) => a + b);
+    }
+
+    addDrone(drone) {
+        this.drones.push(drone);
     }
 
     drawHealth(index) {
         const healthBar = new PercentBox(
-            canvasWidth / 2,
-            24 * (index + 1),
-            canvasWidth * 0.9,
+            canvasWidth / 4 * (index * 2 + 1),
+            24,
+            canvasWidth * 0.45,
             14,
             colours[this.colour],
             colours.white,
         );
-        healthBar.setPercentage(this.health(), this.startHealth());
+        healthBar.setPercentage(this.health, this.startHealth);
         healthBar.draw();
     }
 }
