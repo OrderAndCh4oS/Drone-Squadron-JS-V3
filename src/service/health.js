@@ -1,40 +1,37 @@
 import { colours, context } from '../constants';
+import PercentBox from '../user-interface/percentBox';
 
-export default class Heath {
+export default class Heath extends PercentBox {
     constructor(health) {
+        super(0, 16, 16, 4, colours.green, colours.white);
         this._health = health;
+        this._currentHealth = health;
     }
 
     get health() {
         return this._health;
     }
 
+    get currentHealth() {
+        return this._currentHealth;
+    }
+
     takeDamage(damage) {
-        this._health -= damage;
+        this._currentHealth -= damage;
     }
 
     repairDamage(value) {
-        this._health += value;
+        if(this._currentHealth + value < this._health) {
+            this._currentHealth += value;
+        } else {
+            this._currentHealth = this._health;
+        }
     }
 
     draw(drone) {
         context.translate(drone.position.x, drone.position.y);
-        context.translate(-8, 16);
-        this.drawHealthBox(this.health);
-        context.fillStyle = this._health > 15 ? colours.green : colours.red;
-        context.fill();
-        this.drawHealthBox();
-        context.strokeStyle = colours.white;
-        context.stroke();
-        context.resetTransform();
-    }
-
-    drawHealthBox(width = 100) {
-        context.beginPath();
-        context.moveTo(0, 0);
-        context.lineTo(16 * width / 100, 0);
-        context.lineTo(16 * width / 100, 4);
-        context.lineTo(0, 4);
-        context.lineTo(0, 0);
+        this.setPercentage(this._currentHealth, this._health);
+        this._fill = this._currentHealth <= 20 ? colours.red : colours.green;
+        super.draw();
     }
 }
