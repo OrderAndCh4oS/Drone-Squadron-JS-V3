@@ -7,16 +7,18 @@ import S10 from '../utility/steering/S10';
 import S8 from '../utility/steering/S8';
 import S6 from '../utility/steering/S6';
 import S4 from '../utility/steering/S4';
-import SC900 from '../utility/scanner/SC900';
-import SC600 from '../utility/scanner/SC600';
-import SC400 from '../utility/scanner/SC400';
-import SC200 from '../utility/scanner/SC200';
 import G360 from '../utility/gimbal/G360';
 import G240 from '../utility/gimbal/G240';
 import G120 from '../utility/gimbal/G120';
 import G90 from '../utility/gimbal/G90';
 import G60 from '../utility/gimbal/G60';
 import G40 from '../utility/gimbal/G40';
+import SC900 from '../utility/scanner/SC900';
+import SC800 from '../utility/scanner/SC800';
+import SC700 from '../utility/scanner/SC700';
+import SC600 from '../utility/scanner/SC600';
+import SC500 from '../utility/scanner/SC500';
+import SC400 from '../utility/scanner/SC400';
 
 export const gimbals = {
     'G40': G40,
@@ -28,9 +30,11 @@ export const gimbals = {
 };
 
 export const scanners = {
-    'SC200': SC200,
     'SC400': SC400,
+    'SC500': SC500,
     'SC600': SC600,
+    'SC700': SC700,
+    'SC800': SC800,
     'SC900': SC900,
 };
 

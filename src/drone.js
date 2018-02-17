@@ -3,24 +3,28 @@ import Vector from './service/vector';
 import Particle from './abstract/particle';
 import Health from './service/health';
 import { drones } from './constants/sprites';
+import { gimbals, scanners, steering, thrusters } from './constants/utilities';
+import { weapons } from './constants/weapons';
+import DisplayData from './service/display-data';
 
 export default class Drone extends Particle {
 
-    constructor(
-        id, squadId, name, color, x, y, speed, angle, weapon, gimbal, scanner,
-        thruster,
-        steering) {
-        super(id, x, y, speed, 13, angle);
-        this.name = name;
+    constructor(drone, squad, x, y, angle) {
+        super(drone.id, x, y, 0, 13, angle);
+        this._squadId = squad.id;
+        this._colour = squad.colour;
+        this.name = drone.name;
         this.vector = new Vector(x, y);
         this.vector.setAngle(angle);
-        this.weapon = new weapon(id, squadId, x, y, angle, gimbal);
-        this._color = color;
-        this.scanner = new scanner();
-        this.thruster = new thruster();
-        this.steering = new steering();
+        this.weapon = new weapons[drone.weapon](this, x, y, angle,
+            gimbals[drone.gimbal]);
+        this.scanner = new scanners[drone.scanner]();
+        this.thruster = new thrusters[drone.thruster]();
+        this.steering = new steering[drone.steering]();
         this.health = new Health(100);
-        this._squadId = squadId;
+        this._damage = 0;
+        this._kills = 0;
+        this._killed = [];
     }
 
     get squadId() {
@@ -33,6 +37,15 @@ export default class Drone extends Particle {
 
     set angle(angle) {
         this.vector.setAngle(angle);
+    }
+
+    updateDamage(damage) {
+        this._damage += damage;
+    }
+
+    updateKills(killedDrone) {
+        this._kills++;
+        this._killed.push(killedDrone);
     }
 
     update() {
@@ -61,7 +74,7 @@ export default class Drone extends Particle {
     drawSprite() {
         context.rotate(this.vector.getAngle() + (Math.PI / 180) * 90);
         context.translate(-12.5, -14);
-        context.drawImage(drones[this._color], 0, 0);
+        context.drawImage(drones[this._colour], 0, 0);
     }
 
     drawDrone() {
@@ -70,32 +83,35 @@ export default class Drone extends Particle {
         context.lineTo(-10, -7);
         context.lineTo(-10, 7);
         context.lineTo(10, 0);
-        context.strokeStyle = this._color;
+        context.strokeStyle = this._colour;
         context.stroke();
-        context.fillStyle = this._color;
+        context.fillStyle = this._colour;
         context.fill();
     }
 
     drawName() {
         if(debug.droneNameToggle) {
             context.textAlign = 'center';
-            context.fillStyle = colours[this._color];
+            context.fillStyle = colours[this._colour];
             context.fillText(this.name, 0, -18);
         }
     }
 
     drawData() {
         if(debug.droneDataToggle) {
-            context.textAlign = 'left';
-            context.fillStyle = colours[this._color];
-            context.fillText('ID: ' + this.id, 25, -10);
-            context.fillText('SquadID: ' + this.squadId, 25, 0);
-            context.fillText('Health: ' + this.health.health, 25, 10);
             const positionText = `Position: (${Math.round(
                 this.position.x)}, ${Math.round(this.position.y)})`;
-            context.fillText(positionText, 25, 20);
             const gridText = `Grid: (${this.gridX}, ${this.gridY})`;
-            context.fillText(gridText, 25, 30);
+            const displayData = new DisplayData(0, 0, this.colour);
+            displayData.addLine('ID: ' + this.id);
+            displayData.addLine('SquadID: ' + this.squadId);
+            displayData.addLine('Weapon: ' + this.weapon.name);
+            displayData.addLine('Health: ' + this.health.health);
+            displayData.addLine('Damage: ' + this._damage);
+            displayData.addLine('Kills: ' + this._kills);
+            displayData.addLine(positionText);
+            displayData.addLine(gridText);
+            displayData.draw();
         }
     }
 }
