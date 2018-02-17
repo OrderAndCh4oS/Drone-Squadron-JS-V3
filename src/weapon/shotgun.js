@@ -3,10 +3,10 @@ import { context, pm } from '../constants';
 import Shot from '../ammo/shot';
 
 export default class Shotgun extends Weapon {
-    constructor(id, squadId, x, y, angle, gimbal) {
+    constructor(drone, x, y, angle, gimbal) {
         const fireRate = 7;
         const round = Shot;
-        super(id, squadId, '#664', x, y, angle, gimbal, round, fireRate);
+        super(drone, 'Shotgun', '#664', x, y, angle, gimbal, round, fireRate);
     }
 
     draw() {
@@ -27,8 +27,7 @@ export default class Shotgun extends Weapon {
             const scatter = Math.random() * 0.08 - 0.04;
             pm.addParticle(
                 new this.round(
-                    this.id,
-                    this.squadId,
+                    this.drone,
                     this.position.x,
                     this.position.y,
                     this.gimbal.vector.getAngle() + this.droneAngle + scatter,

@@ -105,7 +105,7 @@ export default class Scanner {
             context.lineTo(5, 5);
             context.moveTo(5, -5);
             context.lineTo(-5, 5);
-            context.strokeStyle = drone.color;
+            context.strokeStyle = drone.colour;
             context.strokeWidth = 5;
             context.stroke();
             context.resetTransform();

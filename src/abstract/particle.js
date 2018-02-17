@@ -12,7 +12,7 @@ export default class Particle {
         this.velocity.setLength(speed);
         this.velocity.setAngle(angle);
         this._remove = false;
-        this._color = colours.white;
+        this._colour = colours.white;
         this._gridX = Math.floor(this.position.x / grid.gridBlockSize);
         this._gridY = Math.floor(this.position.y / grid.gridBlockSize);
     }
@@ -41,8 +41,8 @@ export default class Particle {
         return this._id;
     }
 
-    get color() {
-        return this._color;
+    get colour() {
+        return this._colour;
     }
 
     update() {
@@ -70,9 +70,9 @@ export default class Particle {
             this.radius,
             0,
             2 * Math.PI);
-        context.fillStyle = this._color;
+        context.fillStyle = this._colour;
         context.fill();
-        context.strokeStyle = this._color;
+        context.strokeStyle = this._colour;
         context.stroke();
     }
 }

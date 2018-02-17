@@ -4,16 +4,22 @@ import Vector from '../service/vector';
 import { angleTo } from '../functions';
 
 export default class Weapon {
-    constructor(id, squadId, color, x, y, angle, gimbal, round, fireRate) {
-        this.id = id;
-        this.squadId = squadId;
-        this.color = color;
+    constructor(drone, name, colour, x, y, angle, gimbal, round, fireRate) {
+        this.drone = drone;
+        this.id = drone.id;
+        this.squadId = drone.squadId;
+        this.colour = colour;
         this.position = new Vector(x, y);
         this.velocity = 0;
         this.fireRate = fireRate;
         this.lastFired = 0;
         this.gimbal = new gimbal();
         this.round = round;
+        this._name = name;
+    }
+
+    get name() {
+        return this._name;
     }
 
     draw() {
@@ -24,9 +30,9 @@ export default class Weapon {
         context.lineTo(10, 2);
         context.lineTo(0, 2);
         context.lineTo(0, -2);
-        context.strokeStyle = this.color;
+        context.strokeStyle = this.colour;
         context.stroke();
-        context.fillStyle = this.color;
+        context.fillStyle = this.colour;
         context.fill();
         context.resetTransform();
     }
@@ -58,8 +64,7 @@ export default class Weapon {
     fire() {
         pm.addParticle(
             new this.round(
-                this.id,
-                this.squadId,
+                this.drone,
                 this.position.x,
                 this.position.y,
                 this.gimbal.vector.getAngle() + this.droneAngle,
@@ -69,12 +74,12 @@ export default class Weapon {
     }
 
     applyFill() {
-        context.fillStyle = this.color;
+        context.fillStyle = this.colour;
         context.fill();
     }
 
     applyStroke() {
-        context.strokeStyle = this.color;
+        context.strokeStyle = this.colour;
         context.stroke();
     }
 }
