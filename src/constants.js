@@ -20,7 +20,7 @@ export const canvasHeight = canvas.height = window.innerHeight;
 export const debug = new Debug();
 export const background = new Background();
 export const grid = new GameGrid();
-export const allDrones = [];
+export const squadrons = [];
 export const dm = new DroneManager(canvasWidth, canvasHeight);
 export const pm = new ParticleManager(canvasWidth, canvasHeight);
 

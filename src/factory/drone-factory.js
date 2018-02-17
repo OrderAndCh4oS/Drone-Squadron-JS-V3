@@ -1,5 +1,5 @@
 import Drone from '../drone';
-import { allDrones, canvasHeight, canvasWidth } from '../constants';
+import { allDrones, canvasHeight, canvasWidth, dm } from '../constants';
 
 export default class DroneFactory {
     static make(droneData, squadronData) {
@@ -11,7 +11,7 @@ export default class DroneFactory {
             0,
             Math.random() * Math.PI * 2,
         );
-        allDrones.push(drone);
-        return drone
+        dm.addDrone(drone);
+        return drone;
     }
 }
