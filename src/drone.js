@@ -5,10 +5,9 @@ import Health from './service/health';
 import { drones } from './constants/sprites';
 import { gimbals, scanners, steering, thrusters } from './constants/utilities';
 import { weapons } from './constants/weapons';
-import DisplayData from './service/display-data';
+import DisplayData from './service/display-particle-data';
 
 export default class Drone extends Particle {
-
     constructor(drone, squad, x, y, angle) {
         super(drone.id, x, y, 0, 13, angle);
         this._squadId = squad.id;
@@ -25,6 +24,18 @@ export default class Drone extends Particle {
         this._damage = 0;
         this._kills = 0;
         this._killed = [];
+    }
+
+    get killed() {
+        return this._killed;
+    }
+
+    get damage() {
+        return this._damage;
+    }
+
+    get kills() {
+        return this._kills;
     }
 
     get squadId() {

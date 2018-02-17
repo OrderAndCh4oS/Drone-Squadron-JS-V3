@@ -3,7 +3,7 @@ import { colours, context } from '../constants';
 export default class DisplayData {
     constructor(x, y, colour) {
         this.x = x;
-        this.y = y + 25;
+        this.y = y;
         this.colour = colour;
         this.lines = [];
     }
@@ -12,12 +12,20 @@ export default class DisplayData {
         this.lines.push(text);
     }
 
-    draw() {
+    textStyle(size) {
         context.textAlign = 'left';
+        context.font = size + 'px sans';
         context.fillStyle = colours[this.colour];
+    }
+
+    draw() {
+        this.textStyle(16);
         this.lines.map((line, index) => {
-            context.fillText(line, 25, (index + 1 - this.lines.length / 2) *
-                10);
+            context.fillText(
+                line,
+                this.x,
+                this.y + (index + 1) * 18,
+            );
         });
     }
 }
