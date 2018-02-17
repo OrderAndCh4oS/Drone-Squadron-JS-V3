@@ -29,7 +29,6 @@ function setupDrones(data) {
     data.squadrons.map(s => squadrons.push(SquadronFactory.make(s)));
 }
 
-
 function startAnimating(fps) {
     fpsInterval = 1000 / fps;
     then = Date.now();
@@ -47,14 +46,18 @@ function animate() {
     pm.update();
     grid.draw();
     grid.log();
-    const displayGameData = new DisplayData(10, 100, 'green');
     squadrons.map((s, i) => {
         s.drawHealth(i);
-        displayGameData.addLine(s.name + ' Kills: ' + s.killCount());
+        const displaySquadData = new DisplayData(
+            canvasWidth / 4 * (i * 2 + 1),
+            40,
+            s.colour,
+            'center'
+        );
+        displaySquadData.addLine(s.name);
+        displaySquadData.addLine(`Kills: ${s.kills}`);
+        displaySquadData.draw();
     });
-    if(debug.gameDataToggle) {
-        displayGameData.draw();
-    }
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;

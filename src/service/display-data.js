@@ -1,10 +1,11 @@
 import { colours, context } from '../constants';
 
 export default class DisplayData {
-    constructor(x, y, colour) {
+    constructor(x, y, colour, align = 'left') {
         this.x = x;
         this.y = y;
         this.colour = colour;
+        this.align = align;
         this.lines = [];
     }
 
@@ -13,7 +14,7 @@ export default class DisplayData {
     }
 
     textStyle(size) {
-        context.textAlign = 'left';
+        context.textAlign = this.align;
         context.font = size + 'px sans';
         context.fillStyle = colours[this.colour];
     }

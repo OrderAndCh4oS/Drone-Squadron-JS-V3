@@ -1488,11 +1488,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var DisplayData = function () {
     function DisplayData(x, y, colour) {
+        var align = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'left';
+
         _classCallCheck(this, DisplayData);
 
         this.x = x;
         this.y = y;
         this.colour = colour;
+        this.align = align;
         this.lines = [];
     }
 
@@ -1504,7 +1507,7 @@ var DisplayData = function () {
     }, {
         key: 'textStyle',
         value: function textStyle(size) {
-            _constants.context.textAlign = 'left';
+            _constants.context.textAlign = this.align;
             _constants.context.font = size + 'px sans';
             _constants.context.fillStyle = _constants.colours[this.colour];
         }
@@ -1584,14 +1587,13 @@ function animate() {
     _constants.pm.update();
     _constants.grid.draw();
     _constants.grid.log();
-    var displayGameData = new _displayData2.default(10, 100, 'green');
     _constants.squadrons.map(function (s, i) {
         s.drawHealth(i);
-        displayGameData.addLine(s.name + ' Kills: ' + s.killCount());
+        var displaySquadData = new _displayData2.default(_constants.canvasWidth / 4 * (i * 2 + 1), 40, s.colour, 'center');
+        displaySquadData.addLine(s.name);
+        displaySquadData.addLine('Kills: ' + s.kills);
+        displaySquadData.draw();
     });
-    if (_constants.debug.gameDataToggle) {
-        displayGameData.draw();
-    }
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;
@@ -3755,8 +3757,20 @@ var Squadron = function () {
             this.drones.push(drone);
         }
     }, {
-        key: 'killCount',
-        value: function killCount() {
+        key: 'drawHealth',
+        value: function drawHealth(index) {
+            var healthBar = new _percentBox2.default(_constants.canvasWidth / 4 * (index * 2 + 1), 24, _constants.canvasWidth * 0.45, 14, _constants.colours[this.colour], _constants.colours.white);
+            healthBar.setPercentage(this.health, this.startHealth);
+            healthBar.draw();
+        }
+    }, {
+        key: 'name',
+        get: function get() {
+            return this._name;
+        }
+    }, {
+        key: 'kills',
+        get: function get() {
             return this.drones.map(function (d) {
                 return d.kills;
             }).reduce(function (a, b) {
@@ -3765,7 +3779,7 @@ var Squadron = function () {
         }
     }, {
         key: 'health',
-        value: function health() {
+        get: function get() {
             return this.drones.map(function (d) {
                 return d.health.currentHealth > 0 ? d.health.currentHealth : 0;
             }).reduce(function (a, b) {
@@ -3774,24 +3788,12 @@ var Squadron = function () {
         }
     }, {
         key: 'startHealth',
-        value: function startHealth() {
+        get: function get() {
             return this.drones.map(function (d) {
                 return d.health.health;
             }).reduce(function (a, b) {
                 return a + b;
             });
-        }
-    }, {
-        key: 'drawHealth',
-        value: function drawHealth(index) {
-            var healthBar = new _percentBox2.default(_constants.canvasWidth / 2, 24 * (index + 1), _constants.canvasWidth * 0.9, 14, _constants.colours[this.colour], _constants.colours.white);
-            healthBar.setPercentage(this.health(), this.startHealth());
-            healthBar.draw();
-        }
-    }, {
-        key: 'name',
-        get: function get() {
-            return this._name;
         }
     }]);
 
