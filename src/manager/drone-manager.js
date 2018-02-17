@@ -1,6 +1,6 @@
 import { returnToCanvas } from '../functions';
 import Explosion from '../abstract/explosion';
-import { pm } from '../constants';
+import { allDrones, pm } from '../constants';
 
 export default class DroneManager {
     constructor() {

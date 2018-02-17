@@ -1,7 +1,8 @@
 import {
+    allDrones,
     background,
     canvasHeight,
-    canvasWidth,
+    canvasWidth, colours,
     context,
     debug,
     dm,
@@ -10,8 +11,7 @@ import {
 } from './constants';
 import { deltaTime } from './service/delta-time';
 import DroneFactory from './factory/droneFactory';
-
-const droneFactory = new DroneFactory();
+import DisplayData from './service/display-data';
 
 let fpsInterval, startTime, now, then, elapsed;
 
@@ -28,8 +28,8 @@ function setupDrones(data) {
     const s1 = data.squadrons[0];
     const s2 = data.squadrons[1];
     for(let i = 0; i < s1.drones.length; i++) {
-        dm.addDrone(droneFactory.make(s1.drones[i], s1));
-        dm.addDrone(droneFactory.make(s2.drones[i], s2));
+        dm.addDrone(DroneFactory.make(s1.drones[i], s1));
+        dm.addDrone(DroneFactory.make(s2.drones[i], s2));
     }
 }
 
@@ -38,6 +38,12 @@ function startAnimating(fps) {
     then = Date.now();
     startTime = then;
     animate();
+}
+
+function squadKillCount(squadId) {
+    return allDrones
+        .map(d => d.squadId === squadId ? d.kills : 0)
+        .reduce((a, b) => a + b);
 }
 
 function animate() {
@@ -50,6 +56,12 @@ function animate() {
     pm.update();
     grid.draw();
     grid.log();
+    if(debug.gameDataToggle) {
+        const displaySquadData = new DisplayData(10, 10, 'green');
+        displaySquadData.addLine('Squad One Kills: ' + squadKillCount(1));
+        displaySquadData.addLine('Squad Two Kills: ' + squadKillCount(2));
+        displaySquadData.draw();
+    }
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;
