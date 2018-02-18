@@ -1,5 +1,5 @@
-import { colours, context } from '../constants';
-import PercentBox from '../user-interface/percentBox';
+import { colours, context } from '../constants/constants';
+import PercentBox from '../user-interface/percent-box';
 
 export default class Heath extends PercentBox {
     constructor(health) {

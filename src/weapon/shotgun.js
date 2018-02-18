@@ -1,5 +1,5 @@
 import Weapon from '../abstract/weapon';
-import { context, pm } from '../constants';
+import { context, pm } from '../constants/constants';
 import Shot from '../ammo/shot';
 
 export default class Shotgun extends Weapon {

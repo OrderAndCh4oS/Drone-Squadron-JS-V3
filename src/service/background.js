@@ -1,4 +1,4 @@
-import { canvasHeight, canvasWidth, context } from '../constants';
+import { canvasHeight, canvasWidth, context } from '../constants/constants';
 
 export default class Background {
     constructor() {

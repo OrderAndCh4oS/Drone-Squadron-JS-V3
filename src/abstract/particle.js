@@ -1,4 +1,4 @@
-import { colours, context, friction, grid } from '../constants';
+import { colours, context, friction, grid } from '../constants/constants';
 
 import Vector from '../service/vector';
 import { deltaTime } from '../service/delta-time';

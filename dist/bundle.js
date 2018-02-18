@@ -73,7 +73,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.pm = exports.dm = exports.squadrons = exports.grid = exports.background = exports.debug = exports.canvasHeight = exports.canvasWidth = exports.context = exports.friction = exports.colours = undefined;
+exports.pm = exports.dm = exports.squadrons = exports.grid = exports.background = exports.debug = exports.canvasHeight = exports.canvasWidth = exports.context = exports.friction = exports.game = exports.colours = undefined;
 
 var _particleManager = __webpack_require__(15);
 
@@ -87,11 +87,11 @@ var _gameGrid = __webpack_require__(19);
 
 var _gameGrid2 = _interopRequireDefault(_gameGrid);
 
-var _debug = __webpack_require__(52);
+var _debug = __webpack_require__(57);
 
 var _debug2 = _interopRequireDefault(_debug);
 
-var _background = __webpack_require__(53);
+var _background = __webpack_require__(58);
 
 var _background2 = _interopRequireDefault(_background);
 
@@ -106,6 +106,7 @@ var colours = exports.colours = {
     green: '#80bf32',
     blue: '#3b9ec7'
 };
+var game = exports.game = { state: 'playing' };
 var friction = exports.friction = 0.8;
 var context = exports.context = canvas.getContext('2d');
 var canvasWidth = exports.canvasWidth = canvas.width = window.innerWidth;
@@ -127,150 +128,6 @@ var pm = exports.pm = new _particleManager2.default(canvasWidth, canvasHeight);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.isOffCanvas = isOffCanvas;
-exports.returnToCanvas = returnToCanvas;
-exports.distanceTo = distanceTo;
-exports.angleTo = angleTo;
-exports.didCollide = didCollide;
-exports.randomItem = randomItem;
-exports.angleBetweenRange = angleBetweenRange;
-
-var _constants = __webpack_require__(0);
-
-function isOffCanvas(particle) {
-    return particle.position.x > _constants.canvasWidth + particle.radius || particle.position.x < 0 - particle.radius || particle.position.y > _constants.canvasHeight + particle.radius || particle.position.y < 0 - particle.radius;
-}
-
-function returnToCanvas(drone) {
-    if (drone.position.x > _constants.canvasWidth) {
-        drone.position.x = 0;
-    }
-    if (drone.position.x < 0) {
-        drone.position.x = _constants.canvasWidth;
-    }
-    if (drone.position.y > _constants.canvasHeight) {
-        drone.position.y = 0;
-    }
-    if (drone.position.y < 0) {
-        drone.position.y = _constants.canvasHeight;
-    }
-}
-
-function distanceTo(p1, p2) {
-    var dx = p2.position.x - p1.position.x,
-        dy = p2.position.y - p1.position.y;
-    return Math.sqrt(dx * dx + dy * dy);
-}
-
-function angleTo(angleOne, angleTwo) {
-    return Math.atan2(Math.sin(angleOne - angleTwo), Math.cos(angleOne - angleTwo));
-}
-
-function didCollide(p1, p2) {
-    return !(p1.squadId === p2.squadId) && distanceTo(p1, p2) < p1.radius + p2.radius;
-}
-
-function randomItem(items) {
-    return items[Math.floor(Math.random() * items.length)];
-}
-
-function angleBetweenRange(angleOne, angleTwo, range) {
-    return angleTo(angleOne, angleTwo) <= range / 2 && angleTo(angleOne, angleTwo) >= -(range / 2);
-}
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _vector = __webpack_require__(5);
-
-var _vector2 = _interopRequireDefault(_vector);
-
-var _functions = __webpack_require__(1);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Gimbal = function () {
-    function Gimbal(angleLimit, turningSpeed) {
-        _classCallCheck(this, Gimbal);
-
-        this.vector = new _vector2.default(0, 0);
-        this.vector.setAngle(0);
-        this.vector.setLength(5);
-        this.rotation = 'right';
-        this._angleLimit = angleLimit;
-        this.turningSpeed = turningSpeed;
-        this.lead = 0.2;
-    }
-
-    _createClass(Gimbal, [{
-        key: 'trackTarget',
-        value: function trackTarget(drone) {
-            if (drone.scanner.hasTarget()) {
-                switch (true) {
-                    case (0, _functions.angleTo)(drone.angle + this.vector.getAngle(), drone.scanner.angleToTarget()) > 0.05:
-                        this.rotation = 'left';
-                        break;
-                    case (0, _functions.angleTo)(drone.angle + this.vector.getAngle(), drone.scanner.angleToTarget()) < -0.05:
-                        this.rotation = 'right';
-                        break;
-                    default:
-                        return;
-                }
-            }
-            this.turn();
-        }
-    }, {
-        key: 'turn',
-        value: function turn() {
-            switch (true) {
-                case this.rotation === 'right' && this.vector.getAngle() < this._angleLimit:
-                    this.vector.setAngle(this.vector.getAngle() + this.turningSpeed);
-                    break;
-                case this.rotation === 'left' && this.vector.getAngle() > -this._angleLimit:
-                    this.vector.setAngle(this.vector.getAngle() - this.turningSpeed);
-                    break;
-                case this.rotation === 'right' && this.vector.getAngle() > this._angleLimit:
-                    this.rotation = 'left';
-                    break;
-                case this.rotation === 'left' && this.vector.getAngle() < -this._angleLimit:
-                    this.rotation = 'right';
-                    break;
-            }
-        }
-    }, {
-        key: 'angleLimit',
-        get: function get() {
-            return this._angleLimit;
-        }
-    }]);
-
-    return Gimbal;
-}();
-
-exports.default = Gimbal;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -284,7 +141,7 @@ var _bullet = __webpack_require__(7);
 
 var _bullet2 = _interopRequireDefault(_bullet);
 
-var _functions = __webpack_require__(1);
+var _functions = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -324,14 +181,18 @@ var Scanner = function () {
             for (var i = this.gridRange.start[0]; i < this.gridRange.end[0]; i++) {
                 for (var j = this.gridRange.start[1]; j < this.gridRange.end[1]; j++) {
                     _constants.grid.grid[i][j].map(function (item) {
-                        var angleToItem = (0, _functions.angleTo)(_this._drone.angle, _this.angleToTarget(item));
-                        if (item instanceof _bullet2.default && item.squadId !== _this._drone.squadId && _this.distanceToParticle(item) < 300 && (angleToItem <= 0.15 || angleToItem >= -0.15)) {
-                            _this._threats++;
-                        }
-
+                        _this.detectThreats(item);
                         _this.findNearestDrone(item);
                     });
                 }
+            }
+        }
+    }, {
+        key: 'detectThreats',
+        value: function detectThreats(item) {
+            var angleToItem = (0, _functions.angleTo)(item.angle, this.angleToParticle(item));
+            if (item instanceof _bullet2.default && item.squadId !== this._drone.squadId && this.distanceToParticle(item) < 300 && (angleToItem <= 0.15 || angleToItem >= -0.15)) {
+                this._threats++;
             }
         }
     }, {
@@ -357,10 +218,7 @@ var Scanner = function () {
     }, {
         key: 'angleToTarget',
         value: function angleToTarget() {
-            if (this.hasTarget()) {
-                return this.angleToParticle(this._target);
-            }
-            return 0;
+            return this.hasTarget() ? this.angleToParticle(this._target) : 0;
         }
     }, {
         key: 'angleToParticle',
@@ -435,6 +293,162 @@ var Scanner = function () {
 exports.default = Scanner;
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.isOffCanvas = isOffCanvas;
+exports.returnToCanvas = returnToCanvas;
+exports.distanceTo = distanceTo;
+exports.angleTo = angleTo;
+exports.didCollide = didCollide;
+exports.randomItem = randomItem;
+exports.angleBetweenRange = angleBetweenRange;
+exports.shuffle = shuffle;
+
+var _constants = __webpack_require__(0);
+
+function isOffCanvas(particle) {
+    return particle.position.x > _constants.canvasWidth + particle.radius || particle.position.x < 0 - particle.radius || particle.position.y > _constants.canvasHeight + particle.radius || particle.position.y < 0 - particle.radius;
+}
+
+function returnToCanvas(drone) {
+    if (drone.position.x > _constants.canvasWidth) {
+        drone.position.x = 0;
+    }
+    if (drone.position.x < 0) {
+        drone.position.x = _constants.canvasWidth;
+    }
+    if (drone.position.y > _constants.canvasHeight) {
+        drone.position.y = 0;
+    }
+    if (drone.position.y < 0) {
+        drone.position.y = _constants.canvasHeight;
+    }
+}
+
+function distanceTo(p1, p2) {
+    var dx = p2.position.x - p1.position.x,
+        dy = p2.position.y - p1.position.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function angleTo(angleOne, angleTwo) {
+    return Math.atan2(Math.sin(angleOne - angleTwo), Math.cos(angleOne - angleTwo));
+}
+
+function didCollide(p1, p2) {
+    return !(p1.squadId === p2.squadId) && distanceTo(p1, p2) < p1.radius + p2.radius;
+}
+
+function randomItem(items) {
+    return items[Math.floor(Math.random() * items.length)];
+}
+
+function angleBetweenRange(angleOne, angleTwo, range) {
+    return angleTo(angleOne, angleTwo) <= range / 2 && angleTo(angleOne, angleTwo) >= -(range / 2);
+}
+
+function shuffle(arr) {
+    var randomizedArray = [];
+    var array = arr;
+    while (array.length !== 0) {
+        var rIndex = Math.floor(array.length * Math.random());
+        randomizedArray.push(array[rIndex]);
+        array.splice(rIndex, 1);
+    }
+    return randomizedArray;
+}
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _vector = __webpack_require__(6);
+
+var _vector2 = _interopRequireDefault(_vector);
+
+var _functions = __webpack_require__(2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Gimbal = function () {
+    function Gimbal(angleLimit, turningSpeed) {
+        _classCallCheck(this, Gimbal);
+
+        this.vector = new _vector2.default(0, 0);
+        this.vector.setAngle(0);
+        this.vector.setLength(5);
+        this.rotation = 'right';
+        this._angleLimit = angleLimit;
+        this.turningSpeed = turningSpeed;
+        this.lead = 0.2;
+    }
+
+    _createClass(Gimbal, [{
+        key: 'trackTarget',
+        value: function trackTarget(drone) {
+            if (drone.scanner.hasTarget()) {
+                switch (true) {
+                    case (0, _functions.angleTo)(drone.angle + this.vector.getAngle(), drone.scanner.angleToTarget()) > 0.05:
+                        this.rotation = 'left';
+                        break;
+                    case (0, _functions.angleTo)(drone.angle + this.vector.getAngle(), drone.scanner.angleToTarget()) < -0.05:
+                        this.rotation = 'right';
+                        break;
+                    default:
+                        return;
+                }
+            }
+            this.turn();
+        }
+    }, {
+        key: 'turn',
+        value: function turn() {
+            switch (true) {
+                case this.rotation === 'right' && this.vector.getAngle() < this._angleLimit:
+                    this.vector.setAngle(this.vector.getAngle() + this.turningSpeed);
+                    break;
+                case this.rotation === 'left' && this.vector.getAngle() > -this._angleLimit:
+                    this.vector.setAngle(this.vector.getAngle() - this.turningSpeed);
+                    break;
+                case this.rotation === 'right' && this.vector.getAngle() > this._angleLimit:
+                    this.rotation = 'left';
+                    break;
+                case this.rotation === 'left' && this.vector.getAngle() < -this._angleLimit:
+                    this.rotation = 'right';
+                    break;
+            }
+        }
+    }, {
+        key: 'angleLimit',
+        get: function get() {
+            return this._angleLimit;
+        }
+    }]);
+
+    return Gimbal;
+}();
+
+exports.default = Gimbal;
+
+/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -447,7 +461,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _functions = __webpack_require__(1);
+var _functions = __webpack_require__(2);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -595,139 +609,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _point = __webpack_require__(18);
-
-var _point2 = _interopRequireDefault(_point);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Vector = function () {
-    function Vector(x, y) {
-        _classCallCheck(this, Vector);
-
-        this._position = new _point2.default(x, y);
-    }
-
-    _createClass(Vector, [{
-        key: 'setAngle',
-        value: function setAngle(angle) {
-            var length = this.getLength();
-            this._position.x = Math.cos(angle) * length;
-            this._position.y = Math.sin(angle) * length;
-        }
-    }, {
-        key: 'getAngle',
-        value: function getAngle() {
-            return Math.atan2(this._position.y, this._position.x);
-        }
-    }, {
-        key: 'setLength',
-        value: function setLength(length) {
-            var angle = this.getAngle();
-            this._position.x = Math.cos(angle) * length;
-            this._position.y = Math.sin(angle) * length;
-        }
-    }, {
-        key: 'getLength',
-        value: function getLength() {
-            return Math.sqrt(this._position.x * this._position.x + this._position.y * this._position.y);
-        }
-    }, {
-        key: 'add',
-        value: function add(v2) {
-            return new Vector(this._position.x + v2.x, this._position.y + v2.y);
-        }
-    }, {
-        key: 'subtract',
-        value: function subtract(v2) {
-            return new Vector(this._position.x - v2.x, this._position.y - v2.y);
-        }
-    }, {
-        key: 'multiply',
-        value: function multiply(value) {
-            return new Vector(this._position.x * value, this._position.y * value);
-        }
-    }, {
-        key: 'divide',
-        value: function divide(value) {
-            return new Vector(this._position.x / value, this._position.y / value);
-        }
-    }, {
-        key: 'addTo',
-        value: function addTo(v2) {
-            this._position.x += v2.x;
-            this._position.y += v2.y;
-        }
-    }, {
-        key: 'subtractFrom',
-        value: function subtractFrom(v2) {
-            this._position.x -= v2.x;
-            this._position.y -= v2.y;
-        }
-    }, {
-        key: 'multiplyBy',
-        value: function multiplyBy(value) {
-            this._position.x *= value;
-            this._position.y *= value;
-        }
-    }, {
-        key: 'divideBy',
-        value: function divideBy(value) {
-            this._position.x /= value;
-            this._position.y /= value;
-        }
-    }, {
-        key: 'angleTo',
-        value: function angleTo(v2) {
-            Math.atan2(v2.y - this.y, v2.x - this.x);
-        }
-    }, {
-        key: 'x',
-        get: function get() {
-            return this._position.x;
-        },
-        set: function set(value) {
-            this._position.x = value;
-        }
-    }, {
-        key: 'y',
-        get: function get() {
-            return this._position.y;
-        },
-        set: function set(value) {
-            this._position.y = value;
-        }
-    }, {
-        key: 'point',
-        get: function get() {
-            return this._position;
-        },
-        set: function set(value) {
-            this._position = value;
-        }
-    }]);
-
-    return Vector;
-}();
-
-exports.default = Vector;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _functions = __webpack_require__(1);
+var _functions = __webpack_require__(2);
 
 var _constants = __webpack_require__(0);
 
@@ -863,6 +745,138 @@ var Thruster = function () {
 exports.default = Thruster;
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _point = __webpack_require__(18);
+
+var _point2 = _interopRequireDefault(_point);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Vector = function () {
+    function Vector(x, y) {
+        _classCallCheck(this, Vector);
+
+        this._position = new _point2.default(x, y);
+    }
+
+    _createClass(Vector, [{
+        key: 'setAngle',
+        value: function setAngle(angle) {
+            var length = this.getLength();
+            this._position.x = Math.cos(angle) * length;
+            this._position.y = Math.sin(angle) * length;
+        }
+    }, {
+        key: 'getAngle',
+        value: function getAngle() {
+            return Math.atan2(this._position.y, this._position.x);
+        }
+    }, {
+        key: 'setLength',
+        value: function setLength(length) {
+            var angle = this.getAngle();
+            this._position.x = Math.cos(angle) * length;
+            this._position.y = Math.sin(angle) * length;
+        }
+    }, {
+        key: 'getLength',
+        value: function getLength() {
+            return Math.sqrt(this._position.x * this._position.x + this._position.y * this._position.y);
+        }
+    }, {
+        key: 'add',
+        value: function add(v2) {
+            return new Vector(this._position.x + v2.x, this._position.y + v2.y);
+        }
+    }, {
+        key: 'subtract',
+        value: function subtract(v2) {
+            return new Vector(this._position.x - v2.x, this._position.y - v2.y);
+        }
+    }, {
+        key: 'multiply',
+        value: function multiply(value) {
+            return new Vector(this._position.x * value, this._position.y * value);
+        }
+    }, {
+        key: 'divide',
+        value: function divide(value) {
+            return new Vector(this._position.x / value, this._position.y / value);
+        }
+    }, {
+        key: 'addTo',
+        value: function addTo(v2) {
+            this._position.x += v2.x;
+            this._position.y += v2.y;
+        }
+    }, {
+        key: 'subtractFrom',
+        value: function subtractFrom(v2) {
+            this._position.x -= v2.x;
+            this._position.y -= v2.y;
+        }
+    }, {
+        key: 'multiplyBy',
+        value: function multiplyBy(value) {
+            this._position.x *= value;
+            this._position.y *= value;
+        }
+    }, {
+        key: 'divideBy',
+        value: function divideBy(value) {
+            this._position.x /= value;
+            this._position.y /= value;
+        }
+    }, {
+        key: 'angleTo',
+        value: function angleTo(v2) {
+            Math.atan2(v2.y - this.y, v2.x - this.x);
+        }
+    }, {
+        key: 'x',
+        get: function get() {
+            return this._position.x;
+        },
+        set: function set(value) {
+            this._position.x = value;
+        }
+    }, {
+        key: 'y',
+        get: function get() {
+            return this._position.y;
+        },
+        set: function set(value) {
+            this._position.y = value;
+        }
+    }, {
+        key: 'point',
+        get: function get() {
+            return this._position;
+        },
+        set: function set(value) {
+            this._position = value;
+        }
+    }]);
+
+    return Vector;
+}();
+
+exports.default = Vector;
+
+/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -943,7 +957,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _vector = __webpack_require__(5);
+var _vector = __webpack_require__(6);
 
 var _vector2 = _interopRequireDefault(_vector);
 
@@ -1111,7 +1125,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _vector = __webpack_require__(5);
+var _vector = __webpack_require__(6);
 
 var _vector2 = _interopRequireDefault(_vector);
 
@@ -1127,9 +1141,9 @@ var _sprites = __webpack_require__(21);
 
 var _utilities = __webpack_require__(22);
 
-var _weapons = __webpack_require__(44);
+var _weapons = __webpack_require__(49);
 
-var _displayParticleData = __webpack_require__(51);
+var _displayParticleData = __webpack_require__(56);
 
 var _displayParticleData2 = _interopRequireDefault(_displayParticleData);
 
@@ -1225,6 +1239,7 @@ var Drone = function (_Particle) {
         key: 'drawName',
         value: function drawName() {
             if (_constants.debug.droneNameToggle) {
+                _constants.context.font = '11px Verdana';
                 _constants.context.textAlign = 'center';
                 _constants.context.fillStyle = _constants.colours[this._colour];
                 _constants.context.fillText(this.name, 0, -18);
@@ -1300,11 +1315,11 @@ var _constants = __webpack_require__(0);
 
 var _deltaTime = __webpack_require__(9);
 
-var _vector = __webpack_require__(5);
+var _vector = __webpack_require__(6);
 
 var _vector2 = _interopRequireDefault(_vector);
 
-var _functions = __webpack_require__(1);
+var _functions = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1410,6 +1425,67 @@ var _constants = __webpack_require__(0);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var DisplayData = function () {
+    function DisplayData(x, y, colour) {
+        var align = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'left';
+        var size = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 16;
+
+        _classCallCheck(this, DisplayData);
+
+        this.x = x;
+        this.y = y;
+        this.colour = colour;
+        this.align = align;
+        this.size = size;
+        this.lines = [];
+    }
+
+    _createClass(DisplayData, [{
+        key: 'addLine',
+        value: function addLine(text) {
+            this.lines.push(text);
+        }
+    }, {
+        key: 'textStyle',
+        value: function textStyle() {
+            _constants.context.textAlign = this.align;
+            _constants.context.font = this.size + 'px Verdana';
+            _constants.context.fillStyle = _constants.colours[this.colour];
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            var _this = this;
+
+            this.textStyle();
+            this.lines.map(function (line, index) {
+                _constants.context.fillText(line, _this.x, _this.y + (index + 1) * (_this.size * 1.2));
+            });
+        }
+    }]);
+
+    return DisplayData;
+}();
+
+exports.default = DisplayData;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _constants = __webpack_require__(0);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var PercentBox = function () {
     function PercentBox(x, y, width, height, fill, stroke) {
         _classCallCheck(this, PercentBox);
@@ -1470,65 +1546,6 @@ var PercentBox = function () {
 exports.default = PercentBox;
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _constants = __webpack_require__(0);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DisplayData = function () {
-    function DisplayData(x, y, colour) {
-        var align = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'left';
-
-        _classCallCheck(this, DisplayData);
-
-        this.x = x;
-        this.y = y;
-        this.colour = colour;
-        this.align = align;
-        this.lines = [];
-    }
-
-    _createClass(DisplayData, [{
-        key: 'addLine',
-        value: function addLine(text) {
-            this.lines.push(text);
-        }
-    }, {
-        key: 'textStyle',
-        value: function textStyle(size) {
-            _constants.context.textAlign = this.align;
-            _constants.context.font = size + 'px sans';
-            _constants.context.fillStyle = _constants.colours[this.colour];
-        }
-    }, {
-        key: 'draw',
-        value: function draw() {
-            var _this = this;
-
-            this.textStyle(16);
-            this.lines.map(function (line, index) {
-                _constants.context.fillText(line, _this.x, _this.y + (index + 1) * 18);
-            });
-        }
-    }]);
-
-    return DisplayData;
-}();
-
-exports.default = DisplayData;
-
-/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1539,13 +1556,17 @@ var _constants = __webpack_require__(0);
 
 var _deltaTime = __webpack_require__(9);
 
-var _displayData = __webpack_require__(13);
+var _displayData = __webpack_require__(12);
 
 var _displayData2 = _interopRequireDefault(_displayData);
 
-var _squadronFactory = __webpack_require__(54);
+var _squadronFactory = __webpack_require__(59);
 
 var _squadronFactory2 = _interopRequireDefault(_squadronFactory);
+
+var _ui = __webpack_require__(62);
+
+var _ui2 = _interopRequireDefault(_ui);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1587,13 +1608,24 @@ function animate() {
     _constants.pm.update();
     _constants.grid.draw();
     _constants.grid.log();
-    _constants.squadrons.map(function (s, i) {
-        s.drawHealth(i);
-        var displaySquadData = new _displayData2.default(_constants.canvasWidth / 4 * (i * 2 + 1), 40, s.colour, 'center');
-        displaySquadData.addLine(s.name);
-        displaySquadData.addLine('Kills: ' + s.kills);
-        displaySquadData.draw();
+    _ui2.default.displaySquadData();
+    _constants.squadrons.map(function (s) {
+        if (s.health <= 0) {
+            _constants.game.state = 'game-over';
+        }
     });
+    if (_constants.game.state === 'game-over') {
+        var gameOver = new _displayData2.default(_constants.canvasWidth / 2, _constants.canvasHeight / 2 - 40, 'green', 'center', 32);
+        gameOver.addLine('Game Over');
+        if (_constants.squadrons[0].health > _constants.squadrons[1].health) {
+            gameOver.addLine(_constants.squadrons[0].name + ' Wins');
+        } else if (_constants.squadrons[1].health > _constants.squadrons[0].health) {
+            gameOver.addLine(_constants.squadrons[1].name + ' Wins');
+        } else {
+            gameOver.addLine('Draw');
+        }
+        gameOver.draw();
+    }
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;
@@ -1615,7 +1647,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _functions = __webpack_require__(1);
+var _functions = __webpack_require__(2);
 
 var _constants = __webpack_require__(0);
 
@@ -1687,7 +1719,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _functions = __webpack_require__(1);
+var _functions = __webpack_require__(2);
 
 var _explosion = __webpack_require__(17);
 
@@ -1714,6 +1746,7 @@ var DroneManager = function () {
     }, {
         key: 'update',
         value: function update() {
+            this._drones = (0, _functions.shuffle)(this._drones);
             this._drones = this._drones.map(function (d) {
                 d.draw();
                 d.update();
@@ -1966,6 +1999,7 @@ var GameGrid = function () {
     }, {
         key: 'drawGridContent',
         value: function drawGridContent() {
+            _constants.context.font = '10px Verdana';
             _constants.context.textAlign = 'left';
             _constants.context.fillStyle = _constants.colours.green;
             if (_constants.debug.gameGridToggle) {
@@ -2047,7 +2081,7 @@ var _get = function get(object, property, receiver) { if (object === null) objec
 
 var _constants = __webpack_require__(0);
 
-var _percentBox = __webpack_require__(12);
+var _percentBox = __webpack_require__(13);
 
 var _percentBox2 = _interopRequireDefault(_percentBox);
 
@@ -2160,86 +2194,109 @@ var _T7 = __webpack_require__(26);
 
 var _T8 = _interopRequireDefault(_T7);
 
-var _S = __webpack_require__(27);
+var _T9 = __webpack_require__(27);
+
+var _T10 = _interopRequireDefault(_T9);
+
+var _S = __webpack_require__(28);
 
 var _S2 = _interopRequireDefault(_S);
 
-var _S3 = __webpack_require__(28);
+var _S3 = __webpack_require__(29);
 
 var _S4 = _interopRequireDefault(_S3);
 
-var _S5 = __webpack_require__(29);
+var _S5 = __webpack_require__(30);
 
 var _S6 = _interopRequireDefault(_S5);
 
-var _S7 = __webpack_require__(30);
+var _S7 = __webpack_require__(31);
 
 var _S8 = _interopRequireDefault(_S7);
 
-var _S9 = __webpack_require__(31);
+var _S9 = __webpack_require__(32);
 
 var _S10 = _interopRequireDefault(_S9);
 
-var _G = __webpack_require__(32);
+var _S11 = __webpack_require__(33);
+
+var _S12 = _interopRequireDefault(_S11);
+
+var _G = __webpack_require__(34);
 
 var _G2 = _interopRequireDefault(_G);
 
-var _G3 = __webpack_require__(33);
+var _G3 = __webpack_require__(35);
 
 var _G4 = _interopRequireDefault(_G3);
 
-var _G5 = __webpack_require__(34);
+var _G5 = __webpack_require__(36);
 
 var _G6 = _interopRequireDefault(_G5);
 
-var _G7 = __webpack_require__(35);
+var _G7 = __webpack_require__(37);
 
 var _G8 = _interopRequireDefault(_G7);
 
-var _G9 = __webpack_require__(36);
+var _G9 = __webpack_require__(38);
 
 var _G10 = _interopRequireDefault(_G9);
 
-var _G11 = __webpack_require__(37);
+var _G11 = __webpack_require__(39);
 
 var _G12 = _interopRequireDefault(_G11);
 
-var _SC = __webpack_require__(38);
+var _G13 = __webpack_require__(40);
+
+var _G14 = _interopRequireDefault(_G13);
+
+var _SC = __webpack_require__(41);
 
 var _SC2 = _interopRequireDefault(_SC);
 
-var _SC3 = __webpack_require__(39);
+var _SC3 = __webpack_require__(42);
 
 var _SC4 = _interopRequireDefault(_SC3);
 
-var _SC5 = __webpack_require__(40);
+var _SC5 = __webpack_require__(43);
 
 var _SC6 = _interopRequireDefault(_SC5);
 
-var _SC7 = __webpack_require__(41);
+var _SC7 = __webpack_require__(44);
 
 var _SC8 = _interopRequireDefault(_SC7);
 
-var _SC9 = __webpack_require__(42);
+var _SC9 = __webpack_require__(45);
 
 var _SC10 = _interopRequireDefault(_SC9);
 
-var _SC11 = __webpack_require__(43);
+var _SC11 = __webpack_require__(46);
 
 var _SC12 = _interopRequireDefault(_SC11);
+
+var _SC13 = __webpack_require__(47);
+
+var _SC14 = _interopRequireDefault(_SC13);
+
+var _SC15 = __webpack_require__(48);
+
+var _SC16 = _interopRequireDefault(_SC15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var gimbals = exports.gimbals = {
-    'G40': _G12.default,
-    'G60': _G10.default,
-    'G90': _G8.default,
-    'G120': _G6.default,
+    'G40': _G14.default,
+    'G60': _G12.default,
+    'G90': _G10.default,
+    'G120': _G8.default,
+    'G180': _G6.default,
     'G240': _G4.default,
     'G360': _G2.default
 };
 
 var scanners = exports.scanners = {
+    'SC200': _SC16.default,
+    'SC300': _SC14.default,
     'SC400': _SC12.default,
     'SC500': _SC10.default,
     'SC600': _SC8.default,
@@ -2249,18 +2306,20 @@ var scanners = exports.scanners = {
 };
 
 var steering = exports.steering = {
-    'S4': _S10.default,
-    'S6': _S8.default,
-    'S8': _S6.default,
-    'S10': _S4.default,
-    'S12': _S2.default
+    'S4': _S12.default,
+    'S6': _S10.default,
+    'S8': _S8.default,
+    'S10': _S6.default,
+    'S12': _S4.default,
+    'S15': _S2.default
 };
 
 var thrusters = exports.thrusters = {
-    'T10': _T8.default,
-    'T12': _T6.default,
-    'T15': _T4.default,
-    'T18': _T2.default
+    'T10': _T10.default,
+    'T12': _T8.default,
+    'T15': _T6.default,
+    'T18': _T4.default,
+    'T20': _T2.default
 };
 
 /***/ }),
@@ -2274,7 +2333,44 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _thruster = __webpack_require__(6);
+var _thruster = __webpack_require__(5);
+
+var _thruster2 = _interopRequireDefault(_thruster);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var T20 = function (_Thruster) {
+    _inherits(T20, _Thruster);
+
+    function T20() {
+        _classCallCheck(this, T20);
+
+        return _possibleConstructorReturn(this, (T20.__proto__ || Object.getPrototypeOf(T20)).call(this, 20));
+    }
+
+    return T20;
+}(_thruster2.default);
+
+exports.default = T20;
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _thruster = __webpack_require__(5);
 
 var _thruster2 = _interopRequireDefault(_thruster);
 
@@ -2301,7 +2397,7 @@ var T18 = function (_Thruster) {
 exports.default = T18;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2311,7 +2407,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _thruster = __webpack_require__(6);
+var _thruster = __webpack_require__(5);
 
 var _thruster2 = _interopRequireDefault(_thruster);
 
@@ -2338,7 +2434,7 @@ var T15 = function (_Thruster) {
 exports.default = T15;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2348,7 +2444,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _thruster = __webpack_require__(6);
+var _thruster = __webpack_require__(5);
 
 var _thruster2 = _interopRequireDefault(_thruster);
 
@@ -2375,7 +2471,7 @@ var T12 = function (_Thruster) {
 exports.default = T12;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2385,7 +2481,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _thruster = __webpack_require__(6);
+var _thruster = __webpack_require__(5);
 
 var _thruster2 = _interopRequireDefault(_thruster);
 
@@ -2412,7 +2508,44 @@ var T10 = function (_Thruster) {
 exports.default = T10;
 
 /***/ }),
-/* 27 */
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _steering = __webpack_require__(4);
+
+var _steering2 = _interopRequireDefault(_steering);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var S15 = function (_Steering) {
+    _inherits(S15, _Steering);
+
+    function S15() {
+        _classCallCheck(this, S15);
+
+        return _possibleConstructorReturn(this, (S15.__proto__ || Object.getPrototypeOf(S15)).call(this, 1.5));
+    }
+
+    return S15;
+}(_steering2.default);
+
+exports.default = S15;
+
+/***/ }),
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2449,7 +2582,7 @@ var S12 = function (_Steering) {
 exports.default = S12;
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2486,7 +2619,7 @@ var S10 = function (_Steering) {
 exports.default = S10;
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2523,7 +2656,7 @@ var S8 = function (_Steering) {
 exports.default = S8;
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2560,7 +2693,7 @@ var S6 = function (_Steering) {
 exports.default = S6;
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2597,7 +2730,7 @@ var S4 = function (_Steering) {
 exports.default = S4;
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2607,7 +2740,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _gimbal = __webpack_require__(2);
+var _gimbal = __webpack_require__(3);
 
 var _gimbal2 = _interopRequireDefault(_gimbal);
 
@@ -2634,7 +2767,7 @@ var G360 = function (_Gimbal) {
 exports.default = G360;
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2644,7 +2777,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _gimbal = __webpack_require__(2);
+var _gimbal = __webpack_require__(3);
 
 var _gimbal2 = _interopRequireDefault(_gimbal);
 
@@ -2671,7 +2804,7 @@ var G240 = function (_Gimbal) {
 exports.default = G240;
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2681,7 +2814,44 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _gimbal = __webpack_require__(2);
+var _gimbal = __webpack_require__(3);
+
+var _gimbal2 = _interopRequireDefault(_gimbal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var G180 = function (_Gimbal) {
+    _inherits(G180, _Gimbal);
+
+    function G180() {
+        _classCallCheck(this, G180);
+
+        return _possibleConstructorReturn(this, (G180.__proto__ || Object.getPrototypeOf(G180)).call(this, 0.175 * 9, 0.15));
+    }
+
+    return G180;
+}(_gimbal2.default);
+
+exports.default = G180;
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _gimbal = __webpack_require__(3);
 
 var _gimbal2 = _interopRequireDefault(_gimbal);
 
@@ -2708,7 +2878,7 @@ var G120 = function (_Gimbal) {
 exports.default = G120;
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2718,7 +2888,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _gimbal = __webpack_require__(2);
+var _gimbal = __webpack_require__(3);
 
 var _gimbal2 = _interopRequireDefault(_gimbal);
 
@@ -2745,7 +2915,7 @@ var G90 = function (_Gimbal) {
 exports.default = G90;
 
 /***/ }),
-/* 36 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2755,7 +2925,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _gimbal = __webpack_require__(2);
+var _gimbal = __webpack_require__(3);
 
 var _gimbal2 = _interopRequireDefault(_gimbal);
 
@@ -2782,7 +2952,7 @@ var G60 = function (_Gimbal) {
 exports.default = G60;
 
 /***/ }),
-/* 37 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2792,7 +2962,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _gimbal = __webpack_require__(2);
+var _gimbal = __webpack_require__(3);
 
 var _gimbal2 = _interopRequireDefault(_gimbal);
 
@@ -2819,7 +2989,7 @@ var G40 = function (_Gimbal) {
 exports.default = G40;
 
 /***/ }),
-/* 38 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2829,7 +2999,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _scanner = __webpack_require__(3);
+var _scanner = __webpack_require__(1);
 
 var _scanner2 = _interopRequireDefault(_scanner);
 
@@ -2856,7 +3026,7 @@ var SC900 = function (_Scanner) {
 exports.default = SC900;
 
 /***/ }),
-/* 39 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2866,7 +3036,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _scanner = __webpack_require__(3);
+var _scanner = __webpack_require__(1);
 
 var _scanner2 = _interopRequireDefault(_scanner);
 
@@ -2893,7 +3063,7 @@ var SC800 = function (_Scanner) {
 exports.default = SC800;
 
 /***/ }),
-/* 40 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2903,7 +3073,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _scanner = __webpack_require__(3);
+var _scanner = __webpack_require__(1);
 
 var _scanner2 = _interopRequireDefault(_scanner);
 
@@ -2930,7 +3100,7 @@ var SC700 = function (_Scanner) {
 exports.default = SC700;
 
 /***/ }),
-/* 41 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2940,7 +3110,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _scanner = __webpack_require__(3);
+var _scanner = __webpack_require__(1);
 
 var _scanner2 = _interopRequireDefault(_scanner);
 
@@ -2967,7 +3137,7 @@ var SC600 = function (_Scanner) {
 exports.default = SC600;
 
 /***/ }),
-/* 42 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2977,7 +3147,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _scanner = __webpack_require__(3);
+var _scanner = __webpack_require__(1);
 
 var _scanner2 = _interopRequireDefault(_scanner);
 
@@ -3004,7 +3174,7 @@ var SC500 = function (_Scanner) {
 exports.default = SC500;
 
 /***/ }),
-/* 43 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3014,7 +3184,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _scanner = __webpack_require__(3);
+var _scanner = __webpack_require__(1);
 
 var _scanner2 = _interopRequireDefault(_scanner);
 
@@ -3041,7 +3211,81 @@ var SC400 = function (_Scanner) {
 exports.default = SC400;
 
 /***/ }),
-/* 44 */
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _scanner = __webpack_require__(1);
+
+var _scanner2 = _interopRequireDefault(_scanner);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SC300 = function (_Scanner) {
+    _inherits(SC300, _Scanner);
+
+    function SC300() {
+        _classCallCheck(this, SC300);
+
+        return _possibleConstructorReturn(this, (SC300.__proto__ || Object.getPrototypeOf(SC300)).call(this, 300));
+    }
+
+    return SC300;
+}(_scanner2.default);
+
+exports.default = SC300;
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _scanner = __webpack_require__(1);
+
+var _scanner2 = _interopRequireDefault(_scanner);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SC200 = function (_Scanner) {
+    _inherits(SC200, _Scanner);
+
+    function SC200() {
+        _classCallCheck(this, SC200);
+
+        return _possibleConstructorReturn(this, (SC200.__proto__ || Object.getPrototypeOf(SC200)).call(this, 200));
+    }
+
+    return SC200;
+}(_scanner2.default);
+
+exports.default = SC200;
+
+/***/ }),
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3052,15 +3296,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.weapons = undefined;
 
-var _uzi = __webpack_require__(45);
+var _uzi = __webpack_require__(50);
 
 var _uzi2 = _interopRequireDefault(_uzi);
 
-var _shotgun = __webpack_require__(47);
+var _shotgun = __webpack_require__(52);
 
 var _shotgun2 = _interopRequireDefault(_shotgun);
 
-var _rifle = __webpack_require__(49);
+var _rifle = __webpack_require__(54);
 
 var _rifle2 = _interopRequireDefault(_rifle);
 
@@ -3073,7 +3317,7 @@ var weapons = exports.weapons = {
 };
 
 /***/ }),
-/* 45 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3089,7 +3333,7 @@ var _weapon = __webpack_require__(11);
 
 var _weapon2 = _interopRequireDefault(_weapon);
 
-var _nineMm = __webpack_require__(46);
+var _nineMm = __webpack_require__(51);
 
 var _nineMm2 = _interopRequireDefault(_nineMm);
 
@@ -3136,7 +3380,7 @@ var Uzi = function (_Weapon) {
 exports.default = Uzi;
 
 /***/ }),
-/* 46 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3178,7 +3422,7 @@ var NineMM = function (_Bullet) {
 exports.default = NineMM;
 
 /***/ }),
-/* 47 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3196,7 +3440,7 @@ var _weapon2 = _interopRequireDefault(_weapon);
 
 var _constants = __webpack_require__(0);
 
-var _shot = __webpack_require__(48);
+var _shot = __webpack_require__(53);
 
 var _shot2 = _interopRequireDefault(_shot);
 
@@ -3249,7 +3493,7 @@ var Shotgun = function (_Weapon) {
 exports.default = Shotgun;
 
 /***/ }),
-/* 48 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3286,7 +3530,7 @@ var Shot = function (_Bullet) {
 exports.default = Shot;
 
 /***/ }),
-/* 49 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3304,7 +3548,7 @@ var _weapon2 = _interopRequireDefault(_weapon);
 
 var _constants = __webpack_require__(0);
 
-var _sevenSixTwoMm = __webpack_require__(50);
+var _sevenSixTwoMm = __webpack_require__(55);
 
 var _sevenSixTwoMm2 = _interopRequireDefault(_sevenSixTwoMm);
 
@@ -3349,7 +3593,7 @@ var Rifle = function (_Weapon) {
 exports.default = Rifle;
 
 /***/ }),
-/* 50 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3391,7 +3635,7 @@ var SevenSixTwoMM = function (_Bullet) {
 exports.default = SevenSixTwoMM;
 
 /***/ }),
-/* 51 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3405,7 +3649,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _displayData = __webpack_require__(13);
+var _displayData = __webpack_require__(12);
 
 var _displayData2 = _interopRequireDefault(_displayData);
 
@@ -3444,7 +3688,7 @@ var DisplayParticleData = function (_DisplayData) {
 exports.default = DisplayParticleData;
 
 /***/ }),
-/* 52 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3615,7 +3859,7 @@ var Debug = function () {
 exports.default = Debug;
 
 /***/ }),
-/* 53 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3673,7 +3917,7 @@ var Background = function () {
 exports.default = Background;
 
 /***/ }),
-/* 54 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3685,11 +3929,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _squadron = __webpack_require__(55);
+var _squadron = __webpack_require__(60);
 
 var _squadron2 = _interopRequireDefault(_squadron);
 
-var _droneFactory = __webpack_require__(56);
+var _droneFactory = __webpack_require__(61);
 
 var _droneFactory2 = _interopRequireDefault(_droneFactory);
 
@@ -3719,7 +3963,7 @@ var SquadronFactory = function () {
 exports.default = SquadronFactory;
 
 /***/ }),
-/* 55 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3733,7 +3977,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constants = __webpack_require__(0);
 
-var _percentBox = __webpack_require__(12);
+var _percentBox = __webpack_require__(13);
 
 var _percentBox2 = _interopRequireDefault(_percentBox);
 
@@ -3803,7 +4047,7 @@ var Squadron = function () {
 exports.default = Squadron;
 
 /***/ }),
-/* 56 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3833,7 +4077,7 @@ var DroneFactory = function () {
     _createClass(DroneFactory, null, [{
         key: 'make',
         value: function make(droneData, squadronData) {
-            var drone = new _drone2.default(droneData, squadronData, Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, 0, Math.random() * Math.PI * 2);
+            var drone = new _drone2.default(droneData, squadronData, Math.random() * _constants.canvasWidth, Math.random() * _constants.canvasHeight, Math.random() * Math.PI * 2);
             _constants.dm.addDrone(drone);
             return drone;
         }
@@ -3843,6 +4087,55 @@ var DroneFactory = function () {
 }();
 
 exports.default = DroneFactory;
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _displayData = __webpack_require__(12);
+
+var _displayData2 = _interopRequireDefault(_displayData);
+
+var _constants = __webpack_require__(0);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var UI = function () {
+    function UI() {
+        _classCallCheck(this, UI);
+    }
+
+    _createClass(UI, null, [{
+        key: 'displaySquadData',
+        value: function displaySquadData() {
+            _constants.squadrons.map(function (s, i) {
+                s.drawHealth(i);
+                var displaySquadData = new _displayData2.default(_constants.canvasWidth / 4 * (i * 2 + 1), 40, s.colour, 'center');
+                displaySquadData.addLine(s.name);
+                displaySquadData.addLine('Kills: ' + s.kills);
+                displaySquadData.draw();
+            });
+        }
+    }, {
+        key: 'displayGameOver',
+        value: function displayGameOver() {}
+    }]);
+
+    return UI;
+}();
+
+exports.default = UI;
 
 /***/ })
 /******/ ]);

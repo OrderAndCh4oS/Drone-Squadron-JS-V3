@@ -1,11 +1,11 @@
-import { colours, context, debug } from './constants';
+import { colours, context, debug } from './constants/constants';
 import Vector from './service/vector';
 import Particle from './abstract/particle';
 import Health from './service/health';
 import { drones } from './constants/sprites';
 import { gimbals, scanners, steering, thrusters } from './constants/utilities';
 import { weapons } from './constants/weapons';
-import DisplayData from './service/display-particle-data';
+import DisplayData from './user-interface/display-particle-data';
 
 export default class Drone extends Particle {
     constructor(drone, squad, x, y, angle) {
@@ -102,6 +102,7 @@ export default class Drone extends Particle {
 
     drawName() {
         if(debug.droneNameToggle) {
+            context.font = '11px Verdana';
             context.textAlign = 'center';
             context.fillStyle = colours[this._colour];
             context.fillText(this.name, 0, -18);

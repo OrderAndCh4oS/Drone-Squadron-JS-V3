@@ -1,5 +1,5 @@
 import { didCollide, isOffCanvas } from '../functions';
-import { dm } from '../constants';
+import { dm } from '../constants/constants';
 
 export default class ParticleManager {
     constructor() {

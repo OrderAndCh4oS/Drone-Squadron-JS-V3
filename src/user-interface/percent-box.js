@@ -1,4 +1,4 @@
-import { context } from '../constants';
+import { context } from '../constants/constants';
 
 export default class PercentBox {
 

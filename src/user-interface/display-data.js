@@ -1,11 +1,12 @@
-import { colours, context } from '../constants';
+import { colours, context } from '../constants/constants';
 
 export default class DisplayData {
-    constructor(x, y, colour, align = 'left') {
+    constructor(x, y, colour, align = 'left', size = 16) {
         this.x = x;
         this.y = y;
         this.colour = colour;
         this.align = align;
+        this.size = size;
         this.lines = [];
     }
 
@@ -13,19 +14,19 @@ export default class DisplayData {
         this.lines.push(text);
     }
 
-    textStyle(size) {
+    textStyle() {
         context.textAlign = this.align;
-        context.font = size + 'px sans';
+        context.font = this.size + 'px Verdana';
         context.fillStyle = colours[this.colour];
     }
 
     draw() {
-        this.textStyle(16);
+        this.textStyle();
         this.lines.map((line, index) => {
             context.fillText(
                 line,
                 this.x,
-                this.y + (index + 1) * 18,
+                this.y + (index + 1) * (this.size * 1.2),
             );
         });
     }

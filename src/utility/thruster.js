@@ -1,5 +1,5 @@
 import { angleBetweenRange, distanceTo } from '../functions';
-import { colours, context } from '../constants';
+import { colours, context } from '../constants/constants';
 
 export default class Thruster {
     constructor(thrust) {

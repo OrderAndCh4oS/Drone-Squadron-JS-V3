@@ -1,4 +1,4 @@
-import { context, pm } from '../constants';
+import { context, pm } from '../constants/constants';
 import { deltaTime } from '../service/delta-time';
 import Vector from '../service/vector';
 import { angleTo } from '../functions';

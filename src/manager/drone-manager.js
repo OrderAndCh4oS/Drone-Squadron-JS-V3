@@ -1,6 +1,6 @@
-import { returnToCanvas } from '../functions';
+import { returnToCanvas, shuffle } from '../functions';
 import Explosion from '../abstract/explosion';
-import { pm } from '../constants';
+import { pm } from '../constants/constants';
 
 export default class DroneManager {
     constructor() {
@@ -16,6 +16,7 @@ export default class DroneManager {
     }
 
     update() {
+        this._drones = shuffle(this._drones);
         this._drones = this._drones.map(d => {
             d.draw();
             d.update();

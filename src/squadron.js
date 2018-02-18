@@ -1,5 +1,5 @@
-import { canvasWidth, colours } from './constants';
-import PercentBox from './user-interface/percentBox';
+import { canvasWidth, colours } from './constants/constants';
+import PercentBox from './user-interface/percent-box';
 
 export default class Squadron {
     constructor(id, name, colour) {

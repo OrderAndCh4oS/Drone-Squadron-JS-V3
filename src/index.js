@@ -6,13 +6,15 @@ import {
     debug,
     displayGameData,
     dm,
+    game,
     grid,
     pm,
     squadrons,
-} from './constants';
+} from './constants/constants';
 import { deltaTime } from './service/delta-time';
-import DisplayData from './service/display-data';
+import DisplayData from './user-interface/display-data';
 import SquadronFactory from './factory/squadron-factory';
+import UI from './user-interface/ui';
 
 let fpsInterval, startTime, now, then, elapsed;
 
@@ -46,18 +48,24 @@ function animate() {
     pm.update();
     grid.draw();
     grid.log();
-    squadrons.map((s, i) => {
-        s.drawHealth(i);
-        const displaySquadData = new DisplayData(
-            canvasWidth / 4 * (i * 2 + 1),
-            40,
-            s.colour,
-            'center'
-        );
-        displaySquadData.addLine(s.name);
-        displaySquadData.addLine(`Kills: ${s.kills}`);
-        displaySquadData.draw();
+    UI.displaySquadData();
+    squadrons.map(s => {
+       if(s.health <= 0) {
+           game.state = 'game-over';
+       }
     });
+    if(game.state === 'game-over') {
+        const gameOver = new DisplayData(canvasWidth / 2, canvasHeight / 2 - 40, 'green', 'center', 32);
+        gameOver.addLine('Game Over');
+        if(squadrons[0].health > squadrons[1].health) {
+            gameOver.addLine(squadrons[0].name + ' Wins')
+        } else if (squadrons[1].health > squadrons[0].health) {
+            gameOver.addLine(squadrons[1].name + ' Wins')
+        } else {
+            gameOver.addLine('Draw')
+        }
+        gameOver.draw();
+    }
     requestAnimationFrame(animate);
     now = Date.now();
     elapsed = now - then;
