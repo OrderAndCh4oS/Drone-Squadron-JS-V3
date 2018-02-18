@@ -18,7 +18,7 @@
           {
             "id": 2,
             "name": "Bertev",
-            "weapon": "Uzi",
+            "weapon": "Shotgun",
             "gimbal": "G90",
             "scanner": "SC300",
             "steering": "S6",
@@ -27,7 +27,7 @@
           {
             "id": 3,
             "name": "Jackeith",
-            "weapon": "Uzi",
+            "weapon": "Rifle",
             "gimbal": "G90",
             "scanner": "SC300",
             "steering": "S6",
@@ -45,7 +45,7 @@
           {
             "id": 5,
             "name": "Jamy",
-            "weapon": "Uzi",
+            "weapon": "Shotgun",
             "gimbal": "G90",
             "scanner": "SC300",
             "steering": "S6",
@@ -63,7 +63,7 @@
           {
             "id": 7,
             "name": "Borea",
-            "weapon": "Uzi",
+            "weapon": "Shotgun",
             "gimbal": "G90",
             "scanner": "SC300",
             "steering": "S6",
@@ -115,7 +115,7 @@
           {
             "id": 12,
             "name": "Kostoglotov",
-            "weapon": "Uzi",
+            "weapon": "Shotgun",
             "gimbal": "G90",
             "scanner": "SC300",
             "steering": "S6",
@@ -124,7 +124,7 @@
           {
             "id": 13,
             "name": "Denisovich",
-            "weapon": "Uzi",
+            "weapon": "Rifle",
             "gimbal": "G90",
             "scanner": "SC300",
             "steering": "S6",
@@ -142,7 +142,7 @@
           {
             "id": 15,
             "name": "Illyic",
-            "weapon": "Uzi",
+            "weapon": "Shotgun",
             "gimbal": "G90",
             "scanner": "SC300",
             "steering": "S6",
@@ -160,7 +160,7 @@
           {
             "id": 17,
             "name": "Spet",
-            "weapon": "Uzi",
+            "weapon": "Shotgun",
             "gimbal": "G90",
             "scanner": "SC300",
             "steering": "S6",
