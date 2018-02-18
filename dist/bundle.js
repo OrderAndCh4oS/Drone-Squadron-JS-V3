@@ -3667,7 +3667,7 @@ var DisplayParticleData = function (_DisplayData) {
     function DisplayParticleData(x, y, colour) {
         _classCallCheck(this, DisplayParticleData);
 
-        return _possibleConstructorReturn(this, (DisplayParticleData.__proto__ || Object.getPrototypeOf(DisplayParticleData)).call(this, x, y + 25, colour));
+        return _possibleConstructorReturn(this, (DisplayParticleData.__proto__ || Object.getPrototypeOf(DisplayParticleData)).call(this, x, y + 25, colour, 'left', 10));
     }
 
     _createClass(DisplayParticleData, [{
@@ -3675,7 +3675,7 @@ var DisplayParticleData = function (_DisplayData) {
         value: function draw() {
             var _this2 = this;
 
-            this.textStyle(9);
+            this.textStyle();
             this.lines.map(function (line, index) {
                 _constants.context.fillText(line, 25, (index + 1 - _this2.lines.length / 2) * 10);
             });
