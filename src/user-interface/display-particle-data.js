@@ -3,11 +3,11 @@ import DisplayData from './display-data';
 
 export default class DisplayParticleData extends DisplayData {
     constructor(x, y, colour) {
-        super(x, y + 25, colour);
+        super(x, y + 25, colour, 'left', 10);
     }
 
     draw() {
-        this.textStyle(9);
+        this.textStyle();
         this.lines.map((line, index) => {
             context.fillText(
                 line,
