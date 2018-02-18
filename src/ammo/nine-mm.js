@@ -1,5 +1,5 @@
 import Bullet from '../abstract/bullet';
-import { colours } from '../constants';
+import { colours } from '../constants/constants';
 
 export default class NineMM extends Bullet {
     constructor(drone, x, y, angle, velocity) {

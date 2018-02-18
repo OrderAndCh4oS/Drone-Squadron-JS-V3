@@ -9,27 +9,27 @@
           {
             "id": 1,
             "name": "Rewayn",
-            "weapon": "Shotgun",
-            "gimbal": "G60",
-            "scanner": "SC400",
-            "steering": "S8",
-            "thruster": "T18"
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 2,
             "name": "Bertev",
             "weapon": "Uzi",
             "gimbal": "G90",
-            "scanner": "SC600",
-            "steering": "S8",
-            "thruster": "T12"
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 3,
             "name": "Jackeith",
-            "weapon": "Rifle",
-            "gimbal": "G360",
-            "scanner": "SC900",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
             "steering": "S6",
             "thruster": "T10"
           },
@@ -37,64 +37,64 @@
             "id": 4,
             "name": "Saura",
             "weapon": "Uzi",
-            "gimbal": "G40",
-            "scanner": "SC400",
+            "gimbal": "G90",
+            "scanner": "SC300",
             "steering": "S6",
-            "thruster": "T12"
+            "thruster": "T10"
           },
           {
             "id": 5,
             "name": "Jamy",
-            "weapon": "Rifle",
-            "gimbal": "G120",
-            "scanner": "SC600",
-            "steering": "S12",
-            "thruster": "T12"
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 6,
             "name": "Kathrie",
             "weapon": "Uzi",
             "gimbal": "G90",
-            "scanner": "SC400",
-            "steering": "S10",
-            "thruster": "T12"
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 7,
             "name": "Borea",
-            "weapon": "Shotgun",
+            "weapon": "Uzi",
             "gimbal": "G90",
-            "scanner": "SC600",
-            "steering": "S12",
-            "thruster": "T12"
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 8,
             "name": "Scarlie",
-            "weapon": "Rifle",
-            "gimbal": "G240",
-            "scanner": "SC600",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
             "steering": "S6",
             "thruster": "T10"
           },
           {
             "id": 9,
             "name": "Juane",
-            "weapon": "Shotgun",
-            "gimbal": "G120",
-            "scanner": "SC900",
-            "steering": "S4",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
+            "steering": "S6",
             "thruster": "T10"
           },
           {
             "id": 10,
             "name": "Benjoe",
-            "weapon": "Rifle",
-            "gimbal": "G120",
-            "scanner": "SC600",
-            "steering": "S8",
-            "thruster": "T12"
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           }
         ]
       },
@@ -108,70 +108,70 @@
             "name": "Sarcoma",
             "weapon": "Uzi",
             "gimbal": "G90",
-            "scanner": "SC400",
-            "steering": "S10",
-            "thruster": "T12"
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 12,
             "name": "Kostoglotov",
-            "weapon": "Shotgun",
+            "weapon": "Uzi",
             "gimbal": "G90",
-            "scanner": "SC600",
-            "steering": "S12",
-            "thruster": "T12"
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 13,
             "name": "Denisovich",
-            "weapon": "Rifle",
-            "gimbal": "G240",
-            "scanner": "SC600",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
             "steering": "S6",
             "thruster": "T10"
           },
           {
             "id": 14,
             "name": "Raskolnikov",
-            "weapon": "Shotgun",
-            "gimbal": "G120",
-            "scanner": "SC900",
-            "steering": "S4",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
+            "steering": "S6",
             "thruster": "T10"
           },
           {
             "id": 15,
             "name": "Illyic",
-            "weapon": "Rifle",
-            "gimbal": "G120",
-            "scanner": "SC600",
-            "steering": "S8",
-            "thruster": "T12"
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 16,
             "name": "Spot",
-            "weapon": "Shotgun",
-            "gimbal": "G60",
-            "scanner": "SC900",
-            "steering": "S8",
-            "thruster": "T18"
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 17,
             "name": "Spet",
             "weapon": "Uzi",
             "gimbal": "G90",
-            "scanner": "SC600",
-            "steering": "S8",
-            "thruster": "T12"
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           },
           {
             "id": 18,
             "name": "Poppet",
-            "weapon": "Rifle",
-            "gimbal": "G360",
-            "scanner": "SC900",
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
             "steering": "S6",
             "thruster": "T10"
           },
@@ -179,19 +179,19 @@
             "id": 19,
             "name": "Dot",
             "weapon": "Uzi",
-            "gimbal": "G40",
-            "scanner": "SC400",
+            "gimbal": "G90",
+            "scanner": "SC300",
             "steering": "S6",
-            "thruster": "T12"
+            "thruster": "T10"
           },
           {
             "id": 20,
             "name": "Dottox",
-            "weapon": "Rifle",
-            "gimbal": "G120",
-            "scanner": "SC600",
-            "steering": "S12",
-            "thruster": "T12"
+            "weapon": "Uzi",
+            "gimbal": "G90",
+            "scanner": "SC300",
+            "steering": "S6",
+            "thruster": "T10"
           }
         ]
       }

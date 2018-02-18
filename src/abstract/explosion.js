@@ -1,5 +1,5 @@
 import Particle from './particle';
-import { context } from '../constants';
+import { context } from '../constants/constants';
 
 export default class Explosion extends Particle {
     constructor(id, x, y) {

@@ -1,4 +1,4 @@
-import { canvasHeight, canvasWidth } from './constants';
+import { canvasHeight, canvasWidth } from './constants/constants';
 
 export function isOffCanvas(particle) {
     return (
@@ -47,4 +47,15 @@ export function randomItem(items) {
 export function angleBetweenRange(angleOne, angleTwo, range) {
     return angleTo(angleOne, angleTwo) <= range / 2 &&
         angleTo(angleOne, angleTwo) >= -(range / 2);
+}
+
+export function shuffle(arr) {
+    let randomizedArray = [];
+    let array = arr;
+    while(array.length !== 0) {
+        let rIndex = Math.floor(array.length * Math.random());
+        randomizedArray.push(array[rIndex]);
+        array.splice(rIndex, 1);
+    }
+    return randomizedArray;
 }

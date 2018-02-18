@@ -4,8 +4,8 @@ import {
     colours,
     context,
     debug,
-} from './constants';
-import Drone from './drone';
+} from '../constants/constants';
+import Drone from '../drone';
 
 export default class GameGrid {
     constructor() {
@@ -102,6 +102,7 @@ export default class GameGrid {
     }
 
     drawGridContent() {
+        context.font = '10px Verdana';
         context.textAlign = 'left';
         context.fillStyle = colours.green;
         if(debug.gameGridToggle) {

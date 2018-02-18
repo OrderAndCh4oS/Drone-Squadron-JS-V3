@@ -1,4 +1,4 @@
-import { colours, context, debug, grid } from '../constants';
+import { colours, context, debug, grid } from '../constants/constants';
 import Drone from '../drone';
 import Bullet from '../abstract/bullet';
 import { angleTo } from '../functions';
@@ -38,20 +38,23 @@ export default class Scanner {
             for(let j = this.gridRange.start[1]; j <
             this.gridRange.end[1]; j++) {
                 grid.grid[i][j].map((item) => {
-                    const angleToItem = angleTo(this._drone.angle,
-                        this.angleToTarget(item));
-                    if((
-                            item instanceof Bullet) &&
-                        item.squadId !== this._drone.squadId &&
-                        this.distanceToParticle(item) < 300 &&
-                        (angleToItem <= 0.15 || angleToItem >= -0.15)
-                    ) {
-                        this._threats++;
-                    }
-
+                    this.detectThreats(item);
                     this.findNearestDrone(item);
                 });
             }
+        }
+    }
+
+    detectThreats(item) {
+        const angleToItem = angleTo(item.angle,
+            this.angleToParticle(item));
+        if(
+            (item instanceof Bullet) &&
+            item.squadId !== this._drone.squadId &&
+            this.distanceToParticle(item) < 300 &&
+            (angleToItem <= 0.15 || angleToItem >= -0.15)
+        ) {
+            this._threats++;
         }
     }
 
@@ -77,10 +80,7 @@ export default class Scanner {
     }
 
     angleToTarget() {
-        if(this.hasTarget()) {
-            return this.angleToParticle(this._target);
-        }
-        return 0;
+        return this.hasTarget() ? this.angleToParticle(this._target) : 0;
     }
 
     angleToParticle(particle) {

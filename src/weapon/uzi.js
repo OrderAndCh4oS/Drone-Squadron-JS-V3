@@ -1,6 +1,6 @@
 import Weapon from '../abstract/weapon';
 import NineMM from '../ammo/nine-mm';
-import { context } from '../constants';
+import { context } from '../constants/constants';
 
 export default class Uzi extends Weapon {
     constructor(drone, x, y, angle, gimbal) {
