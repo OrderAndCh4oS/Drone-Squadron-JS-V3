@@ -1166,7 +1166,7 @@ var Drone = function (_Particle) {
         _this._squadId = squad.id;
         _this._colour = squad.colour;
         _this.name = drone.name;
-        _this.vector = new _vector2.default(x, y);
+        _this.vector = new _vector2.default(0, 1);
         _this.vector.setAngle(angle);
         _this.weapon = new _weapons.weapons[drone.weapon](_this, x, y, angle, _utilities.gimbals[drone.gimbal]);
         _this.scanner = new _utilities.scanners[drone.scanner]();
