@@ -1556,10 +1556,6 @@ var _constants = __webpack_require__(0);
 
 var _deltaTime = __webpack_require__(9);
 
-var _displayData = __webpack_require__(12);
-
-var _displayData2 = _interopRequireDefault(_displayData);
-
 var _squadronFactory = __webpack_require__(59);
 
 var _squadronFactory2 = _interopRequireDefault(_squadronFactory);
@@ -1567,6 +1563,10 @@ var _squadronFactory2 = _interopRequireDefault(_squadronFactory);
 var _ui = __webpack_require__(62);
 
 var _ui2 = _interopRequireDefault(_ui);
+
+var _displayGameOver = __webpack_require__(63);
+
+var _displayGameOver2 = _interopRequireDefault(_displayGameOver);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1598,10 +1598,15 @@ function startAnimating(fps) {
     animate();
 }
 
+function setFrameTimeData() {
+    now = Date.now();
+    elapsed = now - then;
+    if (elapsed > fpsInterval) {
+        then = now - elapsed % fpsInterval;
+    }
+}
+
 function animate() {
-    _constants.context.clearRect(0, 0, _constants.canvasWidth, _constants.canvasHeight);
-    _constants.context.fillStyle = '#242526';
-    _constants.context.fillRect(0, 0, _constants.canvasWidth, _constants.canvasHeight);
     _constants.background.draw();
     _deltaTime.deltaTime.update();
     _constants.dm.update();
@@ -1615,23 +1620,10 @@ function animate() {
         }
     });
     if (_constants.game.state === 'game-over') {
-        var gameOver = new _displayData2.default(_constants.canvasWidth / 2, _constants.canvasHeight / 2 - 40, 'green', 'center', 32);
-        gameOver.addLine('Game Over');
-        if (_constants.squadrons[0].health > _constants.squadrons[1].health) {
-            gameOver.addLine(_constants.squadrons[0].name + ' Wins');
-        } else if (_constants.squadrons[1].health > _constants.squadrons[0].health) {
-            gameOver.addLine(_constants.squadrons[1].name + ' Wins');
-        } else {
-            gameOver.addLine('Draw');
-        }
-        gameOver.draw();
+        new _displayGameOver2.default().draw();
     }
     requestAnimationFrame(animate);
-    now = Date.now();
-    elapsed = now - then;
-    if (elapsed > fpsInterval) {
-        then = now - elapsed % fpsInterval;
-    }
+    setFrameTimeData();
 }
 
 /***/ }),
@@ -3904,6 +3896,9 @@ var Background = function () {
     _createClass(Background, [{
         key: 'draw',
         value: function draw() {
+            _constants.context.clearRect(0, 0, _constants.canvasWidth, _constants.canvasHeight);
+            _constants.context.fillStyle = '#242526';
+            _constants.context.fillRect(0, 0, _constants.canvasWidth, _constants.canvasHeight);
             for (var i = 0; i < this.background.stars.length; i++) {
                 _constants.context.drawImage(this.background.stars[i].image, this.background.stars[i].x, this.background.stars[i].y);
             }
@@ -4136,6 +4131,61 @@ var UI = function () {
 }();
 
 exports.default = UI;
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _constants = __webpack_require__(0);
+
+var _displayData = __webpack_require__(12);
+
+var _displayData2 = _interopRequireDefault(_displayData);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var GameOver = function (_DisplayData) {
+    _inherits(GameOver, _DisplayData);
+
+    function GameOver() {
+        _classCallCheck(this, GameOver);
+
+        return _possibleConstructorReturn(this, (GameOver.__proto__ || Object.getPrototypeOf(GameOver)).call(this, _constants.canvasWidth / 2, _constants.canvasHeight / 2 - 40, 'green', 'center', 32));
+    }
+
+    _createClass(GameOver, [{
+        key: 'draw',
+        value: function draw() {
+            this.addLine('Game Over');
+            if (_constants.squadrons[0].health > _constants.squadrons[1].health) {
+                this.addLine(_constants.squadrons[0].name + ' Wins');
+            } else if (_constants.squadrons[1].health > _constants.squadrons[0].health) {
+                this.addLine(_constants.squadrons[1].name + ' Wins');
+            } else {
+                this.addLine('Draw');
+            }
+        }
+    }]);
+
+    return GameOver;
+}(_displayData2.default);
+
+exports.default = GameOver;
 
 /***/ })
 /******/ ]);
