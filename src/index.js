@@ -1,8 +1,5 @@
 import {
     background,
-    canvasHeight,
-    canvasWidth,
-    context,
     debug,
     displayGameData,
     dm,
@@ -12,9 +9,9 @@ import {
     squadrons,
 } from './constants/constants';
 import { deltaTime } from './service/delta-time';
-import DisplayData from './user-interface/display-data';
 import SquadronFactory from './factory/squadron-factory';
 import UI from './user-interface/ui';
+import GameOver from './user-interface/display-game-over';
 
 let fpsInterval, startTime, now, then, elapsed;
 
@@ -38,10 +35,15 @@ function startAnimating(fps) {
     animate();
 }
 
+function setFrameTimeData() {
+    now = Date.now();
+    elapsed = now - then;
+    if(elapsed > fpsInterval) {
+        then = now - (elapsed % fpsInterval);
+    }
+}
+
 function animate() {
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
-    context.fillStyle = '#242526';
-    context.fillRect(0, 0, canvasWidth, canvasHeight);
     background.draw();
     deltaTime.update();
     dm.update();
@@ -50,26 +52,13 @@ function animate() {
     grid.log();
     UI.displaySquadData();
     squadrons.map(s => {
-       if(s.health <= 0) {
-           game.state = 'game-over';
-       }
+        if(s.health <= 0) {
+            game.state = 'game-over';
+        }
     });
     if(game.state === 'game-over') {
-        const gameOver = new DisplayData(canvasWidth / 2, canvasHeight / 2 - 40, 'green', 'center', 32);
-        gameOver.addLine('Game Over');
-        if(squadrons[0].health > squadrons[1].health) {
-            gameOver.addLine(squadrons[0].name + ' Wins')
-        } else if (squadrons[1].health > squadrons[0].health) {
-            gameOver.addLine(squadrons[1].name + ' Wins')
-        } else {
-            gameOver.addLine('Draw')
-        }
-        gameOver.draw();
+        new GameOver().draw();
     }
     requestAnimationFrame(animate);
-    now = Date.now();
-    elapsed = now - then;
-    if(elapsed > fpsInterval) {
-        then = now - (elapsed % fpsInterval);
-    }
+    setFrameTimeData();
 }
