@@ -1,5 +1,10 @@
 import Drone from '../drone';
-import { allDrones, canvasHeight, canvasWidth, dm } from '../constants/constants';
+import {
+    allDrones,
+    canvasHeight,
+    canvasWidth,
+    dm,
+} from '../constants/constants';
 
 export default class DroneFactory {
     static make(droneData, squadronData) {
