@@ -1,4 +1,4 @@
-import { colours, context } from '../constants/constants';
+import { context } from '../constants/constants';
 import DisplayData from './display-data';
 
 export default class DisplayParticleData extends DisplayData {
