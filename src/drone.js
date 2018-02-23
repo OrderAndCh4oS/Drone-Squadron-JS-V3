@@ -13,10 +13,9 @@ export default class Drone extends Particle {
         this._squadId = squad.id;
         this._colour = squad.colour;
         this.name = drone.name;
-        this.vector = new Vector(x, y);
+        this.vector = new Vector(0, 1);
         this.vector.setAngle(angle);
-        this.weapon = new weapons[drone.weapon](this, x, y, angle,
-            gimbals[drone.gimbal]);
+        this.weapon = new weapons[drone.weapon](this, x, y, angle, gimbals[drone.gimbal]);
         this.scanner = new scanners[drone.scanner]();
         this.thruster = new thrusters[drone.thruster]();
         this.steering = new steering[drone.steering]();
