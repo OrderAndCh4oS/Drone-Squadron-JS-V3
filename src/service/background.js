@@ -25,6 +25,9 @@ export default class Background {
     }
 
     draw() {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.fillStyle = '#242526';
+        context.fillRect(0, 0, canvasWidth, canvasHeight);
         for(let i = 0; i < this.background.stars.length; i++) {
             context.drawImage(
                 this.background.stars[i].image,
