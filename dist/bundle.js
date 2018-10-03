@@ -1552,6 +1552,12 @@ exports.default = PercentBox;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _constants = __webpack_require__(0);
 
 var _deltaTime = __webpack_require__(9);
@@ -1568,62 +1574,78 @@ var _displayGameOver = __webpack_require__(63);
 
 var _displayGameOver2 = _interopRequireDefault(_displayGameOver);
 
+var _musicManager = __webpack_require__(64);
+
+var _musicManager2 = _interopRequireDefault(_musicManager);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var fpsInterval = void 0,
-    startTime = void 0,
-    now = void 0,
-    then = void 0,
-    elapsed = void 0;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 _constants.debug.initialiseListeners();
+
+var Main = function () {
+    function Main(fps) {
+        _classCallCheck(this, Main);
+
+        this.fpsInterval = 1000 / fps;
+        this.then = Date.now();
+        this.startTime = this.then;
+        this.elapsed = 0;
+        this.animate = this.animate.bind(this);
+        this.musicManager = new _musicManager2.default();
+    }
+
+    _createClass(Main, [{
+        key: 'animate',
+        value: function animate() {
+            var now = Date.now();
+            this.elapsed = now - this.then;
+            if (this.elapsed > this.fpsInterval) {
+                this.then = Date.now();
+                this.draw();
+            }
+            requestAnimationFrame(this.animate);
+        }
+    }, {
+        key: 'draw',
+        value: function draw() {
+            _constants.background.draw();
+            _deltaTime.deltaTime.update();
+            _constants.dm.update();
+            _constants.pm.update();
+            _constants.grid.draw();
+            _constants.grid.log();
+            _ui2.default.displaySquadData();
+            _constants.squadrons.map(function (s) {
+                if (s.health <= 0) {
+                    _constants.game.state = 'game-over';
+                }
+            });
+            if (_constants.game.state === 'game-over') {
+                new _displayGameOver2.default().draw();
+            }
+        }
+    }]);
+
+    return Main;
+}();
+
+exports.default = Main;
+
 
 fetch('./data/squads.json').then(function (resp) {
     return resp.json();
 }).then(function (data) {
     setupDrones(data.data);
-    startAnimating(60);
+    var main = new Main(60);
+    main.animate();
 });
 
 function setupDrones(data) {
     data.squadrons.map(function (s) {
         return _constants.squadrons.push(_squadronFactory2.default.make(s));
     });
-}
-
-function startAnimating(fps) {
-    fpsInterval = 1000 / fps;
-    then = Date.now();
-    startTime = then;
-    animate();
-}
-
-function setFrameTimeData() {
-    now = Date.now();
-    elapsed = now - then;
-    if (elapsed > fpsInterval) {
-        then = now - elapsed % fpsInterval;
-    }
-}
-
-function animate() {
-    _constants.background.draw();
-    _deltaTime.deltaTime.update();
-    _constants.dm.update();
-    _constants.pm.update();
-    _constants.grid.draw();
-    _constants.grid.log();
-    _ui2.default.displaySquadData();
-    _constants.squadrons.map(function (s) {
-        if (s.health <= 0) {
-            _constants.game.state = 'game-over';
-        }
-    });
-    if (_constants.game.state === 'game-over') {
-        new _displayGameOver2.default().draw();
-    }
-    requestAnimationFrame(animate);
-    setFrameTimeData();
 }
 
 /***/ }),
@@ -4186,6 +4208,153 @@ var GameOver = function (_DisplayData) {
 }(_displayData2.default);
 
 exports.default = GameOver;
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+		value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // Sorry for this strange things. I don't like them
+
+
+var _BitMayhem = __webpack_require__(65);
+
+var _BitMayhem2 = _interopRequireDefault(_BitMayhem);
+
+var _sSpace = __webpack_require__(66);
+
+var _sSpace2 = _interopRequireDefault(_sSpace);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// But i know only one way how to add files is webpack
+// Not counting just putting the row source of the file
+// There are a few songs more, but I think you'll create a better way of adding files, so I won't add anymore
+
+var MusicManager = function () {
+		function MusicManager(songs) {
+				_classCallCheck(this, MusicManager);
+
+				// Vars
+				// If you don't like that lists of sounds and songs are there, you can add them there like params when MusicManager's init happens
+
+				this.sounds = {
+
+						// "piu": "sounds/piu" -- If you want to play: this.play( "piu" );
+
+				};
+
+				this.songs = [_BitMayhem2.default, _sSpace2.default];
+
+				this.loop = 0; // current loop number
+				this.maxloop = 4; // MAGIC NUMBER ( I't how many times song plays before changing )
+
+				//
+
+				this.loadSounds();
+				this.createMainAudio(); // Audio stream for songs ( BG )
+				this.listenToMusic();
+
+				console.log(this.songs);
+				console.log(this.audio);
+		}
+
+		_createClass(MusicManager, [{
+				key: 'loadSounds',
+				value: function loadSounds() {
+
+						for (var sound in this.sounds) {
+
+								this.sounds[sound] = this.load(this.sounds[sound]);
+						};
+				}
+		}, {
+				key: 'createMainAudio',
+				value: function createMainAudio() {
+						var _this = this;
+
+						this.audio = document.createElement('audio');
+
+						this.audio.onended = function () {
+
+								_this.loop++;
+
+								if (_this.loop > _this.maxloop) {
+
+										_this.playlist.shift();
+								}
+
+								if (!_this.playlist.length) {
+										_this.playlist == _this.songs;
+								};
+
+								_this.dom.currentTime = 0;
+								_this.audio.src = _this.playlist[0];
+								_this.audio.play();
+						};
+				}
+		}, {
+				key: 'listenToMusic',
+				value: function listenToMusic() {
+
+						this.playlist = this.songs;
+						this.audio.src = this.playlist[0];
+						this.audio.play();
+				}
+		}, {
+				key: 'load',
+				value: function load(sound) {
+
+						var a = document.createElement('audio');
+						a.src = sound;
+
+						return a;
+				}
+
+				// Just syntactic sugar
+
+		}, {
+				key: 'start',
+				value: function start() {
+						this.audio.fastSeek(0);this.audio.play();
+				}
+		}, {
+				key: 'stop',
+				value: function stop() {
+						this.audio.pause();this.audio.fastSeek(0);
+				}
+		}, {
+				key: 'play',
+				value: function play(sound) {
+
+						this.sounds[sound].play();
+				}
+		}]);
+
+		return MusicManager;
+}();
+
+exports.default = MusicManager;
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "/music/8-Bit-Mayhem.mp3";
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "/music/80s-Space.mp3";
 
 /***/ })
 /******/ ]);
