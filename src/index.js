@@ -12,6 +12,7 @@ import { deltaTime } from './game/service/delta-time';
 import SquadronFactory from './game/factory/squadron-factory';
 import UI from './game/user-interface/ui';
 import GameOver from './game/user-interface/display-game-over';
+import MusicManager from './game/manager/music-manager';
 
 debug.initialiseListeners();
 
@@ -22,6 +23,7 @@ export default class Main {
         this.startTime = this.then;
         this.elapsed = 0;
         this.animate = this.animate.bind(this);
+        this.musicManager = new MusicManager();
     }
 
     animate() {
