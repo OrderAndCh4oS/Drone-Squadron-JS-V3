@@ -19,7 +19,8 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: 'file-loader',
                 options: {
-                    name: 'music/[name].[ext]',
+                    name: '/music/[name].[ext]',
+                    publicPath: 'Drone-Squadron-JS-V3ish/dist/' // ToDo: Remove this later, it's only for GitHub demo
                 },
             },
         ],
