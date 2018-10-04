@@ -9,12 +9,20 @@ module.exports = {
     },
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
     },
     module: {
         rules: [
-            { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" },
-            { test: /\.mp3$/, exclude: /node_modules/, loader: "file-loader", options: { name: 'music/[name].[ext]' } }
-        ]
-    }
+            {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
+            {
+                test: /\.mp3$/,
+                exclude: /node_modules/,
+                loader: 'file-loader',
+                options: {
+                    name: 'music/[name].[ext]',
+                    publicPath: 'Drone-Squadron-JS-V3ish/dist/'
+                },
+            },
+        ],
+    },
 };
