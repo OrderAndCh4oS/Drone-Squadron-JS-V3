@@ -14,7 +14,7 @@ module.exports = {
     module: {
         rules: [
             { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" },
-            { test: /\.mp3$/, exclude: /node_modules/, loader: "file-loader", options: { name: '/music/[name].[ext]' } }
+            { test: /\.mp3$/, exclude: /node_modules/, loader: "file-loader", options: { name: 'music/[name].[ext]' } }
         ]
     }
 };
