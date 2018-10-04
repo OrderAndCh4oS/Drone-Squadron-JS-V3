@@ -3,101 +3,107 @@ import s2 from '../music/80s-Space.mp3'; // But i know only one way how to add f
 // Not counting just putting the row source of the file
 // There are a few songs more, but I think you'll create a better way of adding files, so I won't add anymore
 
-export default class MusicManager{
+export default class MusicManager {
 
-	constructor( songs ){
+    constructor(songs) {
 
-		// Vars
-		// If you don't like that lists of sounds and songs are there, you can add them there like params when MusicManager's init happens
+        // Vars
+        // If you don't like that lists of sounds and songs are there, you can add them there like params when MusicManager's init happens
 
-		this.sounds = {
+        this.sounds = {
 
-			// "piu": "sounds/piu" -- If you want to play: this.play( "piu" );
+            // "piu": "sounds/piu" -- If you want to play: this.play( "piu" );
 
-		}
+        };
 
-		this.songs = [
+        this.songs = [
 
-			s1,
-			s2
+            s1,
+            s2,
 
-		];
+        ];
 
-		this.loop = 0; // current loop number
-		this.maxloop = 4; // MAGIC NUMBER ( I't how many times song plays before changing )
+        this.loop = 0; // current loop number
+        this.maxloop = 4; // MAGIC NUMBER ( I't how many times song plays before changing )
 
-		//
+        //
 
-		this.loadSounds();
-		this.createMainAudio(); // Audio stream for songs ( BG )
-		this.listenToMusic();
+        this.loadSounds();
+        this.createMainAudio(); // Audio stream for songs ( BG )
+        this.listenToMusic();
 
-		//console.log( this.songs ); CHECK THIS
-		//console.log( this.audio ); MEDIA ERROR 4 ( NOT SUPPORTED FORMAT )
+        //console.log( this.songs ); CHECK THIS
+        //console.log( this.audio ); MEDIA ERROR 4 ( NOT SUPPORTED FORMAT )
 
-	}
+    }
 
-	loadSounds(){
+    loadSounds() {
 
-		for( let sound in this.sounds ){
+        for(let sound in this.sounds) {
 
-			this.sounds[ sound ] = this.load( this.sounds[ sound ] );
+            this.sounds[sound] = MusicManager.load(this.sounds[sound]);
 
-		};
+        }
 
-	}
+    }
 
-	createMainAudio(){
+    createMainAudio() {
 
-		this.audio = document.createElement( 'audio' );
+        this.audio = document.createElement('audio');
 
-		this.audio.onended = () => {
+        this.audio.onended = () => {
 
-			this.loop++;
+            this.loop++;
 
-			if( this.loop > this.maxloop ){
+            if(this.loop > this.maxloop) {
 
-				this.playlist.shift();
+                this.playlist.shift();
 
-			}
+            }
 
-			if( !this.playlist.length ){ this.playlist == this.songs };
+            if(!this.playlist.length) { this.playlist = this.songs; }
 
-			this.dom.currentTime = 0;
-			this.audio.src = this.playlist[0];
-			this.audio.play();
+            this.dom.currentTime = 0;
+            this.audio.src = this.playlist[0];
+            this.audio.play();
 
-		}
+        };
 
-	}
+    }
 
-	listenToMusic(){
+    listenToMusic() {
 
-		this.playlist = this.songs;
-		this.audio.src = this.playlist[0];
-		this.audio.play();
+        this.playlist = this.songs;
+        this.audio.src = this.playlist[0];
+        this.audio.play();
 
-	}
+    }
 
-	load( sound ){
+    static load(sound) {
 
-		let a = document.createElement( 'audio' );
-		a.src = sound;
+        let a = document.createElement('audio');
+        a.src = sound;
 
-		return a;
+        return a;
 
-	}
+    }
 
-	// Just syntactic sugar
+    // Just syntactic sugar
 
-	start(){  this.audio.fastSeek( 0 ); this.audio.play(); };
+    start() {
+        this.audio.fastSeek(0);
+        this.audio.play();
+    };
 
-	stop(){ this.audio.pause(); this.audio.fastSeek( 0 ); }
+    stop() {
+        this.audio.pause();
+        this.audio.fastSeek(0);
+    }
 
-	play( sound ){
+    play(sound) {
 
-		this.sounds[ sound ].play();
+        this.sounds[sound].play();
 
-	}
+    }
 
 }
