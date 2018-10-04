@@ -1,7 +1,4 @@
-import s1 from '../music/8-Bit-Mayhem.mp3'; // Sorry for this strange things. I don't like them
-import s2 from '../music/80s-Space.mp3'; // But i know only one way how to add files is webpack
-// Not counting just putting the row source of the file
-// There are a few songs more, but I think you'll create a better way of adding files, so I won't add anymore
+import music from '../music'
 
 export default class MusicManager {
 
@@ -16,12 +13,7 @@ export default class MusicManager {
 
         };
 
-        this.songs = [
-
-            s1,
-            s2,
-
-        ];
+        this.songs = music;
 
         this.loop = 0; // current loop number
         this.maxloop = 4; // MAGIC NUMBER ( I't how many times song plays before changing )
