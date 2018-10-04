@@ -20,7 +20,6 @@ module.exports = {
                 loader: 'file-loader',
                 options: {
                     name: 'music/[name].[ext]',
-                    publicPath: 'Drone-Squadron-JS-V3ish/dist/'
                 },
             },
         ],
