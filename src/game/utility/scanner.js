@@ -1,4 +1,5 @@
-import { colours, context, debug, grid } from '../constants/constants';
+import canvas from '../service/canvas';
+import { colours, debug, grid } from '../constants/constants';
 import Drone from '../drone';
 import Bullet from '../abstract/bullet';
 import { angleTo } from '../functions';
@@ -98,48 +99,48 @@ export default class Scanner {
 
     draw(drone) {
         if(this.hasTarget()) {
-            context.translate(this.target.position.x,
+            canvas.ctx.translate(this.target.position.x,
                 this.target.position.y);
-            context.beginPath();
-            context.moveTo(-5, -5);
-            context.lineTo(5, 5);
-            context.moveTo(5, -5);
-            context.lineTo(-5, 5);
-            context.strokeStyle = drone.colour;
-            context.strokeWidth = 5;
-            context.stroke();
-            context.resetTransform();
+            canvas.ctx.beginPath();
+            canvas.ctx.moveTo(-5, -5);
+            canvas.ctx.lineTo(5, 5);
+            canvas.ctx.moveTo(5, -5);
+            canvas.ctx.lineTo(-5, 5);
+            canvas.ctx.strokeStyle = drone.colour;
+            canvas.ctx.strokeWidth = 5;
+            canvas.ctx.stroke();
+            canvas.ctx.resetTransform();
             this.drawScannerPath(drone);
         }
         this.drawScannerRadius(drone);
     }
 
     drawScannerPath(drone) {
-        if(debug.scannerPathToggle) {
-            context.setLineDash([1, 5]);
-            context.beginPath();
-            context.moveTo(drone.position.x, drone.position.y);
-            context.lineTo(this.target.position.x,
+        if(debug.scannerPath) {
+            canvas.ctx.setLineDash([1, 5]);
+            canvas.ctx.beginPath();
+            canvas.ctx.moveTo(drone.position.x, drone.position.y);
+            canvas.ctx.lineTo(this.target.position.x,
                 this.target.position.y);
-            context.strokeStyle = colours.white;
-            context.stroke();
-            context.setLineDash([0]);
+            canvas.ctx.strokeStyle = colours.white;
+            canvas.ctx.stroke();
+            canvas.ctx.setLineDash([0]);
         }
     }
 
     drawScannerRadius(drone) {
-        if(debug.scannerRadiusToggle) {
-            context.setLineDash([1, 5]);
-            context.beginPath();
-            context.arc(
+        if(debug.scannerRadius) {
+            canvas.ctx.setLineDash([1, 5]);
+            canvas.ctx.beginPath();
+            canvas.ctx.arc(
                 drone.position.x,
                 drone.position.y,
                 this.radius,
                 0,
                 2 * Math.PI);
-            context.strokeStyle = colours.white;
-            context.stroke();
-            context.setLineDash([0]);
+            canvas.ctx.strokeStyle = colours.white;
+            canvas.ctx.stroke();
+            canvas.ctx.setLineDash([0]);
         }
     }
 }

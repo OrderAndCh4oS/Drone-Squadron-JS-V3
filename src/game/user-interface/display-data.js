@@ -1,4 +1,5 @@
-import { colours, context } from '../constants/constants';
+import canvas from '../service/canvas';
+import { colours } from '../constants/constants';
 
 export default class DisplayData {
     constructor(x, y, colour, align = 'left', size = 16) {
@@ -15,15 +16,15 @@ export default class DisplayData {
     }
 
     textStyle() {
-        context.textAlign = this.align;
-        context.font = this.size + 'px Verdana';
-        context.fillStyle = colours[this.colour];
+        canvas.ctx.textAlign = this.align;
+        canvas.ctx.font = this.size + 'px Verdana';
+        canvas.ctx.fillStyle = colours[this.colour];
     }
 
     draw() {
         this.textStyle();
         this.lines.map((line, index) => {
-            context.fillText(
+            canvas.ctx.fillText(
                 line,
                 this.x,
                 this.y + (index + 1) * (this.size * 1.2),

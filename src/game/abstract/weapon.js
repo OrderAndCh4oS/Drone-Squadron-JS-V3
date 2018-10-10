@@ -1,4 +1,5 @@
-import { context, pm } from '../constants/constants';
+import canvas from '../service/canvas';
+import { pm } from '../constants/constants';
 import { deltaTime } from '../service/delta-time';
 import Vector from '../service/vector';
 import { angleTo } from '../functions';
@@ -23,18 +24,18 @@ export default class Weapon {
     }
 
     draw() {
-        context.translate(this.position.x, this.position.y);
-        context.rotate(this.gimbal.vector.getAngle() + this.droneAngle);
-        context.beginPath();
-        context.lineTo(10, -2);
-        context.lineTo(10, 2);
-        context.lineTo(0, 2);
-        context.lineTo(0, -2);
-        context.strokeStyle = this.colour;
-        context.stroke();
-        context.fillStyle = this.colour;
-        context.fill();
-        context.resetTransform();
+        canvas.ctx.translate(this.position.x, this.position.y);
+        canvas.ctx.rotate(this.gimbal.vector.getAngle() + this.droneAngle);
+        canvas.ctx.beginPath();
+        canvas.ctx.lineTo(10, -2);
+        canvas.ctx.lineTo(10, 2);
+        canvas.ctx.lineTo(0, 2);
+        canvas.ctx.lineTo(0, -2);
+        canvas.ctx.strokeStyle = this.colour;
+        canvas.ctx.stroke();
+        canvas.ctx.fillStyle = this.colour;
+        canvas.ctx.fill();
+        canvas.ctx.resetTransform();
     }
 
     update(drone) {
@@ -74,12 +75,12 @@ export default class Weapon {
     }
 
     applyFill() {
-        context.fillStyle = this.colour;
-        context.fill();
+        canvas.ctx.fillStyle = this.colour;
+        canvas.ctx.fill();
     }
 
     applyStroke() {
-        context.strokeStyle = this.colour;
-        context.stroke();
+        canvas.ctx.strokeStyle = this.colour;
+        canvas.ctx.stroke();
     }
 }

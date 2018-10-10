@@ -1,22 +1,22 @@
-import music from '../music'
+import music from '../music';
 
 export default class MusicManager {
 
-    constructor(songs) {
-        this.sounds = {}; // "piu": "sounds/piu" -- If you want to play: this.play( "piu" );
+    constructor() {
+        this.sounds = {};
         this.songs = music;
-        this.loop = 0; // current loop number
-        this.maxloop = 4; // MAGIC NUMBER ( I't how many times song plays before changing )
+        this.loop = 0;
+        this.maxloop = 4;
         this.loadSounds();
-        this.createMainAudio(); // Audio stream for songs ( BG )
+        this.createMainAudio();
         this.listenToMusic();
-        //console.log( this.songs ); CHECK THIS
-        //console.log( this.audio ); MEDIA ERROR 4 ( NOT SUPPORTED FORMAT )
     }
 
     loadSounds() {
         for(let sound in this.sounds) {
-            this.sounds[sound] = MusicManager.load(this.sounds[sound]);
+            if(this.sounds.hasOwnProperty(sound)) {
+                this.sounds[sound] = this.load(this.sounds[sound]);
+            }
         }
     }
 
@@ -50,13 +50,12 @@ export default class MusicManager {
     }
 
     start() {
-        this.audio.fastSeek(0);
+        this.audio.currentTime = 0;
         this.audio.play();
-    };
+    }
 
     stop() {
         this.audio.pause();
-        this.audio.fastSeek(0);
     }
 
     play(sound) {

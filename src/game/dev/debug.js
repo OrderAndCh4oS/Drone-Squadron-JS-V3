@@ -1,28 +1,36 @@
 export default class Debug {
     constructor() {
-        this._gameGridToggle = false;
-        this._scannerRadiusToggle = false;
-        this._scannerPathToggle = false;
-        this._droneNameToggle = false;
-        this._droneDataToggle = false;
-        this._gameDataToggle = false;
+        this._gameGrid = false;
+        this._scannerRadius = false;
+        this._scannerPath = false;
+        this._droneName = false;
+        this._droneData = false;
+        this._gameData = false;
         this._gameGridLog = false;
     }
 
-    get gameDataToggle() {
-        return this._gameDataToggle;
+    get gameData() {
+        return this._gameData;
     }
 
-    set gameDataToggle(value) {
-        this._gameDataToggle = value;
+    set gameData(value) {
+        this._gameData = value;
     }
 
-    get droneDataToggle() {
-        return this._droneDataToggle;
+    get droneData() {
+        return this._droneData;
     }
 
-    set droneDataToggle(value) {
-        this._droneDataToggle = value;
+    set droneData(value) {
+        this._droneData = value;
+    }
+
+    get gameGrid() {
+        return this._gameGrid;
+    }
+
+    set gameGrid(value) {
+        this._gameGrid = value;
     }
 
     get gameGridLog() {
@@ -33,100 +41,56 @@ export default class Debug {
         this._gameGridLog = value;
     }
 
-    get gameGridToggle() {
-        return this._gameGridToggle;
+    get droneName() {
+        return this._droneName;
     }
 
-    set gameGridToggle(value) {
-        this._gameGridToggle = value;
+    set droneName(value) {
+        this._droneName = value;
     }
 
-    get droneNameToggle() {
-        return this._droneNameToggle;
+    get scannerPath() {
+        return this._scannerPath;
     }
 
-    set droneNameToggle(value) {
-        this._droneNameToggle = value;
+    set scannerPath(value) {
+        this._scannerPath = value;
     }
 
-    get scannerPathToggle() {
-        return this._scannerPathToggle;
+    get scannerRadius() {
+        return this._scannerRadius;
     }
 
-    set scannerPathToggle(value) {
-        this._scannerPathToggle = value;
+    set scannerRadius(value) {
+        this._scannerRadius = value;
     }
 
-    get scannerRadiusToggle() {
-        return this._scannerRadiusToggle;
+    gameDataToggle() {
+        this._gameData = !this._gameData;
     }
 
-    set scannerRadiusToggle(value) {
-        this._scannerRadiusToggle = value;
+    droneDataToggle() {
+        this._droneData = !this._droneData;
     }
 
-    initialiseListeners() {
-        this.addGameGridToggleListener();
-        this.addScannerRadiusToggleListener();
-        this.addScannerPathToggleListener();
-        this.addNameToggleListener();
-        this.addDataToggleListener();
-        this.addGameDataToggleListener();
-        this.addGameGridLogListener();
+    gameGridLogToggle() {
+        this._gameGridLog = !this._gameGridLog;
     }
 
-    addGameGridLogListener() {
-        document.getElementById('game-grid-log')
-            .addEventListener('click', (e) => {
-                this._gameGridLog = !this._gameGridLog;
-            });
+    gameGridToggle() {
+        this._gameGrid = !this._gameGrid;
     }
 
-    addGameGridToggleListener() {
-        document.getElementById('game-grid-toggle')
-            .addEventListener('click', (e) => {
-                e.target.classList.toggle('toggled');
-                this._gameGridToggle = !this._gameGridToggle;
-            });
+    droneNameToggle() {
+        this._droneName = !this._droneName;
     }
 
-    addScannerRadiusToggleListener() {
-        document.getElementById('scanner-radius-toggle')
-            .addEventListener('click', (e) => {
-                e.target.classList.toggle('toggled');
-                this._scannerRadiusToggle = !this._scannerRadiusToggle;
-            });
+    scannerPathToggle() {
+        this._scannerPath = !this._scannerPath;
     }
 
-    addScannerPathToggleListener() {
-        document.getElementById('scanner-path-toggle')
-            .addEventListener('click', (e) => {
-                e.target.classList.toggle('toggled');
-                this._scannerPathToggle = !this._scannerPathToggle;
-            });
-    }
-
-    addNameToggleListener() {
-        document.getElementById('name-toggle')
-            .addEventListener('click', (e) => {
-                e.target.classList.toggle('toggled');
-                this._droneNameToggle = !this._droneNameToggle;
-            });
-    }
-
-    addDataToggleListener() {
-        document.getElementById('data-toggle')
-            .addEventListener('click', (e) => {
-                e.target.classList.toggle('toggled');
-                this._droneDataToggle = !this._droneDataToggle;
-            });
-    }
-
-    addGameDataToggleListener() {
-        document.getElementById('game-data-toggle')
-            .addEventListener('click', (e) => {
-                e.target.classList.toggle('toggled');
-                this._gameDataToggle = !this._gameDataToggle;
-            });
+    scannerRadiusToggle() {
+        this._scannerRadius = !this._scannerRadius;
     }
 }
+

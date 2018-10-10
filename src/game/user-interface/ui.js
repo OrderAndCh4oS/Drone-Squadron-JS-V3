@@ -1,12 +1,13 @@
+import canvas from '../service/canvas';
 import DisplayData from './display-data';
-import { canvasWidth, squadrons } from '../constants/constants';
+import { squadrons } from '../constants/constants';
 
 export default class UI {
     static displaySquadData() {
         squadrons.map((s, i) => {
             s.drawHealth(i);
             const displaySquadData = new DisplayData(
-                canvasWidth / 4 * (i * 2 + 1),
+                canvas.width / 4 * (i * 2 + 1),
                 40,
                 s.colour,
                 'center'

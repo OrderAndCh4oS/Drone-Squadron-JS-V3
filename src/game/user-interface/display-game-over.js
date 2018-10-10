@@ -1,10 +1,11 @@
-import { canvasHeight, canvasWidth, squadrons, } from '../constants/constants';
+import canvas from '../service/canvas';
+import { squadrons } from '../constants/constants';
 import DisplayData from './display-data';
 
 export default class GameOver extends DisplayData {
 
     constructor() {
-        super(canvasWidth / 2, canvasHeight / 2 - 40, 'green', 'center', 32);
+        super(canvas.width / 2, canvas.height / 2 - 40, 'green', 'center', 32);
     }
 
     draw() {
