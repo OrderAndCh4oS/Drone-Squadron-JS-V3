@@ -1,17 +1,12 @@
-import {
-    canvasHeight,
-    canvasWidth,
-    colours,
-    context,
-    debug,
-} from '../constants/constants';
+import { colours, debug } from '../constants/constants';
+import canvas from '../service/canvas';
 import Drone from '../drone';
 
 export default class GameGrid {
     constructor() {
         this._gridBlockSize = 100;
-        this._columns = Math.round(canvasWidth / this._gridBlockSize);
-        this._rows = Math.round(canvasHeight / this._gridBlockSize);
+        this._columns = Math.round(canvas.width / this._gridBlockSize);
+        this._rows = Math.round(canvas.height / this._gridBlockSize);
         this._grid = new Array(this._columns);
         for(let i = 0; i < this._grid.length; i++) {
             this._grid[i] = new Array(this._rows);
@@ -91,8 +86,8 @@ export default class GameGrid {
 
     log() {
         if(debug.gameGridLog) {
-            debug.gameGridLog = false;
             console.log(this.grid);
+            debug.gameGridLog = false;
         }
     }
 
@@ -102,17 +97,18 @@ export default class GameGrid {
     }
 
     drawGridContent() {
-        context.font = '10px Verdana';
-        context.textAlign = 'left';
-        context.fillStyle = colours.green;
-        if(debug.gameGridToggle) {
+        canvas.ctx.font = '10px Verdana';
+        canvas.ctx.textAlign = 'left';
+        canvas.ctx.fillStyle = colours.green;
+        if(debug.gameGrid) {
             for(let i = 0; i < this._grid.length; i++) {
                 for(let j = 0; j < this._grid[i].length; j++) {
                     for(let k = 0; k < this._grid[i][j].length; k++) {
                         const item = this._grid[i][j][k];
                         const text = item instanceof Drone ? 'Drone:' +
                             item.name : item.id;
-                        context.fillText(text, i * this._gridBlockSize + 4, j *
+                        canvas.ctx.fillText(text, i * this._gridBlockSize + 4,
+                            j *
                             this._gridBlockSize + (10 * k + 14));
                     }
                 }
@@ -121,24 +117,24 @@ export default class GameGrid {
     }
 
     drawGrid() {
-        if(debug.gameGridToggle) {
-            context.setLineDash([1, 7]);
-            context.strokeStyle = colours.white;
+        if(debug.gameGrid) {
+            canvas.ctx.setLineDash([1, 7]);
+            canvas.ctx.strokeStyle = colours.white;
             for(let i = 0; i < this._columns; i++) {
-                context.fillText(i, i * this._gridBlockSize, 10);
-                context.beginPath();
-                context.moveTo(i * this._gridBlockSize, 0);
-                context.lineTo(i * this._gridBlockSize, canvasHeight);
-                context.stroke();
+                canvas.ctx.fillText(i, i * this._gridBlockSize, 10);
+                canvas.ctx.beginPath();
+                canvas.ctx.moveTo(i * this._gridBlockSize, 0);
+                canvas.ctx.lineTo(i * this._gridBlockSize, canvas.height);
+                canvas.ctx.stroke();
             }
             for(let i = 0; i < this._rows; i++) {
-                context.fillText(i, 0, i * this._gridBlockSize + 10);
-                context.beginPath();
-                context.moveTo(0, i * this._gridBlockSize);
-                context.lineTo(canvasWidth, i * this._gridBlockSize);
-                context.stroke();
+                canvas.ctx.fillText(i, 0, i * this._gridBlockSize + 10);
+                canvas.ctx.beginPath();
+                canvas.ctx.moveTo(0, i * this._gridBlockSize);
+                canvas.ctx.lineTo(canvas.width, i * this._gridBlockSize);
+                canvas.ctx.stroke();
             }
-            context.setLineDash([0]);
+            canvas.ctx.setLineDash([0]);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { context } from '../constants/constants';
+import canvas from '../service/canvas';
 import DisplayData from './display-data';
 
 export default class DisplayParticleData extends DisplayData {
@@ -9,7 +9,7 @@ export default class DisplayParticleData extends DisplayData {
     draw() {
         this.textStyle();
         this.lines.map((line, index) => {
-            context.fillText(
+            canvas.ctx.fillText(
                 line,
                 25,
                 (index + 1 - this.lines.length / 2) * 10,

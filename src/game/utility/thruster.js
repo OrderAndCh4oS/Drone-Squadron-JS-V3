@@ -1,5 +1,6 @@
+import canvas from '../service/canvas';
 import { angleBetweenRange, distanceTo } from '../functions';
-import { colours, context } from '../constants/constants';
+import { colours } from '../constants/constants';
 
 export default class Thruster {
     constructor(thrust) {
@@ -62,22 +63,22 @@ export default class Thruster {
 
     draw(drone) {
         if(this.isThrusting()) {
-            context.translate(drone.position.x, drone.position.y);
-            context.rotate(drone.vector.getAngle());
-            context.beginPath();
-            context.moveTo(-0, -2);
-            context.lineTo(-8, Math.floor(Math.random() * 2) - 3);
-            context.lineTo(-6, -1);
-            context.lineTo(-10, Math.floor(Math.random() * 3) - 1);
-            context.lineTo(-6, 1);
-            context.lineTo(-8, Math.floor(Math.random() * 2) + 2);
-            context.lineTo(-4, 2);
-            context.strokeWidth = 0.5;
-            context.strokeStyle = colours.orange;
-            context.stroke();
-            context.fillStyle = colours.red;
-            context.fill();
-            context.resetTransform();
+            canvas.ctx.translate(drone.position.x, drone.position.y);
+            canvas.ctx.rotate(drone.vector.getAngle());
+            canvas.ctx.beginPath();
+            canvas.ctx.moveTo(-0, -2);
+            canvas.ctx.lineTo(-8, Math.floor(Math.random() * 2) - 3);
+            canvas.ctx.lineTo(-6, -1);
+            canvas.ctx.lineTo(-10, Math.floor(Math.random() * 3) - 1);
+            canvas.ctx.lineTo(-6, 1);
+            canvas.ctx.lineTo(-8, Math.floor(Math.random() * 2) + 2);
+            canvas.ctx.lineTo(-4, 2);
+            canvas.ctx.strokeWidth = 0.5;
+            canvas.ctx.strokeStyle = colours.orange;
+            canvas.ctx.stroke();
+            canvas.ctx.fillStyle = colours.red;
+            canvas.ctx.fill();
+            canvas.ctx.resetTransform();
         }
     }
 

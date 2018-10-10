@@ -1,4 +1,5 @@
-import { colours, context } from '../constants/constants';
+import canvas from '../service/canvas';
+import { colours } from '../constants/constants';
 import PercentBox from '../user-interface/percent-box';
 
 export default class Heath extends PercentBox {
@@ -29,7 +30,7 @@ export default class Heath extends PercentBox {
     }
 
     draw(drone) {
-        context.translate(drone.position.x, drone.position.y);
+        canvas.ctx.translate(drone.position.x, drone.position.y);
         this.setPercentage(this._currentHealth, this._health);
         this._fill = this._currentHealth <= 20 ? colours.red : colours.green;
         super.draw();

@@ -1,4 +1,5 @@
-import { colours, context, debug } from './constants/constants';
+import canvas from './service/canvas';
+import { colours, debug } from './constants/constants';
 import Vector from './service/vector';
 import Particle from './abstract/particle';
 import Health from './service/health';
@@ -72,44 +73,44 @@ export default class Drone extends Particle {
     draw() {
         this.weapon.draw();
         this.thruster.draw(this);
-        context.translate(this.position.x, this.position.y);
+        canvas.ctx.translate(this.position.x, this.position.y);
         this.drawName();
         this.drawData();
         this.drawSprite();
-        context.resetTransform();
+        canvas.ctx.resetTransform();
         this.health.draw(this);
         this.scanner.draw(this);
     }
 
     drawSprite() {
-        context.rotate(this.vector.getAngle() + (Math.PI / 180) * 90);
-        context.translate(-12.5, -14);
-        context.drawImage(drones[this._colour], 0, 0);
+        canvas.ctx.rotate(this.vector.getAngle() + (Math.PI / 180) * 90);
+        canvas.ctx.translate(-12.5, -14);
+        canvas.ctx.drawImage(drones[this._colour], 0, 0);
     }
 
     drawDrone() {
-        context.beginPath();
-        context.moveTo(10, 0);
-        context.lineTo(-10, -7);
-        context.lineTo(-10, 7);
-        context.lineTo(10, 0);
-        context.strokeStyle = this._colour;
-        context.stroke();
-        context.fillStyle = this._colour;
-        context.fill();
+        canvas.ctx.beginPath();
+        canvas.ctx.moveTo(10, 0);
+        canvas.ctx.lineTo(-10, -7);
+        canvas.ctx.lineTo(-10, 7);
+        canvas.ctx.lineTo(10, 0);
+        canvas.ctx.strokeStyle = this._colour;
+        canvas.ctx.stroke();
+        canvas.ctx.fillStyle = this._colour;
+        canvas.ctx.fill();
     }
 
     drawName() {
-        if(debug.droneNameToggle) {
-            context.font = '11px Verdana';
-            context.textAlign = 'center';
-            context.fillStyle = colours[this._colour];
-            context.fillText(this.name, 0, -18);
+        if(debug.droneName) {
+            canvas.ctx.font = '11px Verdana';
+            canvas.ctx.textAlign = 'center';
+            canvas.ctx.fillStyle = colours[this._colour];
+            canvas.ctx.fillText(this.name, 0, -18);
         }
     }
 
     drawData() {
-        if(debug.droneDataToggle) {
+        if(debug.droneData) {
             const positionText = `Position: (${Math.round(
                 this.position.x)}, ${Math.round(this.position.y)})`;
             const gridText = `Grid: (${this.gridX}, ${this.gridY})`;

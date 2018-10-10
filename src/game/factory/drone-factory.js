@@ -1,18 +1,14 @@
 import Drone from '../drone';
-import {
-    allDrones,
-    canvasHeight,
-    canvasWidth,
-    dm,
-} from '../constants/constants';
+import { allDrones, dm } from '../constants/constants';
+import canvas from '../service/canvas';
 
 export default class DroneFactory {
     static make(droneData, squadronData) {
         const drone = new Drone(
             droneData,
             squadronData,
-            Math.random() * canvasWidth,
-            Math.random() * canvasHeight,
+            Math.random() * canvas.width,
+            Math.random() * canvas.height,
             Math.random() * Math.PI * 2,
         );
         dm.addDrone(drone);

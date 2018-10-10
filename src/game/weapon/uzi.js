@@ -1,6 +1,6 @@
 import Weapon from '../abstract/weapon';
 import NineMM from '../ammo/nine-mm';
-import { context } from '../constants/constants';
+import canvas from '../service/canvas';
 
 export default class Uzi extends Weapon {
     constructor(drone, x, y, angle, gimbal) {
@@ -10,16 +10,16 @@ export default class Uzi extends Weapon {
     }
 
     draw() {
-        context.translate(this.position.x, this.position.y);
-        context.rotate(this.gimbal.vector.getAngle() + this.droneAngle);
-        context.beginPath();
-        context.lineTo(6, -1);
-        context.lineTo(6, 1);
-        context.lineTo(0, 1);
-        context.lineTo(0, -1);
+        canvas.ctx.translate(this.position.x, this.position.y);
+        canvas.ctx.rotate(this.gimbal.vector.getAngle() + this.droneAngle);
+        canvas.ctx.beginPath();
+        canvas.ctx.lineTo(6, -1);
+        canvas.ctx.lineTo(6, 1);
+        canvas.ctx.lineTo(0, 1);
+        canvas.ctx.lineTo(0, -1);
         this.applyStroke();
         this.applyFill();
-        context.resetTransform();
+        canvas.ctx.resetTransform();
     }
 
 }

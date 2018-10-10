@@ -1,4 +1,4 @@
-import { context } from '../constants/constants';
+import canvas from '../service/canvas';
 
 export default class PercentBox {
 
@@ -17,30 +17,30 @@ export default class PercentBox {
     }
 
     draw() {
-        context.translate(this._x - this._width / 2, this._y);
+        canvas.ctx.translate(this._x - this._width / 2, this._y);
         this.drawStroke();
         this.drawFill();
-        context.resetTransform();
+        canvas.ctx.resetTransform();
     }
 
     drawFill() {
         this.drawPercentBox(this._percentage);
-        context.fillStyle = this._fill;
-        context.fill();
+        canvas.ctx.fillStyle = this._fill;
+        canvas.ctx.fill();
     }
 
     drawStroke() {
         this.drawPercentBox();
-        context.strokeStyle = this._stroke;
-        context.stroke();
+        canvas.ctx.strokeStyle = this._stroke;
+        canvas.ctx.stroke();
     }
 
     drawPercentBox(percentage = 100) {
-        context.beginPath();
-        context.moveTo(0, 0);
-        context.lineTo(this._width * percentage / 100, 0);
-        context.lineTo(this._width * percentage / 100, this._height);
-        context.lineTo(0, this._height);
-        context.lineTo(0, 0);
+        canvas.ctx.beginPath();
+        canvas.ctx.moveTo(0, 0);
+        canvas.ctx.lineTo(this._width * percentage / 100, 0);
+        canvas.ctx.lineTo(this._width * percentage / 100, this._height);
+        canvas.ctx.lineTo(0, this._height);
+        canvas.ctx.lineTo(0, 0);
     }
 }

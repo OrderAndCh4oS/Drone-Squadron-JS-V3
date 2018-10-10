@@ -1,4 +1,5 @@
-import { canvasWidth, colours } from './constants/constants';
+import canvas from './service/canvas';
+import { colours } from './constants/constants';
 import PercentBox from './user-interface/percent-box';
 
 export default class Squadron {
@@ -38,9 +39,9 @@ export default class Squadron {
 
     drawHealth(index) {
         const healthBar = new PercentBox(
-            canvasWidth / 4 * (index * 2 + 1),
+            canvas.width / 4 * (index * 2 + 1),
             24,
-            canvasWidth * 0.45,
+            canvas.width * 0.45,
             14,
             colours[this.colour],
             colours.white,

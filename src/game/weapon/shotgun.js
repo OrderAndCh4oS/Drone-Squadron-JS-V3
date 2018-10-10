@@ -1,5 +1,6 @@
 import Weapon from '../abstract/weapon';
-import { context, pm } from '../constants/constants';
+import { pm } from '../constants/constants';
+import canvas from '../service/canvas';
 import Shot from '../ammo/shot';
 
 export default class Shotgun extends Weapon {
@@ -10,16 +11,16 @@ export default class Shotgun extends Weapon {
     }
 
     draw() {
-        context.translate(this.position.x, this.position.y);
-        context.rotate(this.gimbal.vector.getAngle() + this.droneAngle);
-        context.beginPath();
-        context.lineTo(8, -2);
-        context.lineTo(8, 2);
-        context.lineTo(0, 2);
-        context.lineTo(0, -2);
+        canvas.ctx.translate(this.position.x, this.position.y);
+        canvas.ctx.rotate(this.gimbal.vector.getAngle() + this.droneAngle);
+        canvas.ctx.beginPath();
+        canvas.ctx.lineTo(8, -2);
+        canvas.ctx.lineTo(8, 2);
+        canvas.ctx.lineTo(0, 2);
+        canvas.ctx.lineTo(0, -2);
         this.applyStroke();
         this.applyFill();
-        context.resetTransform();
+        canvas.ctx.resetTransform();
     }
 
     fire() {
