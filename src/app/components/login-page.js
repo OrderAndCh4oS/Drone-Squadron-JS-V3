@@ -19,7 +19,11 @@ class Login extends Component {
     };
 
     handleSubmit = () => {
-        request(postLogin, false, this.state);
+        request(postLogin, false, this.state).then(data => {
+            if(data.hasOwnProperty('user')) {
+                window.localStorage.setItem('user', data.user);
+            }
+        });
     };
 
     render() {
@@ -37,7 +41,7 @@ class Login extends Component {
                                onChange={this.handleChange('password')}
                                autoComplete="current-password" margin="normal"/>
                 </Grid>
-                <Grid item xs={12} spacing={40}>
+                <Grid item xs={12}>
                     <Button variant="contained" color="primary"
                             onClick={this.handleSubmit}>
                         Login

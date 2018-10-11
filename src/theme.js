@@ -21,6 +21,13 @@ const theme = createMuiTheme({
             color: 'black',
         },
     },
+    overrides: {
+        MuiPaper: {
+            root: {
+                padding: '16px',
+            },
+        },
+    },
 });
 
 export default theme;

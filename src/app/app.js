@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import request from '../api/request';
 import { getPriceList } from '../api';
 import Login from './components/login-page';
+import Paper from '@material-ui/core/Paper/Paper';
 
 const styles = theme => ({
     root: {
@@ -46,15 +47,25 @@ class App extends Component {
             <div className={classes.root}>
                 <Grid container spacing={24}>
                     <Grid item xs={12}>
-                        <Typography component="h2" variant="display1"
-                                    gutterBottom>
-                            Drone Squadron
-                        </Typography>
-                        <Login/>
-                        <Button variant='contained' color='primary'
-                                className={classes.button}
-                                onClick={this.handleClick}>Play</Button>
-                        {this.state.play ? <Main/> : null}
+                        <Paper>
+                            <Typography component="h2" variant="display1"
+                                        gutterBottom>
+                                Drone Squadron
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Paper>
+                            <Login/>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Paper>
+                            <Button variant='contained' color='primary'
+                                    className={classes.button}
+                                    onClick={this.handleClick}>Play</Button>
+                            {this.state.play ? <Main/> : null}
+                        </Paper>
                     </Grid>
                 </Grid>
             </div>
