@@ -14,13 +14,20 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "lodash": "^4.17.11",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-stage-2": "^7.0.0",
-    "@babel/polyfill": "^7.0.0",
+    "@material-ui/core": "^3.1.2",
+    "@material-ui/icons": "^3.0.1",
     "babel-eslint": "8",
     "babel-loader": "^8.0.4",
     "clean-webpack-plugin": "^0.1.17",
@@ -51,9 +58,5 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-    "@material-ui/core": "^3.1.2",
-    "lodash": "^4.17.11",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2"
   }
 }

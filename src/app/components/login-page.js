@@ -1,43 +1,62 @@
 import React, { Component } from 'react';
+import { Redirect, withRouter } from 'react-router';
+import Grid from '@material-ui/core/Grid/Grid';
 import TextField from '@material-ui/core/TextField/TextField';
 import Button from '@material-ui/core/Button/Button';
+import auth from '../auth';
 import request from '../../api/request';
 import { postLogin } from '../../api';
-import Grid from '@material-ui/core/Grid/Grid';
 
 class Login extends Component {
 
     state = {
-        username: '',
-        password: '',
+        redirectToReferrer: false,
+        user: {
+            username: '',
+            password: '',
+        },
     };
 
     handleChange = name => event => {
-        this.setState({
-            [name]: event.target.value,
+        const value = event.target.value;
+        this.setState(prevState => {
+            return {
+                user: {
+                    ...prevState.user,
+                    [name]: value,
+                },
+            };
         });
     };
 
     handleSubmit = () => {
-        request(postLogin, false, this.state).then(data => {
+        console.log(this.state.user);
+        request(postLogin, false, this.state.user).then(data => {
             if(data.hasOwnProperty('user')) {
                 window.localStorage.setItem('user', data.user);
+                auth.authenticate(() => {
+                    this.setState({redirectToReferrer: true});
+                });
             }
         });
     };
 
     render() {
+        const {from} = this.props.location.state || {from: {pathname: '/'}};
+        if(this.state.redirectToReferrer) {
+            return <Redirect to={from}/>;
+        }
         return (
             <form noValidate autoComplete="off">
                 <Grid item xs={12}>
                     <TextField id="username" label="Username"
-                               value={this.state.name}
+                               value={this.state.user.username}
                                onChange={this.handleChange('username')}
                                margin="normal"/>
                 </Grid>
                 <Grid item xs={12}>
                     <TextField id="password" label="Password" type="password"
-                               value={this.state.name}
+                               value={this.state.user.password}
                                onChange={this.handleChange('password')}
                                autoComplete="current-password" margin="normal"/>
                 </Grid>
@@ -51,5 +70,7 @@ class Login extends Component {
         );
     }
 }
+
+Login = withRouter(Login);
 
 export default Login;
