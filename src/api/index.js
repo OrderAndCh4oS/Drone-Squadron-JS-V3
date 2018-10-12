@@ -10,6 +10,10 @@ export const postLogin = ({values: {username, password}}) => {
     return postFetch(makeUrl('/login'), {username, password});
 };
 
+export const getLogout = () => {
+    return getFetch(makeUrl('/logout'));
+};
+
 export const getUser = ({params}) => {
     return getFetch(makeUrl('/user', params));
 };
