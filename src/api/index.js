@@ -30,8 +30,8 @@ export const getSquadron = ({params}) => {
     return getFetch(makeUrl('/squadron', params));
 };
 
-export const postSquadron = ({params}) => {
-    return postFetch(makeUrl('/squadron', params));
+export const postSquadron = ({params, values}) => {
+    return postFetch(makeUrl('/squadron', params), values);
 };
 
 export const putSquadron = ({params}) => {
@@ -46,12 +46,16 @@ export const getDrone = ({params}) => {
     return getFetch(makeUrl('/drone', params));
 };
 
-export const postDrone = ({params}) => {
-    return postFetch(makeUrl('/drone', params));
+export const getDroneBySquadron = ({params}) => {
+    return getFetch(makeUrl('/squadron/' + params.id + '/drone'));
 };
 
-export const putDrone = ({params}) => {
-    return putFetch(makeUrl('/drone', params));
+export const postDrone = ({params, values}) => {
+    return postFetch(makeUrl('/drone', params), values);
+};
+
+export const putDrone = ({params, values}) => {
+    return putFetch(makeUrl('/drone', params), values);
 };
 
 export const deleteDrone = ({params}) => {

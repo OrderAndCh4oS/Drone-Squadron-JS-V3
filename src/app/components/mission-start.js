@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import Button from '@material-ui/core/Button/Button';
 import Main from '../../game/game';
 import { withStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography/Typography';
 
 const styles = theme => ({
     button: {
@@ -22,9 +23,15 @@ class MissionStart extends Component {
         const {classes} = this.props;
         return (
             <Fragment>
-                <Button variant='contained' color='primary'
-                        className={classes.button}
-                        onClick={this.handleClick}>Play</Button>
+                <Typography variant="display1" className={classes.grow}>
+                    Mission Start
+                </Typography>
+                <Button
+                    variant='contained'
+                    color='primary'
+                    className={classes.button}
+                    onClick={this.handleClick}
+                >Play</Button>
                 {this.state.play ? <Main/> : null}
             </Fragment>
         );

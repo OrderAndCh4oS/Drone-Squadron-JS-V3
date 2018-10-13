@@ -1,5 +1,7 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
+const spacing = 16;
+
 const theme = createMuiTheme({
     typography: {
         useNextVariants: true,
@@ -19,6 +21,7 @@ const theme = createMuiTheme({
         },
         display1: {
             color: 'black',
+            marginBottom: spacing,
         },
     },
     overrides: {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link, Route } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar/AppBar';
 import Toolbar from '@material-ui/core/Toolbar/Toolbar';
@@ -6,8 +6,6 @@ import IconButton from '@material-ui/core/IconButton/IconButton';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List/List';
 import Divider from '@material-ui/core/Divider/Divider';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -20,6 +18,8 @@ import ListItemText from '@material-ui/core/ListItemText/ListItemText';
 import auth from './auth';
 import Redirect from 'react-router/es/Redirect';
 import { withRouter } from 'react-router';
+import ManageSquadrons from './components/manage-squadrons';
+import ManageDrones from './components/manage-drones';
 
 const styles = theme => ({
     root: {
@@ -27,6 +27,12 @@ const styles = theme => ({
     },
     grow: {
         flexGrow: 1,
+    },
+    layout: {
+        width: 'auto',
+        paddingTop: theme.spacing.unit * 2,
+        marginLeft: theme.spacing.unit * 4,
+        marginRight: theme.spacing.unit * 4,
     },
     list: {
         width: 250,
@@ -51,12 +57,15 @@ const PrivateRoute = ({component: Component, ...rest}) => (
         auth.isAuthenticated ? (
             <Component {...props} />
         ) : (
-            <Redirect to={{
-                pathname: '/login',
-                state: {from: props.location},
-            }}/>
+            <Redirect
+                to={{
+                    pathname: '/login',
+                    state: {from: props.location},
+                }}
+            />
         )
-    }/>
+    }
+    />
 );
 
 const AuthButton = withRouter(({history}) => {
@@ -64,8 +73,10 @@ const AuthButton = withRouter(({history}) => {
         <Button color="inherit" component={Link} to={'/login'}>
             Login
         </Button> :
-        <Button color="inherit" onClick={() => auth.signOut(
-            () => history.push('/'))}>
+        <Button
+            color="inherit" onClick={() => auth.signOut(
+            () => history.push('/'))}
+        >
             Logout
         </Button>;
 });
@@ -75,11 +86,27 @@ const AuthListButton = withRouter(({history}) => {
         <ListItem button component={Link} to={'/login'}>
             <ListItemText primary="Login"/>
         </ListItem> :
-        <ListItem button onClick={() => auth.signOut(
-            () => history.push('/'))}>
+        <ListItem
+            button onClick={() => auth.signOut(
+            () => history.push('/'))}
+        >
             <ListItemText primary="Logout"/>
         </ListItem>;
 });
+
+const AdminMenu = () =>
+    <Fragment>
+        <List>
+            <ListItem button component={Link} to={'/manage-squadrons'}>
+                <ListItemText primary="Manage Squadrons"/>
+            </ListItem>
+        </List>
+        <List>
+            <ListItem button component={Link} to={'/mission-start'}>
+                <ListItemText primary="Mission Start"/>
+            </ListItem>
+        </List>
+    </Fragment>;
 
 class App extends Component {
 
@@ -94,11 +121,7 @@ class App extends Component {
                     <ListItemText primary="Home"/>
                 </ListItem>
             </List>
-            <List>
-                <ListItem button component={Link} to={'/mission-start'}>
-                    <ListItemText primary="Mission Start"/>
-                </ListItem>
-            </List>
+            <AdminMenu/>
             <Divider/>
             <List>
                 <AuthListButton/>
@@ -116,38 +139,55 @@ class App extends Component {
         const {classes} = this.props;
         return (
             <div className={classes.root}>
-                <Grid container spacing={24}>
-                    <AppBar position="static">
-                        <Toolbar>
-                            <IconButton className={classes.menuButton}
-                                        color="inherit" aria-label="Menu">
-                                <MenuIcon
-                                    onClick={this.toggleDrawer('left', true)}/>
-                            </IconButton>
-                            <Typography variant="subheading" color="inherit"
-                                        className={classes.grow}>
-                                Drone Squadron
-                            </Typography>
-                            <AuthButton/>
-                        </Toolbar>
-                    </AppBar>
-                    <Drawer open={this.state.left}
-                            onClose={this.toggleDrawer('left', false)}>
-                        <div tabIndex={0} role="button"
-                             onClick={this.toggleDrawer('left', false)}
-                             onKeyDown={this.toggleDrawer('left', false)}>
-                            {this.sideList}
-                        </div>
-                    </Drawer>
-                    <Grid item xs={12}>
-                        <Paper>
-                            <Route exact path="/" component={Home}/>
-                            <PrivateRoute exact path="/mission-start"
-                                          component={MissionStart}/>
-                            <Route path="/login" component={Login}/>
-                        </Paper>
-                    </Grid>
-                </Grid>
+                <AppBar position="static">
+                    <Toolbar>
+                        <IconButton
+                            className={classes.menuButton}
+                            color="inherit"
+                            aria-label="Menu"
+                        >
+                            <MenuIcon
+                                onClick={this.toggleDrawer('left', true)}
+                            />
+                        </IconButton>
+                        <Typography
+                            variant="subheading"
+                            color="inherit"
+                            className={classes.grow}
+                        >
+                            Drone Squadron
+                        </Typography>
+                        <AuthButton/>
+                    </Toolbar>
+                </AppBar>
+                <Drawer
+                    open={this.state.left}
+                    onClose={this.toggleDrawer('left', false)}
+                >
+                    <div
+                        tabIndex={0}
+                        role="button"
+                        onClick={this.toggleDrawer('left', false)}
+                        onKeyDown={this.toggleDrawer('left', false)}
+                    >
+                        {this.sideList}
+                    </div>
+                </Drawer>
+                <div className={classes.layout}>
+                    <Route exact path="/" component={Home}/>
+                    <PrivateRoute
+                        exact
+                        path="/manage-squadrons"
+                        component={ManageSquadrons}
+                    />
+                    <PrivateRoute
+                        exact path="/manage-drones" component={ManageDrones}
+                    />
+                    <PrivateRoute
+                        exact path="/mission-start" component={MissionStart}
+                    />
+                    <Route path="/login" component={Login}/>
+                </div>
             </div>
         );
     }
