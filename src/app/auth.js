@@ -2,18 +2,23 @@ import request from '../api/request';
 import { getLogout } from '../api';
 
 const auth = {
-    isAuthenticated: false,
-    authenticate(cb) {
+    isAuthenticated: JSON.parse(window.localStorage.getItem('user')) !== null,
+    authenticate(callback) {
         this.isAuthenticated = true;
-        cb();
+        callback();
     },
-    signOut(cb) {
+    signOut(callback) {
         this.isAuthenticated = false;
         request(getLogout).then(() => {
             window.localStorage.removeItem('user');
         });
-        cb();
+        callback();
     },
 };
 
 export default auth;
+
+export const handleUnauthorised = (data, history) => {
+    if(data.hasOwnProperty('error') && data.error === 'Not logged in')
+        history.push('/login');
+};

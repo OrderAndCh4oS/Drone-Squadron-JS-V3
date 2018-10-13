@@ -12,11 +12,9 @@ class Home extends Component {
     render() {
         const {classes} = this.props;
         return (
-            <div>
-                <Typography variant="display1" className={classes.grow}>
-                    Drone Squadron
-                </Typography>
-            </div>
+            <Typography variant="display1">
+                Drone Squadron
+            </Typography>
         );
     }
 }
