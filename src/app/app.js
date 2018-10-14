@@ -20,6 +20,7 @@ import Redirect from 'react-router/es/Redirect';
 import { withRouter } from 'react-router';
 import ManageSquadrons from './components/manage-squadrons';
 import ManageDrones from './components/manage-drones';
+import UpdateDrone from './components/update-drone';
 
 const styles = theme => ({
     root: {
@@ -182,6 +183,9 @@ class App extends Component {
                     />
                     <PrivateRoute
                         exact path="/manage-drones" component={ManageDrones}
+                    />
+                    <PrivateRoute
+                        exact path="/update-drone" component={UpdateDrone}
                     />
                     <PrivateRoute
                         exact path="/mission-start" component={MissionStart}

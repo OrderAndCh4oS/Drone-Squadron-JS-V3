@@ -66,6 +66,9 @@ class ManageDrones extends Component {
                 <Typography variant="display1">
                     Manage Drones
                 </Typography>
+                <Typography variant="subheading">
+                    {this.state.squadron.name}
+                </Typography>
                 <form noValidate autoComplete="off" className={classes.form}>
                     <Grid container spacing={16}>
                         <Grid item xs={12}>
@@ -122,10 +125,13 @@ class ManageDrones extends Component {
                                 >Value {drone.value}</Typography>
                                 <Button
                                     variant="contained"
-                                    color="primary"
-                                    component={Link}
-                                    to={'/manage-drone'}
-                                    state={drone}
+                                    color="primary" component={Link} to={{
+                                    pathname: '/update-drone',
+                                    state: {
+                                        squadron: this.state.squadron,
+                                        drone,
+                                    },
+                                }}
                                 >Manage</Button>
                             </Paper>
                         </Grid>)}
