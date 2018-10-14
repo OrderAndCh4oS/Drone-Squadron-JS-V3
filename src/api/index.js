@@ -55,7 +55,7 @@ export const postDrone = ({params, values}) => {
 };
 
 export const putDrone = ({params, values}) => {
-    return putFetch(makeUrl('/drone', params), values);
+    return putFetch(makeUrl('/drone/' + params.id), values);
 };
 
 export const deleteDrone = ({params}) => {
