@@ -21,6 +21,9 @@ const styles = theme => ({
     text: {
         marginBottom: theme.spacing.unit,
     },
+    back: {
+        marginTop: theme.spacing.unit,
+    },
 });
 
 class ManageDrones extends Component {
@@ -125,15 +128,21 @@ class ManageDrones extends Component {
                                 >Value {drone.value}</Typography>
                                 <Button
                                     variant="contained"
-                                    color="primary" component={Link} to={{
-                                    pathname: '/update-drone',
-                                    state: {
-                                        squadron: this.state.squadron,
-                                        drone,
-                                    },
-                                }}
+                                    color="primary"
+                                    component={Link}
+                                    to={{
+                                        pathname: '/update-drone',
+                                        state: {
+                                            squadron: this.state.squadron,
+                                            drone,
+                                        },
+                                    }}
                                 >Manage</Button>
                             </Paper>
+                            <Button
+                                className={classes.back}
+                                onClick={() => this.props.history.goBack()}
+                            >Back</Button>
                         </Grid>)}
                 </Grid>
             </Fragment>
