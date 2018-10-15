@@ -21,6 +21,9 @@ const styles = theme => ({
     text: {
         marginBottom: theme.spacing.unit,
     },
+    back: {
+        marginTop: theme.spacing.unit,
+    },
 });
 
 class ManageSquadrons extends Component {
@@ -103,6 +106,10 @@ class ManageSquadrons extends Component {
                             </Paper>
                         </Grid>)}
                 </Grid>
+                <Button
+                    className={classes.back}
+                    onClick={() => this.props.history.goBack()}
+                >Back</Button>
             </Fragment>
         );
     }
