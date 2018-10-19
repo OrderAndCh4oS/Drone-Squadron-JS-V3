@@ -24,6 +24,10 @@ const styles = theme => ({
     back: {
         marginTop: theme.spacing.unit,
     },
+    error: {
+        marginTop: theme.spacing.unit,
+        color: '#ff0000x',
+    },
 });
 
 class ManageDrones extends Component {
@@ -31,10 +35,18 @@ class ManageDrones extends Component {
         name: '',
         squadron: this.props.location.state.squadron,
         drones: [],
+        errors: {
+            name: false,
+        },
     };
     handleChange = name => event => {
         const value = event.target.value;
-        this.setState({[name]: value});
+        this.setState({
+            [name]: value,
+            errors: {
+                [name]: false,
+            },
+        });
     };
     handleSubmit = () => {
         const values = {
@@ -42,6 +54,12 @@ class ManageDrones extends Component {
             'squadron': this.state.squadron.id,
         };
         request(postDrone, false, values).then(data => {
+            if(data.hasOwnProperty('error')) {
+                this.setState({errors: data.error});
+                setTimeout(() => {
+                    this.setState({errors: {}});
+                }, 5000);
+            }
             if(data.hasOwnProperty('name')) {
                 this.setState(prevState => ({
                     drones: [...prevState.drones, data],
@@ -77,9 +95,13 @@ class ManageDrones extends Component {
                         <Grid item xs={12}>
                             <TextField
                                 required
+                                error={this.state.errors.name}
                                 id="name"
                                 label="Drone Name"
                                 value={this.state.name}
+                                helperText={this.state.errors.name
+                                    ? this.state.errors.name
+                                    : false}
                                 onChange={this.handleChange('name')}
                                 margin="normal"
                             />
@@ -92,6 +114,9 @@ class ManageDrones extends Component {
                             >
                                 Create
                             </Button>
+                            {this.state.errors.message ? <Typography
+                                className={classes.error}
+                            >{this.state.errors.message}</Typography> : null}
                         </Grid>
                     </Grid>
                 </form>
@@ -139,12 +164,12 @@ class ManageDrones extends Component {
                                     }}
                                 >Manage</Button>
                             </Paper>
-                            <Button
-                                className={classes.back}
-                                onClick={() => this.props.history.goBack()}
-                            >Back</Button>
                         </Grid>)}
                 </Grid>
+                <Button
+                    className={classes.back}
+                    onClick={() => this.props.history.goBack()}
+                >Back</Button>
             </Fragment>
         );
     }
