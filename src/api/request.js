@@ -10,6 +10,10 @@ const request = (request, params, values) => {
                     return handleUnauthorisedResponse(response);
                 case 404:
                     return handleNotFoundResponse(response);
+                case 400:
+                    return handleInvalidDataResponse(response);
+                case 500:
+                    return handleErrorResponse(response);
                 default:
                     return response;
             }
@@ -29,6 +33,12 @@ const handleUnauthorisedResponse = (response) => response.json()
     .then(data => data);
 
 const handleNotFoundResponse = (response) => response.json()
+    .then(data => data);
+
+const handleInvalidDataResponse = (response) => response.json()
+    .then(data => ({error: data}));
+
+const handleErrorResponse = (response) => response.json()
     .then(data => data);
 
 export default request;
