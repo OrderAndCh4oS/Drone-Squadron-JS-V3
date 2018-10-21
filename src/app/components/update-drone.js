@@ -46,10 +46,23 @@ const styles = theme => ({
     },
 });
 
+const UpdateMessage = ({classes, updated}) => updated ?
+    <Typography variant={'body1'} className={classes.updated}>
+        Updated
+    </Typography>
+    : null;
+
+const ErrorMessage = ({classes, error}) => error ?
+    <Typography className={classes.error}>
+        {error}
+    </Typography>
+    : null;
+
 class UpdateDrone extends Component {
     state = {
         squadron: this.props.location.state.squadron,
         drone: this.props.location.state.drone,
+        errors: {},
         updates: {},
         updated: false,
         priceList: {
@@ -59,29 +72,40 @@ class UpdateDrone extends Component {
             steering: [],
             scanner: [],
         },
+        cost_of_updates: 0,
     };
 
-    handleUpdate = (name, item) => event => {
-        const value = event.target.value;
-        const item_id = this.findItemId(
-            this.state.priceList[name],
-            value,
+    handleUpdate = event => {
+        const item_name = event.target.value;
+        const type = event.target.name;
+        const item = this.findItemByName(
+            this.state.priceList[type],
+            item_name,
         );
         this.setState(prevState => ({
             drone: {
                 ...prevState.drone,
-                [item]: value,
+                [type + '_name']: item_name,
             },
             updates: {
                 ...prevState.updates,
-                [name]: item_id,
+                [type]: item,
             },
+            cost_of_updates: this.updateCost(type, item),
         }));
     };
+
     handleSubmit = () => {
+        if(this.state.cost_of_updates > this.state.squadron.scrap) {
+            this.setState({errors: {message: 'Not enough scrap'}});
+            setTimeout(() => {
+                this.setState({errors: {}});
+            }, 5000);
+            return;
+        }
         const updates = {
             squadron: this.state.squadron.id,
-            ...this.state.updates,
+            ...this.prepare_updates(),
         };
         request(putDrone, {id: this.state.drone.id}, updates).then(data => {
             this.setState({
@@ -92,6 +116,43 @@ class UpdateDrone extends Component {
         });
     };
 
+    findItemByName = (itemList, name) => {
+        const match = itemList.filter(
+            item => item.name === name,
+        );
+        if(match.length) {
+            return match[0];
+        }
+        return '';
+    };
+
+    prepare_updates = () => {
+        const updates = {};
+        for(let key in this.state.updates) {
+            if(this.state.updates.hasOwnProperty(key)) {
+                updates[key] = this.state.updates[key].item_id;
+            }
+        }
+        return updates;
+    };
+
+    updateCost = (type, item) => {
+        const updates = this.state.updates;
+        updates[type] = item;
+        return Object.values(updates)
+            .reduce((cost, item) => cost + item.scrap, 0);
+    };
+
+    makePriceList = (data) => {
+        return data.reduce((obj, listItem) => {
+            obj[listItem.item] = obj[listItem.item] || [];
+            const item = listItem['item'];
+            delete listItem['item'];
+            obj[item].push(listItem);
+            return obj;
+        }, {});
+    };
+
     componentDidMount() {
         if(!this.props.location.state.squadron) {
             this.props.history.push('/manage-squadrons');
@@ -99,21 +160,10 @@ class UpdateDrone extends Component {
         if(!this.props.location.state.drone) {
             this.props.history.push('/manage-squadrons');
         }
-
-        function makePriceList(data) {
-            return data.reduce((obj, listItem) => {
-                obj[listItem.item] = obj[listItem.item] || [];
-                const item = listItem['item'];
-                delete listItem['item'];
-                obj[item].push(listItem);
-                return obj;
-            }, {});
-        }
-
         request(getPriceList).then(data => {
             const {history} = this.props;
             handleUnauthorised(data, history);
-            this.setState({priceList: makePriceList(data)});
+            this.setState({priceList: this.makePriceList(data)});
         });
     }
 
@@ -123,6 +173,15 @@ class UpdateDrone extends Component {
             <Fragment>
                 <Typography variant="display1">
                     Manage Drones
+                </Typography>
+                <Typography variant="subheading">
+                    {this.state.squadron.name}
+                </Typography>
+                <Typography variant="body1">
+                    Scrap: {this.state.squadron.scrap}
+                </Typography>
+                <Typography variant="body1" className={classes.text}>
+                    Cost of Updates: {this.state.cost_of_updates}
                 </Typography>
                 <Grid container justify="flex-start" spacing={16}>
                     <Grid item xs={12}>
@@ -151,19 +210,12 @@ class UpdateDrone extends Component {
                                     >Weapon</InputLabel>
                                     <Select
                                         value={this.state.drone.weapon_name}
-                                        onChange={this.handleUpdate('weapon',
-                                            'weapon_name')}
-                                        input={<Input name="age" id="weapon"/>}
+                                        onChange={this.handleUpdate}
+                                        input={<Input
+                                            name="weapon" id="weapon"
+                                        />}
                                     >
-                                        {
-                                            this.state.priceList.weapon.map(
-                                                weapon =>
-                                                    <MenuItem
-                                                        key={weapon.item_id}
-                                                        value={weapon.name}
-                                                    >{weapon.name + ', Cost: ' +
-                                                    weapon.scrap}</MenuItem>)
-                                        }
+                                        {this.weapon_options()}
                                     </Select>
                                 </FormControl>
                                 <FormControl className={classes.formControl}>
@@ -172,19 +224,12 @@ class UpdateDrone extends Component {
                                     >Gimbal</InputLabel>
                                     <Select
                                         value={this.state.drone.gimbal_name}
-                                        onChange={this.handleUpdate('gimbal',
-                                            'gimbal_name')}
-                                        input={<Input name="age" id="gimbal"/>}
+                                        onChange={this.handleUpdate}
+                                        input={<Input
+                                            name="gimbal" id="gimbal"
+                                        />}
                                     >
-                                        {
-                                            this.state.priceList.gimbal.map(
-                                                gimbal =>
-                                                    <MenuItem
-                                                        key={gimbal.item_id}
-                                                        value={gimbal.name}
-                                                    >{gimbal.name + ', Cost: ' +
-                                                    gimbal.scrap}</MenuItem>)
-                                        }
+                                        {this.gimbal_options()}
                                     </Select>
                                 </FormControl>
                                 <FormControl className={classes.formControl}>
@@ -193,22 +238,12 @@ class UpdateDrone extends Component {
                                     >Thruster</InputLabel>
                                     <Select
                                         value={this.state.drone.thruster_name}
-                                        onChange={this.handleUpdate('thruster',
-                                            'thruster_name')}
+                                        onChange={this.handleUpdate}
                                         input={<Input
-                                            name="age" id="thruster"
+                                            name="thruster" id="thruster"
                                         />}
                                     >
-                                        {
-                                            this.state.priceList.thruster.map(
-                                                thruster =>
-                                                    <MenuItem
-                                                        key={thruster.item_id}
-                                                        value={thruster.name}
-                                                    >{thruster.name +
-                                                    ', Cost: ' +
-                                                    thruster.scrap}</MenuItem>)
-                                        }
+                                        {this.thruster_options()}
                                     </Select>
                                 </FormControl>
                                 <FormControl className={classes.formControl}>
@@ -217,22 +252,12 @@ class UpdateDrone extends Component {
                                     >Steering</InputLabel>
                                     <Select
                                         value={this.state.drone.steering_name}
-                                        onChange={this.handleUpdate('steering',
-                                            'steering_name')}
+                                        onChange={this.handleUpdate}
                                         input={<Input
-                                            name="age" id="steering"
+                                            name="steering" id="steering"
                                         />}
                                     >
-                                        {
-                                            this.state.priceList.steering.map(
-                                                steering =>
-                                                    <MenuItem
-                                                        key={steering.item_id}
-                                                        value={steering.name}
-                                                    >{steering.name +
-                                                    ', Cost: ' +
-                                                    steering.scrap}</MenuItem>)
-                                        }
+                                        {this.steering_options()}
                                     </Select>
                                 </FormControl>
                                 <FormControl className={classes.formControl}>
@@ -241,22 +266,12 @@ class UpdateDrone extends Component {
                                     >Scanner</InputLabel>
                                     <Select
                                         value={this.state.drone.scanner_name}
-                                        onChange={this.handleUpdate('scanner',
-                                            'scanner_name')}
+                                        onChange={this.handleUpdate}
                                         input={<Input
                                             name="scanner" id="scanner"
                                         />}
                                     >
-                                        {
-                                            this.state.priceList.scanner.map(
-                                                scanner =>
-                                                    <MenuItem
-                                                        key={scanner.item_id}
-                                                        value={scanner.name}
-                                                    >{scanner.name +
-                                                    ', Cost: ' +
-                                                    scanner.scrap}</MenuItem>)
-                                        }
+                                        {this.scanner_options()}
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -266,10 +281,14 @@ class UpdateDrone extends Component {
                                     color="primary"
                                     onClick={this.handleSubmit}
                                 >Complete Updates</Button>
-                                {this.state.updated ? <Typography
-                                    variant={'body1'}
-                                    className={classes.updated}
-                                >Updated</Typography> : null}
+                                <UpdateMessage
+                                    classes={classes}
+                                    updated={this.state.updated}
+                                />
+                                <ErrorMessage
+                                    classes={classes}
+                                    error={this.state.errors.message}
+                                />
                             </Grid>
                         </Paper>
                         <Button
@@ -282,15 +301,54 @@ class UpdateDrone extends Component {
         );
     }
 
-    findItemId(itemList, name) {
-        console.log('find: ', name);
-        const match = itemList.filter(
-            item => item.name === name,
+    scanner_options() {
+        return this.state.priceList.scanner.map(
+            scanner =>
+                <MenuItem key={scanner.item_id} value={scanner.name}>
+                    {scanner.name + ', Cost: ' + scanner.scrap}
+                </MenuItem>,
         );
-        if(match.length) {
-            return match[0].item_id;
-        }
-        return '';
+    }
+
+    steering_options() {
+        return this.state.priceList.steering.map(
+            steering =>
+                <MenuItem key={steering.item_id} value={steering.name}>
+                    {steering.name + ', Cost: ' + steering.scrap}
+                </MenuItem>,
+        );
+    }
+
+    thruster_options() {
+        return this.state.priceList.thruster.map(
+            thruster =>
+                <MenuItem
+                    key={thruster.item_id} value={thruster.name}
+                >{thruster.name +
+                ', Cost: ' +
+                thruster.scrap}</MenuItem>);
+    }
+
+    gimbal_options() {
+        return this.state.priceList.gimbal.map(
+            gimbal =>
+                <MenuItem key={gimbal.item_id} value={gimbal.name}>
+                    {gimbal.name + ', Cost: ' + gimbal.scrap}
+                </MenuItem>,
+        );
+    }
+
+    weapon_options() {
+        return this.state.priceList.weapon.map(
+            weapon =>
+                <MenuItem
+                    key={weapon.item_id}
+                    value={weapon.name}
+                    scrap={weapon.scrap}
+                >
+                    {weapon.name + ', Cost: ' + weapon.scrap}
+                </MenuItem>,
+        );
     }
 }
 
