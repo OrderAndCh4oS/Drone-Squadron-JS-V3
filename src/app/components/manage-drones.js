@@ -61,8 +61,13 @@ class ManageDrones extends Component {
                 }, 5000);
             }
             if(data.hasOwnProperty('name')) {
+                // ToDo: return squadron scrap from API and update squadron
                 this.setState(prevState => ({
                     drones: [...prevState.drones, data],
+                    squadron: {
+                        ...prevState.squadron,
+                        scrap: prevState.squadron.scrap - 50,
+                    },
                     name: '',
                 }));
             }
@@ -89,6 +94,9 @@ class ManageDrones extends Component {
                 </Typography>
                 <Typography variant="subheading">
                     {this.state.squadron.name}
+                </Typography>
+                <Typography variant="body1">
+                    Scrap: {this.state.squadron.scrap}
                 </Typography>
                 <form noValidate autoComplete="off" className={classes.form}>
                     <Grid container spacing={16}>
