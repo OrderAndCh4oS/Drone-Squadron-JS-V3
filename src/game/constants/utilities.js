@@ -24,8 +24,10 @@ import SC500 from '../utility/scanner/SC500';
 import SC400 from '../utility/scanner/SC400';
 import SC300 from '../utility/scanner/SC300';
 import SC200 from '../utility/scanner/SC200';
+import Fixed from '../utility/gimbal/Fixed';
 
 export const gimbals = {
+    'Fixed': Fixed,
     'G40': G40,
     'G60': G60,
     'G90': G90,
