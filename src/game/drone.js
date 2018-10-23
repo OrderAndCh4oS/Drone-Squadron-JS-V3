@@ -10,16 +10,18 @@ import DisplayData from './user-interface/display-particle-data';
 
 export default class Drone extends Particle {
     constructor(drone, squad, x, y, angle) {
+        console.log('drone', drone);
         super(drone.id, x, y, 0, 13, angle);
         this._squadId = squad.id;
         this._colour = squad.colour;
         this.name = drone.name;
         this.vector = new Vector(0, 1);
         this.vector.setAngle(angle);
-        this.weapon = new weapons[drone.weapon](this, x, y, angle, gimbals[drone.gimbal]);
-        this.scanner = new scanners[drone.scanner]();
-        this.thruster = new thrusters[drone.thruster]();
-        this.steering = new steering[drone.steering]();
+        this.weapon = new weapons[drone.weapon_name](this, x, y, angle,
+            gimbals[drone.gimbal_name]);
+        this.scanner = new scanners[drone.scanner_name]();
+        this.thruster = new thrusters[drone.thruster_name]();
+        this.steering = new steering[drone.steering_name]();
         this.health = new Health(100);
         this._damage = 0;
         this._kills = 0;

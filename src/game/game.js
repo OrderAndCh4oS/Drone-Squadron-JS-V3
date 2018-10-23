@@ -17,14 +17,14 @@ import DebugBar from './components/debug-bar';
 
 export default class Main extends Component {
 
-    fetchData = () => {
-        fetch('./data/squads.json')
-            .then(resp => resp.json())
-            .then((data) => {
-                this.setupDrones(data.data);
-                this.play();
-            });
-    };
+    // fetchData = () => {
+    //     fetch('./data/squads.json')
+    //         .then(resp => resp.json())
+    //         .then((data) => {
+    //             this.setupDrones(data.data);
+    //             this.play();
+    //         });
+    // };
     play = () => {
         this.fpsInterval = 1000 / 60;
         this.then = Date.now();
@@ -63,6 +63,7 @@ export default class Main extends Component {
 
     constructor(props) {
         super(props);
+
     }
 
     setupDrones(data) {
@@ -71,7 +72,9 @@ export default class Main extends Component {
     }
 
     componentDidMount() {
-        this.fetchData();
+        console.log(this.props);
+        this.setupDrones(this.props);
+        this.play();
     }
 
     render() {

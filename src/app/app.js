@@ -21,6 +21,7 @@ import { withRouter } from 'react-router';
 import ManageSquadrons from './components/manage-squadrons';
 import ManageDrones from './components/manage-drones';
 import UpdateDrone from './components/update-drone';
+import SelectSquadron from './components/select-squadron';
 
 const styles = theme => ({
     root: {
@@ -103,8 +104,8 @@ const AdminMenu = () =>
             </ListItem>
         </List>
         <List>
-            <ListItem button component={Link} to={'/mission-start'}>
-                <ListItemText primary="Mission Start"/>
+            <ListItem button component={Link} to={'/play'}>
+                <ListItemText primary="Play"/>
             </ListItem>
         </List>
     </Fragment>;
@@ -186,6 +187,9 @@ class App extends Component {
                     />
                     <PrivateRoute
                         exact path="/update-drone" component={UpdateDrone}
+                    />
+                    <PrivateRoute
+                        exact path="/play" component={SelectSquadron}
                     />
                     <PrivateRoute
                         exact path="/mission-start" component={MissionStart}

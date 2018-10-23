@@ -117,13 +117,7 @@ class UpdateDrone extends Component {
     };
 
     findItemByName = (itemList, name) => {
-        const match = itemList.filter(
-            item => item.name === name,
-        );
-        if(match.length) {
-            return match[0];
-        }
-        return '';
+        return itemList.find(item => item.name === name) || '';
     };
 
     prepare_updates = () => {
