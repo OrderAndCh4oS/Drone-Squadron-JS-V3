@@ -1,33 +1,35 @@
-import T20 from '../utility/thruster/T20';
-import T18 from '../utility/thruster/T18';
-import T15 from '../utility/thruster/T15';
-import T12 from '../utility/thruster/T12';
-import T10 from '../utility/thruster/T10';
-import S15 from '../utility/steering/S15';
-import S12 from '../utility/steering/S12';
-import S10 from '../utility/steering/S10';
-import S8 from '../utility/steering/S8';
-import S6 from '../utility/steering/S6';
-import S4 from '../utility/steering/S4';
-import G360 from '../utility/gimbal/G360';
-import G240 from '../utility/gimbal/G240';
-import G180 from '../utility/gimbal/G180';
-import G120 from '../utility/gimbal/G120';
-import G90 from '../utility/gimbal/G90';
-import G60 from '../utility/gimbal/G60';
-import G40 from '../utility/gimbal/G40';
-import SC900 from '../utility/scanner/SC900';
-import SC800 from '../utility/scanner/SC800';
-import SC700 from '../utility/scanner/SC700';
-import SC600 from '../utility/scanner/SC600';
-import SC500 from '../utility/scanner/SC500';
-import SC400 from '../utility/scanner/SC400';
-import SC300 from '../utility/scanner/SC300';
-import SC200 from '../utility/scanner/SC200';
-import Fixed from '../utility/gimbal/Fixed';
+import T20 from '../game-object/utility/thruster/T20';
+import T18 from '../game-object/utility/thruster/T18';
+import T15 from '../game-object/utility/thruster/T15';
+import T12 from '../game-object/utility/thruster/T12';
+import T10 from '../game-object/utility/thruster/T10';
+import S15 from '../game-object/utility/steering/S15';
+import S12 from '../game-object/utility/steering/S12';
+import S10 from '../game-object/utility/steering/S10';
+import S8 from '../game-object/utility/steering/S8';
+import S6 from '../game-object/utility/steering/S6';
+import S4 from '../game-object/utility/steering/S4';
+import G360 from '../game-object/utility/gimbal/G360';
+import G240 from '../game-object/utility/gimbal/G240';
+import G180 from '../game-object/utility/gimbal/G180';
+import G120 from '../game-object/utility/gimbal/G120';
+import G90 from '../game-object/utility/gimbal/G90';
+import G60 from '../game-object/utility/gimbal/G60';
+import G40 from '../game-object/utility/gimbal/G40';
+import SC900 from '../game-object/utility/scanner/SC900';
+import SC800 from '../game-object/utility/scanner/SC800';
+import SC700 from '../game-object/utility/scanner/SC700';
+import SC600 from '../game-object/utility/scanner/SC600';
+import SC500 from '../game-object/utility/scanner/SC500';
+import SC400 from '../game-object/utility/scanner/SC400';
+import SC300 from '../game-object/utility/scanner/SC300';
+import SC200 from '../game-object/utility/scanner/SC200';
+import Fixed from '../game-object/utility/gimbal/Fixed';
+import G20 from '../game-object/utility/gimbal/G20';
 
 export const gimbals = {
     'Fixed': Fixed,
+    'G20': G20,
     'G40': G40,
     'G60': G60,
     'G90': G90,

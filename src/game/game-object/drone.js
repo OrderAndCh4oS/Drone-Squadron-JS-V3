@@ -1,15 +1,14 @@
-import canvas from './service/canvas';
-import { colours, debug } from './constants/constants';
-import Vector from './service/vector';
+import canvas from '../service/canvas';
+import { colours, debug } from '../constants/constants';
+import Vector from '../service/vector';
 import Particle from './abstract/particle';
-import Health from './service/health';
-import { drones } from './constants/sprites';
-import { gimbals, scanners, steering, thrusters } from './constants/utilities';
-import { weapons } from './constants/weapons';
-import DisplayData from './user-interface/display-particle-data';
+import Health from '../service/health';
+import { drones } from '../constants/sprites';
+import DisplayData from '../user-interface/display-particle-data';
 
 export default class Drone extends Particle {
-    constructor(drone, squad, x, y, angle) {
+    constructor(
+        drone, squad, weapon, thruster, steering, scanner, x, y, angle) {
         console.log('drone', drone);
         super(drone.id, x, y, 0, 13, angle);
         this._squadId = squad.id;
@@ -17,11 +16,10 @@ export default class Drone extends Particle {
         this.name = drone.name;
         this.vector = new Vector(0, 1);
         this.vector.setAngle(angle);
-        this.weapon = new weapons[drone.weapon_name](this, x, y, angle,
-            gimbals[drone.gimbal_name]);
-        this.scanner = new scanners[drone.scanner_name]();
-        this.thruster = new thrusters[drone.thruster_name]();
-        this.steering = new steering[drone.steering_name]();
+        this.weapon = weapon;
+        this.scanner = scanner;
+        this.thruster = thruster;
+        this.steering = steering;
         this.health = new Health(100);
         this._damage = 0;
         this._kills = 0;
@@ -53,7 +51,7 @@ export default class Drone extends Particle {
     }
 
     updateDamage(damage) {
-        this._damage += damage;
+        this._damage = +(this._damage + damage).toFixed(2);
     }
 
     updateKills(killedDrone) {

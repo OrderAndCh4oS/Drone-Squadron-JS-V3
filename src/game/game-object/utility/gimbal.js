@@ -1,5 +1,5 @@
-import Vector from '../service/vector';
-import { angleTo } from '../functions';
+import Vector from '../../service/vector';
+import { angleTo } from '../../functions';
 
 export default class Gimbal {
 
@@ -8,7 +8,7 @@ export default class Gimbal {
         this.vector.setAngle(0);
         this.vector.setLength(5);
         this.rotation = 'right';
-        this._angleLimit = angleLimit;
+        this._angleLimit = (angleLimit * Math.PI) / 180.0;
         this.turningSpeed = turningSpeed;
         this.lead = 0.2;
     }

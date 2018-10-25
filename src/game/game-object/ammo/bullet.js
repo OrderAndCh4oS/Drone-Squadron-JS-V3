@@ -1,11 +1,16 @@
-import Particle from './particle';
+import Particle from '../abstract/particle';
 
 export default class Bullet extends Particle {
-    constructor(drone, x, y, speed, radius, angle, velocity, damage) {
+    constructor(drone, x, y, angle, velocity, speed, radius, damage, colour) {
         super(drone.id, x, y, speed, radius, angle);
         this._drone = drone;
         this._damage = damage;
+        this._colour = colour;
         this.velocity.addTo(velocity);
+    }
+
+    get colour() {
+        return this._colour;
     }
 
     get squadId() {

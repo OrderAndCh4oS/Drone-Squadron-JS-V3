@@ -1,8 +1,8 @@
-import canvas from '../service/canvas';
-import { colours, debug, grid } from '../constants/constants';
+import canvas from '../../service/canvas';
+import { colours, debug, grid } from '../../constants/constants';
 import Drone from '../drone';
-import Bullet from '../abstract/bullet';
-import { angleTo } from '../functions';
+import Bullet from '../ammo/bullet';
+import { angleTo } from '../../functions';
 
 export default class Scanner {
     constructor(radius) {

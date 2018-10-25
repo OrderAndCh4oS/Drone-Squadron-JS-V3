@@ -2,7 +2,7 @@ import canvas from '../service/canvas';
 import { colours } from '../constants/constants';
 import PercentBox from '../user-interface/percent-box';
 
-export default class Heath extends PercentBox {
+export default class Health extends PercentBox {
     constructor(health) {
         super(0, 16, 16, 4, colours.green, colours.white);
         this._health = health;
@@ -18,7 +18,7 @@ export default class Heath extends PercentBox {
     }
 
     takeDamage(damage) {
-        this._currentHealth -= damage;
+        this._currentHealth = +(this._currentHealth - damage).toFixed(2);
     }
 
     repairDamage(value) {

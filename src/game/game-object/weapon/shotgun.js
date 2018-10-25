@@ -1,13 +1,10 @@
 import Weapon from '../abstract/weapon';
-import { pm } from '../constants/constants';
-import canvas from '../service/canvas';
-import Shot from '../ammo/shot';
+import { pm } from '../../constants/constants';
+import canvas from '../../service/canvas';
 
 export default class Shotgun extends Weapon {
-    constructor(drone, x, y, angle, gimbal) {
-        const fireRate = 7;
-        const round = Shot;
-        super(drone, 'Shotgun', '#664', x, y, angle, gimbal, round, fireRate);
+    constructor(name, fireRate, round) {
+        super(name, fireRate, round, '#43211d');
     }
 
     draw() {
@@ -27,7 +24,7 @@ export default class Shotgun extends Weapon {
         for(let i = 0; i < 12; i++) {
             const scatter = Math.random() * 0.08 - 0.04;
             pm.addParticle(
-                new this.round(
+                this.round.make(
                     this.drone,
                     this.position.x,
                     this.position.y,

@@ -14,17 +14,23 @@ import GameOver from './user-interface/display-game-over';
 import MusicManager from './manager/music-manager';
 import canvas from './service/canvas';
 import DebugBar from './components/debug-bar';
+import request from '../api/request';
+import {
+    getGimbal,
+    getScanner,
+    getSteering,
+    getThruster,
+    getWeapon,
+} from '../api';
+import UtilitiesFactory from './factory/utilities-factory';
+import GimbalFactory from './factory/gimbal-factory';
+import ThrusterFactory from './factory/thruster-factory';
+import SteeringFactory from './factory/steering-factory';
+import ScannerFactory from './factory/scanner-factory';
+import WeaponFactory from './factory/weapon-factory';
 
 export default class Main extends Component {
 
-    // fetchData = () => {
-    //     fetch('./data/squads.json')
-    //         .then(resp => resp.json())
-    //         .then((data) => {
-    //             this.setupDrones(data.data);
-    //             this.play();
-    //         });
-    // };
     play = () => {
         this.fpsInterval = 1000 / 60;
         this.then = Date.now();
@@ -33,6 +39,7 @@ export default class Main extends Component {
         this.musicManager = new MusicManager();
         this.animate();
     };
+
     animate = () => {
         const now = Date.now();
         this.elapsed = now - this.then;
@@ -42,6 +49,7 @@ export default class Main extends Component {
         }
         requestAnimationFrame(this.animate);
     };
+
     draw = () => {
         background.draw();
         deltaTime.update();
@@ -61,20 +69,49 @@ export default class Main extends Component {
         }
     };
 
-    constructor(props) {
-        super(props);
-
+    setupDrones(squadronJson, utilities) {
+        squadronJson.map(
+            s => squadrons.push(SquadronFactory.make(s, utilities)),
+        );
     }
 
-    setupDrones(data) {
-        if(data.hasOwnProperty('squadrons'))
-            data.squadrons.map(s => squadrons.push(SquadronFactory.make(s)));
+    fetchUtility(promises, get, name, factory) {
+        promises.push(request(get).then(data => {
+            return {[name]: UtilitiesFactory.make(factory, data)};
+        }));
+    }
+
+    fetchDrones() {
+        const promises = [];
+
+        this.fetchUtility(promises, getGimbal, 'gimbals', GimbalFactory);
+        this.fetchUtility(promises, getThruster, 'thrusters', ThrusterFactory);
+        this.fetchUtility(promises, getSteering, 'steering', SteeringFactory);
+        this.fetchUtility(promises, getScanner, 'scanners', ScannerFactory);
+        this.fetchUtility(promises, getWeapon, 'weapons', WeaponFactory);
+
+        Promise.all(promises).then(items => {
+            let utilities = {};
+            for(let item of items) {
+                utilities = Object.assign(utilities, item);
+            }
+            if(utilities.hasOwnProperty('weapons') &&
+                utilities.hasOwnProperty('gimbals')) {
+                for(let weapon in utilities.weapons) {
+                    if(utilities.weapons.hasOwnProperty(weapon)) {
+                        utilities.weapons[weapon].attachGimbals(
+                            utilities.gimbals);
+                    }
+                }
+            }
+            if(this.props.hasOwnProperty('squadrons'))
+                this.setupDrones(this.props.squadrons, utilities);
+            this.play();
+        });
     }
 
     componentDidMount() {
-        console.log(this.props);
-        this.setupDrones(this.props);
-        this.play();
+        this.fetchDrones();
     }
 
     render() {
