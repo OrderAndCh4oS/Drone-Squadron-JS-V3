@@ -17,5 +17,6 @@ export default class GameOver extends DisplayData {
         } else {
             this.addLine('Draw');
         }
+        super.draw();
     }
 }

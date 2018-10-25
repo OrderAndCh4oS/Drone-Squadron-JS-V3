@@ -1,26 +1,37 @@
-import canvas from '../service/canvas';
-import { pm } from '../constants/constants';
-import { deltaTime } from '../service/delta-time';
-import Vector from '../service/vector';
-import { angleTo } from '../functions';
+import canvas from '../../service/canvas';
+import { pm } from '../../constants/constants';
+import { deltaTime } from '../../service/delta-time';
+import Vector from '../../service/vector';
+import { angleTo } from '../../functions';
 
 export default class Weapon {
-    constructor(drone, name, colour, x, y, angle, gimbal, round, fireRate) {
+    attachDrone = (drone) => {
         this.drone = drone;
         this.id = drone.id;
         this.squadId = drone.squadId;
-        this.colour = colour;
-        this.position = new Vector(x, y);
-        this.velocity = 0;
-        this.fireRate = fireRate;
-        this.lastFired = 0;
-        this.gimbal = new gimbal();
-        this.round = round;
-        this._name = name;
-    }
+    };
 
     get name() {
         return this._name;
+    }
+
+    attachGimbal = (gimbal) => {
+        this.gimbal = gimbal;
+    };
+
+    constructor(name, fireRate, roundType, colour = '#766') {
+        this.drone = null;
+        this.id = null;
+        this.colour = colour;
+        this.velocity = 0;
+        this.fireRate = fireRate;
+        this.lastFired = 0;
+        this.round = roundType;
+        this._name = name;
+    }
+
+    setPosition(x, y) {
+        this.position = new Vector(x, y);
     }
 
     draw() {
@@ -48,8 +59,8 @@ export default class Weapon {
             drone.scanner.angleToTarget());
         if(
             drone.scanner.hasTarget() &&
-            angleToTarget <= this.gimbal.angleLimit &&
-            angleToTarget >= -this.gimbal.angleLimit
+            angleToTarget <= this.gimbal.angleLimit + 0.01 &&
+            angleToTarget >= -(this.gimbal.angleLimit + 0.01)
         ) {
             this.fireIfReady();
         }
@@ -64,7 +75,7 @@ export default class Weapon {
 
     fire() {
         pm.addParticle(
-            new this.round(
+            this.round.make(
                 this.drone,
                 this.position.x,
                 this.position.y,

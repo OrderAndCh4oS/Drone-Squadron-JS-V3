@@ -1,5 +1,5 @@
 import { returnToCanvas, shuffle } from '../functions';
-import Explosion from '../abstract/explosion';
+import Explosion from '../game-object/abstract/explosion';
 import { pm } from '../constants/constants';
 
 export default class DroneManager {
@@ -17,16 +17,17 @@ export default class DroneManager {
 
     update() {
         this._drones = shuffle(this._drones);
-        this._drones = this._drones.map(d => {
-            d.draw();
-            d.update();
-            returnToCanvas(d);
-            if(d.health.currentHealth <= 0) {
-                const explosion = new Explosion(-1, d.position.x, d.position.y);
+        this._drones = this._drones.map(drone => {
+            drone.draw();
+            drone.update();
+            returnToCanvas(drone);
+            if(drone.health.currentHealth <= 0) {
+                const explosion = new Explosion(-1, drone.position.x,
+                    drone.position.y);
                 pm.addParticle(explosion);
-                d.removeParticle();
+                drone.removeParticle();
             }
-            return d;
-        }).filter((d) => d.health.currentHealth > 0);
+            return drone;
+        }).filter((drone) => drone.health.currentHealth > 0);
     }
 }

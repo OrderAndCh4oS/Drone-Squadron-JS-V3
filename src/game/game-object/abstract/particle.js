@@ -1,8 +1,8 @@
-import { colours, friction, grid } from '../constants/constants';
+import { colours, friction, grid } from '../../constants/constants';
 
-import Vector from '../service/vector';
-import { deltaTime } from '../service/delta-time';
-import canvas from '../service/canvas';
+import Vector from '../../service/vector';
+import { deltaTime } from '../../service/delta-time';
+import canvas from '../../service/canvas';
 
 export default class Particle {
     constructor(id, x, y, speed, radius, angle) {

@@ -1,12 +1,9 @@
 import Weapon from '../abstract/weapon';
-import NineMM from '../ammo/nine-mm';
-import canvas from '../service/canvas';
+import canvas from '../../service/canvas';
 
 export default class Uzi extends Weapon {
-    constructor(drone, x, y, angle, gimbal) {
-        const fireRate = 2;
-        const round = NineMM;
-        super(drone, 'Uzi', '#8aa', x, y, angle, gimbal, round, fireRate);
+    constructor(name, fireRate, round) {
+        super(name, fireRate, round, '#86aa98');
     }
 
     draw() {
@@ -21,5 +18,4 @@ export default class Uzi extends Weapon {
         this.applyFill();
         canvas.ctx.resetTransform();
     }
-
 }

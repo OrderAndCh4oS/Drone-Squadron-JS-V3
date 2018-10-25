@@ -1,6 +1,6 @@
-import canvas from '../service/canvas';
-import { angleBetweenRange, distanceTo } from '../functions';
-import { colours } from '../constants/constants';
+import canvas from '../../service/canvas';
+import { angleBetweenRange, distanceTo } from '../../functions';
+import { colours } from '../../constants/constants';
 
 export default class Thruster {
     constructor(thrust) {

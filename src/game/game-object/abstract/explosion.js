@@ -1,4 +1,4 @@
-import canvas from '../service/canvas';
+import canvas from '../../service/canvas';
 import Particle from './particle';
 
 export default class Explosion extends Particle {

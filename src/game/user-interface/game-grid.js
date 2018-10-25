@@ -1,6 +1,6 @@
 import { colours, debug } from '../constants/constants';
 import canvas from '../service/canvas';
-import Drone from '../drone';
+import Drone from '../game-object/drone';
 
 export default class GameGrid {
     constructor() {

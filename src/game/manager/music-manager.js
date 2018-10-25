@@ -30,7 +30,7 @@ export default class MusicManager {
             if(!this.playlist.length) {
                 this.playlist = this.songs;
             }
-            this.dom.currentTime = 0;
+            // this.dom.currentTime = 0;
             this.audio.src = this.playlist[0];
             this.audio.play();
         };

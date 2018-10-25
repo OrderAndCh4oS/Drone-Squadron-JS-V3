@@ -1,12 +1,9 @@
-import canvas from '../service/canvas';
+import canvas from '../../service/canvas';
 import Weapon from '../abstract/weapon';
-import SevenSixTwoMM from '../ammo/seven-six-two-mm';
 
 export default class Rifle extends Weapon {
-    constructor(drone, x, y, angle, gimbal) {
-        const fireRate = 10;
-        const round = SevenSixTwoMM;
-        super(drone, 'Rifle', '#577', x, y, angle, gimbal, round, fireRate);
+    constructor(name, fireRate, round) {
+        super(name, fireRate, round, '#577');
     }
 
     draw() {
@@ -21,5 +18,4 @@ export default class Rifle extends Weapon {
         this.applyFill();
         canvas.ctx.resetTransform();
     }
-
 }
