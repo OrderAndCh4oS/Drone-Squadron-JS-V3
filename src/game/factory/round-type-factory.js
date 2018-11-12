@@ -9,7 +9,6 @@ export default class RoundTypeFactory {
     }
 
     make(drone, x, y, angle, velocity) {
-        console.log(drone, x, y, angle, velocity);
         return new Bullet(drone, x, y, angle, velocity,
             this._speed,
             this._radius,

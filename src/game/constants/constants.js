@@ -14,7 +14,6 @@ export const colours = {
     blue: '#3b9ec7',
 };
 
-export const game = {state: 'playing'};
 export const friction = 0.8;
 
 export const debug = new Debug();

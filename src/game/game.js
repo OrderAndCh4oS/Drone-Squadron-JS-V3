@@ -21,6 +21,7 @@ import {
     getSteering,
     getThruster,
     getWeapon,
+    postSquadron,
 } from '../api';
 import UtilitiesFactory from './factory/utilities-factory';
 import GimbalFactory from './factory/gimbal-factory';
@@ -30,6 +31,11 @@ import ScannerFactory from './factory/scanner-factory';
 import WeaponFactory from './factory/weapon-factory';
 
 export default class Main extends Component {
+
+    state = {
+        gameOver: false,
+        winner: false,
+    };
 
     play = () => {
         this.fpsInterval = 1000 / 60;
@@ -60,26 +66,36 @@ export default class Main extends Component {
         UI.displaySquadData();
         squadrons.map(s => {
             if(s.health <= 0) {
-                game.state = 'game-over';
+                this.setState({
+                    gameOver: true,
+                });
             }
         });
-        if(game.state === 'game-over') {
+        if(this.state.gameOver) {
+            this.setWinner();
             this.musicManager.stop();
-            new GameOver().draw();
+            new GameOver().draw(this.state.winner);
+            // this.updateSquadrons();
         }
     };
 
-    setupDrones(squadronJson, utilities) {
-        squadronJson.map(
-            s => squadrons.push(SquadronFactory.make(s, utilities)),
-        );
-    }
+    setWinner = () => {
+        let winner;
+        if(squadrons[0].health > squadrons[1].health) {
+            winner = squadrons[0];
+        } else if(squadrons[1].health > squadrons[0].health) {
+            winner = squadrons[1];
+        } else {
+            winner = false;
+        }
+        this.setState({winner});
+    };
 
-    fetchUtility(promises, get, name, factory) {
-        promises.push(request(get).then(data => {
-            return {[name]: UtilitiesFactory.make(factory, data)};
-        }));
-    }
+    updateSquadrons = () => {
+        squadrons.map(squadron => {
+            request(postSquadron({}));
+        });
+    };
 
     fetchDrones() {
         const promises = [];
@@ -108,6 +124,18 @@ export default class Main extends Component {
                 this.setupDrones(this.props.squadrons, utilities);
             this.play();
         });
+    }
+
+    fetchUtility(promises, get, name, factory) {
+        promises.push(request(get).then(data => {
+            return {[name]: UtilitiesFactory.make(factory, data)};
+        }));
+    }
+
+    setupDrones(squadronJson, utilities) {
+        squadronJson.map(
+            s => squadrons.push(SquadronFactory.make(s, utilities)),
+        );
     }
 
     componentDidMount() {

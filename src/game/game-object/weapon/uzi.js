@@ -1,9 +1,10 @@
 import Weapon from '../abstract/weapon';
 import canvas from '../../service/canvas';
+import sounds from '../../assets/audio/sound';
 
 export default class Uzi extends Weapon {
     constructor(name, fireRate, round) {
-        super(name, fireRate, round, '#86aa98');
+        super(name, fireRate, round, '#86aa98', sounds.uziOne);
     }
 
     draw() {

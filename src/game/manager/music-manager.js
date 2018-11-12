@@ -1,8 +1,9 @@
-import music from '../music';
+import music from '../assets/audio/music';
 
 export default class MusicManager {
 
     constructor() {
+        this.current_track = 0;
         this.sounds = {};
         this.songs = music;
         this.loop = 0;
@@ -12,12 +13,11 @@ export default class MusicManager {
         this.listenToMusic();
     }
 
-    loadSounds() {
-        for(let sound in this.sounds) {
-            if(this.sounds.hasOwnProperty(sound)) {
-                this.sounds[sound] = this.load(this.sounds[sound]);
-            }
-        }
+    static load(sound) {
+        let a = document.createElement('audio');
+        a.src = sound;
+
+        return a;
     }
 
     createMainAudio() {
@@ -30,23 +30,23 @@ export default class MusicManager {
             if(!this.playlist.length) {
                 this.playlist = this.songs;
             }
-            // this.dom.currentTime = 0;
             this.audio.src = this.playlist[0];
             this.audio.play();
         };
     }
 
-    listenToMusic() {
-        this.playlist = this.songs;
-        this.audio.src = this.playlist[0];
-        this.audio.play();
+    loadSounds() {
+        for(let sound in this.sounds) {
+            if(this.sounds.hasOwnProperty(sound)) {
+                this.sounds[sound] = MusicManager.load(this.sounds[sound]);
+            }
+        }
     }
 
-    load(sound) {
-        let a = document.createElement('audio');
-        a.src = sound;
-
-        return a;
+    listenToMusic() {
+        this.playlist = this.songs;
+        this.audio.src = this.songs[0];
+        this.audio.play();
     }
 
     start() {
