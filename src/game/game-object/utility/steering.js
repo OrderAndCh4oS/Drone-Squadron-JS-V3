@@ -61,7 +61,7 @@ export default class Steering {
     hasTargetCloseBehind(drone) {
         return (drone.scanner.hasTarget() &&
             distanceTo(drone, drone.scanner.target) < 200 &&
-            !angleBetweenRange(drone, Math.PI / 2));
+            !angleBetweenRange(drone, Math.PI / 6));
     }
 
     hasThreats(drone) {

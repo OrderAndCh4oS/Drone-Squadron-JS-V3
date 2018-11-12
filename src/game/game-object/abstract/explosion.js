@@ -1,5 +1,7 @@
 import canvas from '../../service/canvas';
 import Particle from './particle';
+import sounds from '../../assets/audio/sound';
+import Sound from './sound';
 
 export default class Explosion extends Particle {
     constructor(id, x, y) {
@@ -9,6 +11,7 @@ export default class Explosion extends Particle {
         this._explosionImage.src = this._sprite;
         this._frame = 0;
         this._damage = 0;
+        this._sound = new Sound(sounds.explosionOne);
     }
 
     get damage() {
@@ -23,6 +26,9 @@ export default class Explosion extends Particle {
     }
 
     draw() {
+        if(!this._sound.has_played) {
+            this._sound.play();
+        }
         canvas.ctx.translate(this.position.x - 24, this.position.y - 24);
         canvas.ctx.drawImage(this._explosionImage, 48 * this._frame, 0, 48, 48,
             0,

@@ -9,7 +9,6 @@ import DisplayData from '../user-interface/display-particle-data';
 export default class Drone extends Particle {
     constructor(
         drone, squad, weapon, thruster, steering, scanner, x, y, angle) {
-        console.log('drone', drone);
         super(drone.id, x, y, 0, 13, angle);
         this._squadId = squad.id;
         this._colour = squad.colour;

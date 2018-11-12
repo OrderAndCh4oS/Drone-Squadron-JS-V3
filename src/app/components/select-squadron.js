@@ -45,8 +45,6 @@ class SelectSquadron extends Component {
     handleUpdate = event => {
         const value = event.target.value;
         const name = event.target.name;
-        console.log('value: ', value);
-        console.log(name, ': ', this.findById(value));
         this.setState({
             [name]: this.findById(value),
         });

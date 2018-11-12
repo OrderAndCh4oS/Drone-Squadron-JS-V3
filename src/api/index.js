@@ -62,8 +62,8 @@ export const deleteDrone = ({params}) => {
     return deleteFetch(makeUrl('/drone', params));
 };
 
-export const getPriceList = () => {
-    return getFetch(makeUrl('/price-list'));
+export const getItemList = () => {
+    return getFetch(makeUrl('/item-list'));
 };
 
 export const getWeapon = () => {

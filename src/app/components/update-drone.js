@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import Button from '@material-ui/core/Button/Button';
 import Grid from '@material-ui/core/Grid/Grid';
 import request from '../../api/request';
-import { getPriceList, putDrone } from '../../api';
+import { getItemList, putDrone } from '../../api';
 import Paper from '@material-ui/core/Paper/Paper';
 import Typography from '@material-ui/core/Typography/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -154,7 +154,7 @@ class UpdateDrone extends Component {
         if(!this.props.location.state.drone) {
             this.props.history.push('/manage-squadrons');
         }
-        request(getPriceList).then(data => {
+        request(getItemList).then(data => {
             const {history} = this.props;
             handleUnauthorised(data, history);
             this.setState({priceList: this.makePriceList(data)});

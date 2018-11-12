@@ -1,10 +1,11 @@
 import Weapon from '../abstract/weapon';
 import { pm } from '../../constants/constants';
 import canvas from '../../service/canvas';
+import sounds from '../../assets/audio/sound';
 
 export default class Shotgun extends Weapon {
     constructor(name, fireRate, round) {
-        super(name, fireRate, round, '#43211d');
+        super(name, fireRate, round, '#43211d', sounds.shotgunOne);
     }
 
     draw() {
@@ -21,6 +22,7 @@ export default class Shotgun extends Weapon {
     }
 
     fire() {
+        this._sound.play();
         for(let i = 0; i < 12; i++) {
             const scatter = Math.random() * 0.08 - 0.04;
             pm.addParticle(

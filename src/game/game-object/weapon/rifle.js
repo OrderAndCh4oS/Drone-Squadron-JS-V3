@@ -1,9 +1,10 @@
 import canvas from '../../service/canvas';
 import Weapon from '../abstract/weapon';
+import sounds from '../../assets/audio/sound';
 
 export default class Rifle extends Weapon {
     constructor(name, fireRate, round) {
-        super(name, fireRate, round, '#577');
+        super(name, fireRate, round, '#577', sounds.rifleTwo);
     }
 
     draw() {

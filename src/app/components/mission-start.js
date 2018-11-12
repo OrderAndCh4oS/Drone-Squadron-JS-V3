@@ -35,7 +35,6 @@ class MissionStart extends Component {
             .then(data => {
                 const {history} = this.props;
                 handleUnauthorised(data, history);
-                console.log(data);
                 this.setState(prevState => ({
                     squadronOne: {
                         ...prevState.squadronOne,

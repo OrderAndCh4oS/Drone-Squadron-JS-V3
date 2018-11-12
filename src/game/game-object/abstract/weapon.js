@@ -3,6 +3,8 @@ import { pm } from '../../constants/constants';
 import { deltaTime } from '../../service/delta-time';
 import Vector from '../../service/vector';
 import { angleTo } from '../../functions';
+import sounds from '../../assets/audio/sound';
+import Sound from './sound';
 
 export default class Weapon {
     attachDrone = (drone) => {
@@ -19,7 +21,8 @@ export default class Weapon {
         this.gimbal = gimbal;
     };
 
-    constructor(name, fireRate, roundType, colour = '#766') {
+    constructor(
+        name, fireRate, roundType, colour = '#766', sound = sounds.rifleOne) {
         this.drone = null;
         this.id = null;
         this.colour = colour;
@@ -28,6 +31,7 @@ export default class Weapon {
         this.lastFired = 0;
         this.round = roundType;
         this._name = name;
+        this._sound = new Sound(sound);
     }
 
     setPosition(x, y) {
@@ -83,6 +87,7 @@ export default class Weapon {
                 this.velocity,
             ),
         );
+        this._sound.play();
     }
 
     applyFill() {

@@ -85,6 +85,8 @@ class ManageDrones extends Component {
         });
     }
 
+    com;
+
     render() {
         const {classes} = this.props;
         return (
