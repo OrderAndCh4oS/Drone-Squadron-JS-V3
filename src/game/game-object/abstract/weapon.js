@@ -21,6 +21,10 @@ export default class Weapon {
         this.gimbal = gimbal;
     };
 
+    attachRoundType = (round) => {
+        this.round = round;
+    };
+
     constructor(
         name, fireRate, roundType, colour = '#766', sound = sounds.rifleOne) {
         this.drone = null;

@@ -17,6 +17,7 @@ import DebugBar from './components/debug-bar';
 import request from '../api/request';
 import {
     getGimbal,
+    getRoundType,
     getScanner,
     getSteering,
     getThruster,
@@ -29,6 +30,7 @@ import ThrusterFactory from './factory/thruster-factory';
 import SteeringFactory from './factory/steering-factory';
 import ScannerFactory from './factory/scanner-factory';
 import WeaponFactory from './factory/weapon-factory';
+import RoundTypeFactory from './factory/round-type-factory';
 
 export default class Main extends Component {
 
@@ -105,23 +107,18 @@ export default class Main extends Component {
         this.fetchUtility(promises, getSteering, 'steering', SteeringFactory);
         this.fetchUtility(promises, getScanner, 'scanners', ScannerFactory);
         this.fetchUtility(promises, getWeapon, 'weapons', WeaponFactory);
+        this.fetchUtility(promises, getRoundType, 'roundTypes',
+            RoundTypeFactory);
 
         Promise.all(promises).then(items => {
             let utilities = {};
             for(let item of items) {
                 utilities = Object.assign(utilities, item);
             }
-            if(utilities.hasOwnProperty('weapons') &&
-                utilities.hasOwnProperty('gimbals')) {
-                for(let weapon in utilities.weapons) {
-                    if(utilities.weapons.hasOwnProperty(weapon)) {
-                        utilities.weapons[weapon].attachGimbals(
-                            utilities.gimbals);
-                    }
-                }
-            }
-            if(this.props.hasOwnProperty('squadrons'))
+            console.log(utilities);
+            if(this.props.hasOwnProperty('squadrons')) {
                 this.setupDrones(this.props.squadrons, utilities);
+            }
             this.play();
         });
     }
@@ -149,4 +146,3 @@ export default class Main extends Component {
         </div>;
     }
 }
-

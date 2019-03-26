@@ -78,6 +78,10 @@ export const getRoundType = () => {
     return getFetch(makeUrl('/round-type'));
 };
 
+export const getRoundTypeById = ({params}) => {
+    return getFetch(makeUrl('/round-type/' + params.id));
+};
+
 export const getScanner = () => {
     return getFetch(makeUrl('/scanner'));
 };

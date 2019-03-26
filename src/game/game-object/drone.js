@@ -110,8 +110,9 @@ export default class Drone extends Particle {
 
     drawData() {
         if(debug.droneData) {
-            const positionText = `Position: (${Math.round(
-                this.position.x)}, ${Math.round(this.position.y)})`;
+            const x = Math.round(this.position.x);
+            const y = Math.round(this.position.y);
+            const positionText = `Position: (${x}, ${y})`;
             const gridText = `Grid: (${this.gridX}, ${this.gridY})`;
             const displayData = new DisplayData(0, 0, this.colour);
             displayData.addLine('ID: ' + this.id);

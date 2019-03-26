@@ -1,11 +1,16 @@
 import Bullet from '../game-object/ammo/bullet';
 
 export default class RoundTypeFactory {
-    constructor(speed, radius, damage, colour) {
-        this._speed = speed;
-        this._radius = radius;
-        this._damage = damage;
-        this._colour = colour;
+    constructor(params) {
+        this._id = params.id;
+        this._speed = params.speed;
+        this._radius = params.radius;
+        this._damage = params.damage;
+        this._colour = params.colour;
+    }
+
+    get id() {
+        return this._id;
     }
 
     make(drone, x, y, angle, velocity) {

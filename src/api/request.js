@@ -3,6 +3,8 @@ const request = (request, params, values) => {
         response => {
             switch(response.status) {
                 case 200:
+                case 304:
+                case 204:
                     return handleSuccessfulResponse(response);
                 case 401:
                     return handleAuthenticationErrorResponse(response);
