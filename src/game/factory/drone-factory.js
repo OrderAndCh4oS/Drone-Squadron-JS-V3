@@ -7,6 +7,12 @@ export default class DroneFactory {
     static make(droneData, squadronData, utilities) {
         const weapon = utilities.weapons[droneData.weapon_name].make();
         weapon.attachGimbal(utilities.gimbals[droneData.gimbal_name].make());
+        weapon.attachRoundType(
+            Object.values(utilities.roundTypes)
+                .find(row => {
+                    return row.id === weapon.round;
+                }),
+        );
         const thruster = utilities.thrusters[droneData.thruster_name].make();
         const steering = utilities.steering[droneData.steering_name].make();
         const scanner = utilities.scanners[droneData.scanner_name].make();
