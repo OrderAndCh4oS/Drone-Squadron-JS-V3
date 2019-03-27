@@ -4,6 +4,10 @@ import Drone from '../game-object/drone';
 
 export default class GameGrid {
     constructor() {
+        this.init();
+    }
+
+    init() {
         this._gridBlockSize = 100;
         this._columns = Math.round(canvas.width / this._gridBlockSize);
         this._rows = Math.round(canvas.height / this._gridBlockSize);
@@ -89,6 +93,10 @@ export default class GameGrid {
             console.log(this.grid);
             debug.gameGridLog = false;
         }
+    }
+
+    reset() {
+        this.init();
     }
 
     draw() {

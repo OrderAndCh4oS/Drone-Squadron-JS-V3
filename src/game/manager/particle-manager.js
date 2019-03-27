@@ -3,15 +3,15 @@ import { dm } from '../constants/constants';
 
 export default class ParticleManager {
     constructor() {
-        this.particles = [];
+        this._particles = [];
     }
 
     addParticle(particle) {
-        this.particles.push(particle);
+        this._particles.push(particle);
     }
 
     update() {
-        this.particles = this.particles
+        this._particles = this._particles
             .map(p => {
                 p.draw();
                 p.update();
@@ -22,6 +22,10 @@ export default class ParticleManager {
                 return p;
             })
             .filter(p => !p.remove && !isOffCanvas(p));
+    }
+
+    reset() {
+        this._particles = [];
     }
 
     collisionDetection(p) {

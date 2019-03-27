@@ -31,10 +31,19 @@ import SteeringFactory from './factory/steering-factory';
 import ScannerFactory from './factory/scanner-factory';
 import WeaponFactory from './factory/weapon-factory';
 import RoundTypeFactory from './factory/round-type-factory';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core';
 
-export default class Main extends Component {
+const styles = theme => ({
+    button: {
+        marginBottom: theme.spacing.unit,
+    },
+});
+
+class Main extends Component {
 
     state = {
+        playing: false,
         gameOver: false,
         winner: false,
     };
@@ -45,17 +54,19 @@ export default class Main extends Component {
         this.startTime = this.then;
         this.elapsed = 0;
         this.musicManager = new MusicManager();
-        this.animate();
+        this.setState({playing: true});
     };
 
     animate = () => {
-        const now = Date.now();
-        this.elapsed = now - this.then;
-        if(this.elapsed > this.fpsInterval) {
-            this.then = Date.now();
-            this.draw();
+        if(this.state.playing) {
+            const now = Date.now();
+            this.elapsed = now - this.then;
+            if(this.elapsed > this.fpsInterval) {
+                this.then = Date.now();
+                this.draw();
+            }
+            requestAnimationFrame(this.animate);
         }
-        requestAnimationFrame(this.animate);
     };
 
     draw = () => {
@@ -74,14 +85,18 @@ export default class Main extends Component {
             }
         });
         if(this.state.gameOver) {
-            this.setWinner();
+            const winner = this.getWinner();
             this.musicManager.stop();
             new GameOver().draw(this.state.winner);
             // this.updateSquadrons();
+            this.setState({
+                winner,
+                gameOver: true,
+            });
         }
     };
 
-    setWinner = () => {
+    getWinner = () => {
         let winner;
         if(squadrons[0].health > squadrons[1].health) {
             winner = squadrons[0];
@@ -90,13 +105,23 @@ export default class Main extends Component {
         } else {
             winner = false;
         }
-        this.setState({winner});
+        return winner;
     };
 
     updateSquadrons = () => {
         squadrons.map(squadron => {
             request(postSquadron({}));
         });
+    };
+
+    endGame = () => {
+        this.setState({playing: false});
+        squadrons.shift();
+        squadrons.shift();
+        dm.reset();
+        pm.reset();
+        grid.reset();
+        this.props.endGame();
     };
 
     fetchDrones() {
@@ -107,19 +132,23 @@ export default class Main extends Component {
         this.fetchUtility(promises, getSteering, 'steering', SteeringFactory);
         this.fetchUtility(promises, getScanner, 'scanners', ScannerFactory);
         this.fetchUtility(promises, getWeapon, 'weapons', WeaponFactory);
-        this.fetchUtility(promises, getRoundType, 'roundTypes',
-            RoundTypeFactory);
+        this.fetchUtility(
+            promises,
+            getRoundType,
+            'roundTypes',
+            RoundTypeFactory,
+        );
 
         Promise.all(promises).then(items => {
             let utilities = {};
             for(let item of items) {
                 utilities = Object.assign(utilities, item);
             }
-            console.log(utilities);
             if(this.props.hasOwnProperty('squadrons')) {
                 this.setupDrones(this.props.squadrons, utilities);
             }
             this.play();
+            this.animate();
         });
     }
 
@@ -140,9 +169,25 @@ export default class Main extends Component {
     }
 
     render() {
+        const {classes} = this.props;
         return <div>
             {canvas.canvas}
-            <DebugBar/>
+            {
+                !this.state.gameOver
+                    ? <DebugBar/>
+                    : <div>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            className={classes.button}
+                            onClick={this.endGame}
+                        >Finish</Button>
+                    </div>
+            }
         </div>;
     }
 }
+
+Main = withStyles(styles)(Main);
+
+export default Main;

@@ -15,6 +15,10 @@ export default class DroneManager {
         this._drones.push(drone);
     }
 
+    reset() {
+        this._drones = [];
+    }
+
     update() {
         this._drones = shuffle(this._drones);
         this._drones = this._drones.map(drone => {

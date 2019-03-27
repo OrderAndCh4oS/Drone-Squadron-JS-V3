@@ -27,11 +27,28 @@ class MissionStart extends Component {
     };
 
     handleClick = () => {
-        this.setState({play: true});
+        this.fetchSquadrons().then(
+            () => this.setState({play: true}),
+        );
     };
 
-    componentDidMount() {
-        request(getDroneBySquadron, {id: this.state.squadronOne.id})
+    endGame = () => {
+        console.log('end');
+        this.setState(prevState => ({
+            play: false,
+            squadronOne: {
+                ...prevState.squadronOne,
+                drones: null,
+            },
+            squadronTwo: {
+                ...prevState.squadronTwo,
+                drones: null,
+            },
+        }));
+    };
+
+    async fetchSquadrons() {
+        await request(getDroneBySquadron, {id: this.state.squadronOne.id})
             .then(data => {
                 const {history} = this.props;
                 handleUnauthorised(data, history);
@@ -42,11 +59,10 @@ class MissionStart extends Component {
                     },
                 }));
             });
-        request(getDroneBySquadron, {id: this.state.squadronTwo.id})
+        await request(getDroneBySquadron, {id: this.state.squadronTwo.id})
             .then(data => {
                 const {history} = this.props;
                 handleUnauthorised(data, history);
-                console.log(data);
                 this.setState(prevState => ({
                     squadronTwo: {
                         ...prevState.squadronTwo,
@@ -63,18 +79,17 @@ class MissionStart extends Component {
                 <Typography variant="display1" className={classes.grow}>
                     Mission Start
                 </Typography>
-                <Button
-                    variant='contained'
-                    color='primary'
-                    className={classes.button}
-                    onClick={this.handleClick}
-                >Play</Button>
                 {this.state.play ?
                     <Main
                         squadrons={[
                             this.state.squadronOne,
-                            this.state.squadronTwo]}
-                    /> : null}
+                            this.state.squadronTwo]} endGame={this.endGame}
+                    /> : <Button
+                        variant='contained'
+                        color='primary'
+                        className={classes.button}
+                        onClick={this.handleClick}
+                    >Play</Button>}
             </Fragment>
         );
     }
