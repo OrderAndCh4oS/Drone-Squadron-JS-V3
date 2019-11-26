@@ -52,21 +52,21 @@ const styles = theme => ({
         color: theme.palette.text.secondary,
     },
 });
-
 const PrivateRoute = ({component: Component, ...rest}) => (
     <Route
-        {...rest} render={props =>
-        auth.isAuthenticated ? (
-            <Component {...props} />
-        ) : (
-            <Redirect
-                to={{
-                    pathname: '/login',
-                    state: {from: props.location},
-                }}
-            />
-        )
-    }
+        {...rest}
+        render={props =>
+            auth.isAuthenticated ? (
+                <Component {...props} />
+            ) : (
+                <Redirect
+                    to={{
+                        pathname: '/login',
+                        state: {from: props.location},
+                    }}
+                />
+            )
+        }
     />
 );
 
@@ -76,8 +76,8 @@ const AuthButton = withRouter(({history}) => {
             Login
         </Button> :
         <Button
-            color="inherit" onClick={() => auth.signOut(
-            () => history.push('/'))}
+            color="inherit"
+            onClick={() => auth.signOut(() => history.push('/'))}
         >
             Logout
         </Button>;
@@ -89,8 +89,8 @@ const AuthListButton = withRouter(({history}) => {
             <ListItemText primary="Login"/>
         </ListItem> :
         <ListItem
-            button onClick={() => auth.signOut(
-            () => history.push('/'))}
+            button
+            onClick={() => auth.signOut(() => history.push('/'))}
         >
             <ListItemText primary="Logout"/>
         </ListItem>;
