@@ -107,10 +107,14 @@ class UpdateDrone extends Component {
             squadron: this.state.squadron.id,
             ...this.prepare_updates(),
         };
+        const cost = this.updateCost();
         request(putDrone, {id: this.state.drone.id}, updates).then(data => {
             this.setState({
                 updates: {},
                 updated: true,
+                cost_of_updates: 0
+            }, () => {
+
             });
             setTimeout(() => this.setState({updated: false}), 2000);
         });

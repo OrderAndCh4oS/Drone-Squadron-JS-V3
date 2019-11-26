@@ -57,5 +57,7 @@
     "webpack-dev-server": "^3.8.2",
     "webpack-merge": "^4.1.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "redux": "^4.0.4"
+  }
 }
