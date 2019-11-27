@@ -90,7 +90,7 @@ class SelectSquadron extends Component {
         const {classes} = this.props;
         return (
             <Fragment>
-                <Typography variant="display1">
+                <Typography variant="h4">
                     Select Squadrons
                 </Typography>
                 <Paper>

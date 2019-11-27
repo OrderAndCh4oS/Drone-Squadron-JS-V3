@@ -76,7 +76,7 @@ class MissionStart extends Component {
         const {classes} = this.props;
         return (
             <Fragment>
-                <Typography variant="display1" className={classes.grow}>
+                <Typography variant="h4" className={classes.grow}>
                     Mission Start
                 </Typography>
                 {this.state.play ?

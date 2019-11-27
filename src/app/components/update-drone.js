@@ -169,7 +169,7 @@ class UpdateDrone extends Component {
         const {classes} = this.props;
         return (
             <Fragment>
-                <Typography variant="display1">
+                <Typography variant="h4">
                     Manage Drones
                 </Typography>
                 <Typography variant="subheading">

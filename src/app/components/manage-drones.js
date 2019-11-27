@@ -91,10 +91,10 @@ class ManageDrones extends Component {
         const {classes} = this.props;
         return (
             <Fragment>
-                <Typography variant="display1">
+                <Typography variant="h4">
                     Manage Drones
                 </Typography>
-                <Typography variant="subheading">
+                <Typography variant="subtitle1">
                     {this.state.squadron.name}
                 </Typography>
                 <Typography variant="body1">
@@ -134,7 +134,7 @@ class ManageDrones extends Component {
                     {this.state.drones.map(
                         drone => <Grid item xs={4} key={drone.id}>
                             <Paper>
-                                <Typography variant={'headline'}>
+                                <Typography variant={'h5'}>
                                     {drone.name}
                                 </Typography>
                                 <Typography

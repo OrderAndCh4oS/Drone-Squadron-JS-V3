@@ -1,6 +1,7 @@
 import request from '../api/request';
 import { getLogout } from '../api';
 
+// Todo: Handle auth better, need to re-validate a JWT token or something.
 const auth = {
     isAuthenticated: JSON.parse(window.localStorage.getItem('user')) !== null,
     authenticate(callback) {

@@ -147,13 +147,12 @@ class App extends Component {
                             className={classes.menuButton}
                             color="inherit"
                             aria-label="Menu"
+                            onClick={this.toggleDrawer('left', true)}
                         >
-                            <MenuIcon
-                                onClick={this.toggleDrawer('left', true)}
-                            />
+                            <MenuIcon/>
                         </IconButton>
                         <Typography
-                            variant="subheading"
+                            variant="subtitle1"
                             color="inherit"
                             className={classes.grow}
                         >

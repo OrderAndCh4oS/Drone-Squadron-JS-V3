@@ -58,7 +58,7 @@ class ManageSquadrons extends Component {
         const {classes} = this.props;
         return (
             <Fragment>
-                <Typography variant="display1">
+                <Typography variant="h4">
                     Manage Squadron
                 </Typography>
                 <form noValidate autoComplete="off" className={classes.form}>
@@ -88,7 +88,7 @@ class ManageSquadrons extends Component {
                     {this.state.squadrons.map(
                         squadron => <Grid item xs={4} key={squadron.id}>
                             <Paper>
-                                <Typography variant={'headline'}>
+                                <Typography variant={'h5'}>
                                     {squadron.name}
                                 </Typography>
                                 <Typography

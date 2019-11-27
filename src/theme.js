@@ -34,7 +34,7 @@ const theme = createMuiTheme({
         button: {
             fontStyle: 'italic',
         },
-        display1: {
+        h4: {
             color: 'black',
             marginBottom: spacing,
         },

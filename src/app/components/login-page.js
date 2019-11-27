@@ -7,9 +7,10 @@ import auth from '../auth';
 import request from '../../api/request';
 import { postLogin } from '../../api';
 import Typography from '@material-ui/core/Typography/Typography';
+import { connect } from 'react-redux';
+import { setUser } from '../../store/user/actions';
 
 class Login extends Component {
-
     state = {
         redirectToReferrer: false,
         user: {
@@ -34,6 +35,7 @@ class Login extends Component {
         request(postLogin, false, this.state.user).then(data => {
             if(data.hasOwnProperty('user')) {
                 window.localStorage.setItem('user', JSON.stringify(data.user));
+                this.props.updateName(data.user);
                 auth.authenticate(() => {
                     this.setState({redirectToReferrer: true});
                 });
@@ -48,7 +50,7 @@ class Login extends Component {
         }
         return (
             <Fragment>
-                <Typography variant="display1">
+                <Typography variant="h4">
                     Mission Start
                 </Typography>
                 <form noValidate autoComplete="off">
@@ -91,6 +93,12 @@ class Login extends Component {
     }
 }
 
-Login = withRouter(Login);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateName: name => dispatch(setUser(name)),
+    };
+};
+
+Login = withRouter(connect(null, mapDispatchToProps)(Login));
 
 export default Login;

@@ -11,7 +11,7 @@
     "prod": "webpack --mode=production  --config webpack.prod.js && cp src/.htaccess dist/.htaccess && cp src/sitemap.xml dist/sitemap.xml && cp src/robots.txt dist/robots.txt && cp src/favicon.ico dist/favicon.ico && cp -R src/static/ dist/static"
   },
   "keywords": [],
-  "author": "",
+  "author": "Sarcoma <sean@orderandchaoscreative.com>",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.1.2",
@@ -58,6 +58,9 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-    "redux": "^4.0.4"
+    "react-redux": "^7.1.3",
+    "redux": "^4.0.4",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0"
   }
 }

@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Typography from '@material-ui/core/Typography/Typography';
 import { withStyles } from '@material-ui/core';
+import { connect } from 'react-redux';
 
 const styles = theme => ({
     grow: {
@@ -10,15 +11,25 @@ const styles = theme => ({
 
 class Home extends Component {
     render() {
-        const {classes} = this.props;
+        const {username} = this.props;
         return (
-            <Typography variant="display1">
-                Drone Squadron
-            </Typography>
+            <Fragment>
+                <Typography variant="h4">
+                    Drone Squadron
+                </Typography>
+                {
+                    username !== ''
+                        ?
+                        <Typography variant="subtitle1">{username}</Typography>
+                        : null
+                }
+            </Fragment>
         );
     }
 }
 
-Home = withStyles(styles)(Home);
+const mapStateToProps = (state) => {
+    return state.userReducer;
+};
 
-export default Home;
+export default withStyles(styles)(connect(mapStateToProps)(Home));
