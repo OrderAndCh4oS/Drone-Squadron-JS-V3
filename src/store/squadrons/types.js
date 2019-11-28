@@ -1,2 +1,4 @@
-export const UPDATE_NAME = 'UPDATE_NAME';
-export const CLEAR_NAME = 'CLEAR_NAME';
+export const SET_SQUADRONS = 'SET_SQUADRONS';
+export const ADD_SQUADRON = 'ADD_SQUADRON';
+export const REMOVE_SQUADRON = 'REMOVE_SQUADRON';
+export const UPDATE_SQUADRON = 'UPDATE_SQUADRON';

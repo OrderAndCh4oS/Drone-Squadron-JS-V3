@@ -1,6 +1,4 @@
 
-const state = {
-    name: ''
-};
+const state = [];
 
 export default state;

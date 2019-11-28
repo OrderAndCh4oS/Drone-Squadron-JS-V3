@@ -11,16 +11,16 @@ const styles = theme => ({
 
 class Home extends Component {
     render() {
-        const {username} = this.props;
+        const {user, squadrons, drones} = this.props;
         return (
             <Fragment>
                 <Typography variant="h4">
                     Drone Squadron
                 </Typography>
                 {
-                    username !== ''
+                    user.username !== ''
                         ?
-                        <Typography variant="subtitle1">{username}</Typography>
+                        <Typography variant="subtitle1">{user.username}</Typography>
                         : null
                 }
             </Fragment>
@@ -29,7 +29,7 @@ class Home extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return state.userReducer;
+    return state;
 };
 
 export default withStyles(styles)(connect(mapStateToProps)(Home));

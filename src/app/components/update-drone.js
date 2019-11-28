@@ -13,6 +13,9 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import Input from '@material-ui/core/Input/Input';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import FormControl from '@material-ui/core/FormControl/FormControl';
+import { updateDrone } from '../../store/drones/actions';
+import { updateSquadron } from '../../store/squadrons/actions';
+import { connect } from 'react-redux';
 
 const styles = theme => ({
     root: {
@@ -60,7 +63,6 @@ const ErrorMessage = ({classes, error}) => error ?
 
 class UpdateDrone extends Component {
     state = {
-        squadron: this.props.location.state.squadron,
         drone: this.props.location.state.drone,
         errors: {},
         updates: {},
@@ -96,7 +98,7 @@ class UpdateDrone extends Component {
     };
 
     handleSubmit = () => {
-        if(this.state.cost_of_updates > this.state.squadron.scrap) {
+        if(this.state.cost_of_updates > this.props.squadron.scrap) {
             this.setState({errors: {message: 'Not enough scrap'}});
             setTimeout(() => {
                 this.setState({errors: {}});
@@ -104,17 +106,19 @@ class UpdateDrone extends Component {
             return;
         }
         const updates = {
-            squadron: this.state.squadron.id,
+            squadron: this.props.squadron.id,
             ...this.prepare_updates(),
         };
-        const cost = this.updateCost();
         request(putDrone, {id: this.state.drone.id}, updates).then(data => {
+            this.props.updateDrone(data);
+            this.props.updateSquadron({
+                ...this.props.squadron,
+                scrap: this.props.squadron.scrap - this.state.cost_of_updates,
+            });
             this.setState({
                 updates: {},
                 updated: true,
-                cost_of_updates: 0
-            }, () => {
-
+                cost_of_updates: 0,
             });
             setTimeout(() => this.setState({updated: false}), 2000);
         });
@@ -166,17 +170,17 @@ class UpdateDrone extends Component {
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, squadron} = this.props;
         return (
             <Fragment>
                 <Typography variant="h4">
                     Manage Drones
                 </Typography>
-                <Typography variant="subheading">
-                    {this.state.squadron.name}
+                <Typography variant="subtitle1">
+                    {squadron.name}
                 </Typography>
                 <Typography variant="body1">
-                    Scrap: {this.state.squadron.scrap}
+                    Scrap: {squadron.scrap}
                 </Typography>
                 <Typography variant="body1" className={classes.text}>
                     Cost of Updates: {this.state.cost_of_updates}
@@ -186,7 +190,7 @@ class UpdateDrone extends Component {
                         <Paper>
                             <Grid item xs={12}>
                                 <Typography
-                                    variant={'headline'}
+                                    variant={'h4'}
                                     className={classes.text}
                                 >
                                     {this.state.drone.name}
@@ -350,6 +354,22 @@ class UpdateDrone extends Component {
     }
 }
 
-UpdateDrone = withStyles(styles)(withRouter(UpdateDrone));
+const mapStateToProps = (state, props) => {
+    const squadron = props.location.state.squadron;
+    const drone = props.location.state.drone;
+    return {
+        drone: state.drones.find(d => d.id === drone.id),
+        squadron: state.squadrons.find(s => s.id === squadron.id),
+    };
+};
 
-export default UpdateDrone;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateDrone: drone => dispatch(updateDrone(drone)),
+        updateSquadron: squadron => dispatch(updateSquadron(squadron)),
+    };
+};
+
+export default withStyles(styles)(withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(UpdateDrone),
+));

@@ -10,6 +10,9 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { withRouter } from 'react-router';
 import { handleUnauthorised } from '../auth';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { addDrone, setDrones } from '../../store/drones/actions';
+import { updateSquadron } from '../../store/squadrons/actions';
 
 const styles = theme => ({
     form: {
@@ -33,8 +36,6 @@ const styles = theme => ({
 class ManageDrones extends Component {
     state = {
         name: '',
-        squadron: this.props.location.state.squadron,
-        drones: [],
         errors: {
             name: false,
         },
@@ -51,7 +52,7 @@ class ManageDrones extends Component {
     handleSubmit = () => {
         const values = {
             'name': this.state.name,
-            'squadron': this.state.squadron.id,
+            'squadron': this.props.squadron.id,
         };
         request(postDrone, false, values).then(data => {
             if(data.hasOwnProperty('error')) {
@@ -62,43 +63,41 @@ class ManageDrones extends Component {
             }
             if(data.hasOwnProperty('name')) {
                 // ToDo: return squadron scrap from API and update squadron
-                this.setState(prevState => ({
-                    drones: [...prevState.drones, data],
-                    squadron: {
-                        ...prevState.squadron,
-                        scrap: prevState.squadron.scrap - 50,
-                    },
-                    name: '',
-                }));
+                this.setState({name: ''});
+                this.props.addDrone(data);
+                this.props.updateSquadron({
+                    ...this.props.squadron,
+                    scrap: this.props.squadron.scrap - 50
+                });
             }
         });
     };
 
     componentDidMount() {
-        if(!this.props.location.state.squadron) {
+        if(!this.props.squadron) {
             this.props.history.push('/manage-squadrons');
         }
-        request(getDroneBySquadron, {id: this.state.squadron.id}).then(data => {
+        request(getDroneBySquadron, {id: this.props.squadron.id}).then(data => {
             const {history} = this.props;
             handleUnauthorised(data, history);
-            this.setState({drones: data});
+            this.props.setDrones(data);
         });
     }
 
     com;
 
     render() {
-        const {classes} = this.props;
+        const {classes, squadron, drones} = this.props;
         return (
             <Fragment>
                 <Typography variant="h4">
                     Manage Drones
                 </Typography>
                 <Typography variant="subtitle1">
-                    {this.state.squadron.name}
+                    {squadron.name}
                 </Typography>
                 <Typography variant="body1">
-                    Scrap: {this.state.squadron.scrap}
+                    Scrap: {squadron.scrap}
                 </Typography>
                 <form noValidate autoComplete="off" className={classes.form}>
                     <Grid container spacing={16}>
@@ -131,7 +130,7 @@ class ManageDrones extends Component {
                     </Grid>
                 </form>
                 <Grid container justify="flex-start" spacing={16}>
-                    {this.state.drones.map(
+                    {drones.map(
                         drone => <Grid item xs={4} key={drone.id}>
                             <Paper>
                                 <Typography variant={'h5'}>
@@ -168,7 +167,7 @@ class ManageDrones extends Component {
                                     to={{
                                         pathname: '/update-drone',
                                         state: {
-                                            squadron: this.state.squadron,
+                                            squadron,
                                             drone,
                                         },
                                     }}
@@ -185,6 +184,23 @@ class ManageDrones extends Component {
     }
 }
 
-ManageDrones = withStyles(styles)(withRouter(ManageDrones));
+const mapStateToProps = (state, props) => {
+    const squadron = props.location.state.squadron;
 
-export default ManageDrones;
+    return {
+        drones: state.drones,
+        squadron: state.squadrons.find(s => s.id === squadron.id)
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setDrones: drones => dispatch(setDrones(drones)),
+        addDrone: drone => dispatch(addDrone(drone)),
+        updateSquadron: squadron => dispatch(updateSquadron(squadron)),
+    };
+};
+
+export default withStyles(styles)(withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(ManageDrones),
+));

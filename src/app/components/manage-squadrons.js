@@ -10,6 +10,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { withRouter } from 'react-router';
 import { handleUnauthorised } from '../auth';
 import { Link } from 'react-router-dom';
+import { addSquadron, setSquadrons } from '../../store/squadrons/actions';
+import { connect } from 'react-redux';
 
 const styles = theme => ({
     form: {
@@ -29,7 +31,6 @@ const styles = theme => ({
 class ManageSquadrons extends Component {
     state = {
         name: '',
-        squadrons: [],
     };
     handleChange = name => event => {
         const value = event.target.value;
@@ -38,10 +39,9 @@ class ManageSquadrons extends Component {
     handleSubmit = () => {
         request(postSquadron, false, {'name': this.state.name}).then(data => {
             if(data.hasOwnProperty('name')) {
-                this.setState(prevState => ({
-                    squadrons: [...prevState.squadrons, data],
-                    name: '',
-                }));
+                this.setState({name: ''});
+                console.log('d', data);
+                this.props.addSquadron(data);
             }
         });
     };
@@ -50,12 +50,13 @@ class ManageSquadrons extends Component {
         request(getSquadron).then(data => {
             const {history} = this.props;
             handleUnauthorised(data, history);
-            this.setState({squadrons: data});
+            this.props.setSquadrons(data);
         });
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, squadrons} = this.props;
+        console.log('s2', squadrons);
         return (
             <Fragment>
                 <Typography variant="h4">
@@ -85,7 +86,7 @@ class ManageSquadrons extends Component {
                     </Grid>
                 </form>
                 <Grid container justify="flex-start" spacing={16}>
-                    {this.state.squadrons.map(
+                    {squadrons.map(
                         squadron => <Grid item xs={4} key={squadron.id}>
                             <Paper>
                                 <Typography variant={'h5'}>
@@ -115,6 +116,20 @@ class ManageSquadrons extends Component {
     }
 }
 
-ManageSquadrons = withStyles(styles)(withRouter(ManageSquadrons));
+const mapStateToProps = (state) => {
+    return {
+        squadrons: state.squadrons,
+    };
+};
 
-export default ManageSquadrons;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setSquadrons: squadrons => dispatch(setSquadrons(squadrons)),
+        addSquadron: squadron => dispatch(addSquadron(squadron)),
+    };
+};
+
+export default withStyles(styles)(
+    withRouter(
+        connect(mapStateToProps, mapDispatchToProps)(ManageSquadrons),
+    ));

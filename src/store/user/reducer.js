@@ -6,10 +6,7 @@ let initialState = state;
 const reducer = (state = initialState, action) => {
     switch(action.type) {
         case SET_USER:
-            return {
-                ...state,
-                ...action.user,
-            };
+            return action.user;
         default:
             return state;
     }

@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
-import userReducer from './user/reducer';
-import dronesReducer from './drones/reducer';
-import squadronsReducer from './squadrons/reducer';
+import user from './user/reducer';
+import drones from './drones/reducer';
+import squadrons from './squadrons/reducer';
 
 const rootReducer = combineReducers({
-    userReducer,
-    dronesReducer,
-    squadronsReducer,
+    user,
+    drones,
+    squadrons,
 });
 
 export default rootReducer;
