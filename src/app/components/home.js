@@ -28,8 +28,9 @@ class Home extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return state;
-};
+const mapStateToProps = (state, ownProps) => ({
+    ...state,
+    ...ownProps,
+});
 
 export default withStyles(styles)(connect(mapStateToProps)(Home));

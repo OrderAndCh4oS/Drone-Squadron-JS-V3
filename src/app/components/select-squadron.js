@@ -81,7 +81,6 @@ class SelectSquadron extends Component {
         request(getSquadron).then(data => {
             const {history} = this.props;
             handleUnauthorised(data, history);
-            console.log(data);
             this.setState({squadrons: data});
         });
     }
@@ -153,6 +152,4 @@ class SelectSquadron extends Component {
     }
 }
 
-SelectSquadron = withStyles(styles)(SelectSquadron);
-
-export default SelectSquadron;
+export default withStyles(styles)(SelectSquadron);

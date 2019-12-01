@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import {
     background,
-    dm,
-    game,
+    droneManager,
     grid,
-    pm,
+    particleManager,
     squadrons,
 } from './constants/constants';
 import { deltaTime } from './service/delta-time';
@@ -22,7 +21,7 @@ import {
     getSteering,
     getThruster,
     getWeapon,
-    postSquadron,
+    putEndOfGameUpdate, putSquadron,
 } from '../api';
 import UtilitiesFactory from './factory/utilities-factory';
 import GimbalFactory from './factory/gimbal-factory';
@@ -33,6 +32,9 @@ import WeaponFactory from './factory/weapon-factory';
 import RoundTypeFactory from './factory/round-type-factory';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core';
+import { connect } from 'react-redux';
+import { endOfGameUpdate } from '../store/drones/actions';
+import { updateSquadron } from '../store/squadrons/actions';
 
 const styles = theme => ({
     button: {
@@ -41,6 +43,7 @@ const styles = theme => ({
 });
 
 class Main extends Component {
+    updated = false;
 
     state = {
         playing: false,
@@ -49,6 +52,7 @@ class Main extends Component {
     };
 
     play = () => {
+        this.updated = false;
         this.fpsInterval = 1000 / 60;
         this.then = Date.now();
         this.startTime = this.then;
@@ -72,8 +76,8 @@ class Main extends Component {
     draw = () => {
         background.draw();
         deltaTime.update();
-        dm.update();
-        pm.update();
+        droneManager.update();
+        particleManager.update();
         grid.draw();
         grid.log();
         UI.displaySquadData();
@@ -88,7 +92,7 @@ class Main extends Component {
             const winner = this.getWinner();
             this.musicManager.stop();
             new GameOver().draw(this.state.winner);
-            // this.updateSquadrons();
+            this.updateSquadrons();
             this.setState({
                 winner,
                 gameOver: true,
@@ -109,37 +113,71 @@ class Main extends Component {
     };
 
     updateSquadrons = () => {
+        if(this.updated) return;
+        this.updated = true;
         squadrons.map(squadron => {
-            request(postSquadron({}));
-        });
+            const winner = this.getWinner();
+            const roundBonus = winner ? winner.id === squadron.id ? 250 : 125 : 150;
+            const killBonus = squadron.drones.reduce((bonus, d) => bonus + (d.kills * 25), 0);
+            request(putSquadron,{id: squadron.id}, {
+                scrap: squadron.scrap + roundBonus + killBonus
+            }).then(data => {
+                return this.props.updateSquadron({
+                    id: Number(data.id_1),
+                    scrap: data.scrap,
+                });
+            });
+            return squadron.drones.map(
+                drone => {
+                    let status;
+                    const finalHealth = drone.health.currentHealth;
+                    switch(true) {
+                        case finalHealth <= 0:
+                            status = 'destroyed';
+                            break;
+                        case finalHealth < 33:
+                            status = 'damaged';
+                            break;
+                        default:
+                            status = 'ready';
+                    }
+                    request(
+                        putEndOfGameUpdate,
+                        {id: drone.id},
+                        {kills: drone.kills, status},
+                    ).then(data => {
+                        this.props.endOfGameUpdate(
+                            drone.id,
+                            data.missions,
+                            data.kills,
+                            data.status,
+                        );
+                    });
+                },
+            );
+        },
+        );
     };
 
     endGame = () => {
         this.setState({playing: false});
         squadrons.shift();
         squadrons.shift();
-        dm.reset();
-        pm.reset();
+        droneManager.reset();
+        particleManager.reset();
         grid.reset();
         this.props.endGame();
     };
 
-    fetchDrones() {
-        const promises = [];
-
-        this.fetchUtility(promises, getGimbal, 'gimbals', GimbalFactory);
-        this.fetchUtility(promises, getThruster, 'thrusters', ThrusterFactory);
-        this.fetchUtility(promises, getSteering, 'steering', SteeringFactory);
-        this.fetchUtility(promises, getScanner, 'scanners', ScannerFactory);
-        this.fetchUtility(promises, getWeapon, 'weapons', WeaponFactory);
-        this.fetchUtility(
-            promises,
-            getRoundType,
-            'roundTypes',
-            RoundTypeFactory,
-        );
-
-        Promise.all(promises).then(items => {
+    fetchDrones = () => {
+        Promise.all([
+            this.fetchUtility(getGimbal, 'gimbals', GimbalFactory),
+            this.fetchUtility(getThruster, 'thrusters', ThrusterFactory),
+            this.fetchUtility(getSteering, 'steering', SteeringFactory),
+            this.fetchUtility(getScanner, 'scanners', ScannerFactory),
+            this.fetchUtility(getWeapon, 'weapons', WeaponFactory),
+            this.fetchUtility(getRoundType, 'roundTypes', RoundTypeFactory),
+        ]).then(items => {
             let utilities = {};
             for(let item of items) {
                 utilities = Object.assign(utilities, item);
@@ -150,22 +188,24 @@ class Main extends Component {
             this.play();
             this.animate();
         });
-    }
+    };
 
-    fetchUtility(promises, get, name, factory) {
-        promises.push(request(get).then(data => {
-            return {[name]: UtilitiesFactory.make(factory, data)};
-        }));
-    }
+    fetchUtility = (getUtility, name, factory) =>
+        request(getUtility).then(
+            data => ({[name]: UtilitiesFactory.make(factory, data)}),
+        );
 
-    setupDrones(squadronJson, utilities) {
+    setupDrones = (squadronJson, utilities) =>
         squadronJson.map(
             s => squadrons.push(SquadronFactory.make(s, utilities)),
         );
-    }
 
     componentDidMount() {
         this.fetchDrones();
+    }
+
+    componentWillUnmount() {
+        this.endGame();
     }
 
     render() {
@@ -188,6 +228,22 @@ class Main extends Component {
     }
 }
 
-Main = withStyles(styles)(Main);
+const mapStateToProps = (state, ownProps) => {
+    return {
+        ...state,
+        ...ownProps,
+    };
+};
 
-export default Main;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        endOfGameUpdate: (id, missions, kills, status) => dispatch(
+            endOfGameUpdate(id, missions, kills, status),
+        ),
+        updateSquadron: (squadron) => dispatch(updateSquadron(squadron)),
+    };
+};
+
+export default withStyles(styles)(
+    connect(mapStateToProps, mapDispatchToProps)(Main),
+);

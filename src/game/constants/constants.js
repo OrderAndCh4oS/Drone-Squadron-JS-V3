@@ -14,12 +14,12 @@ export const colours = {
     blue: '#3b9ec7',
 };
 
-export const friction = 0.8;
+export const friction = 0.7;
 
 export const debug = new Debug();
 export const background = new Background();
 export const grid = new GameGrid();
 export const squadrons = [];
-export const dm = new DroneManager();
-export const pm = new ParticleManager();
+export const droneManager = new DroneManager();
+export const particleManager = new ParticleManager();
 

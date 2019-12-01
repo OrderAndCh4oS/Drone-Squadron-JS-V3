@@ -7,6 +7,7 @@ export default class SquadronFactory {
             squadronData.id,
             squadronData.name,
             squadronData.colour,
+            squadronData.scrap
         );
         squadronData.drones.map((d) => {
             squadron.addDrone(DroneFactory.make(d, squadronData, utilities));

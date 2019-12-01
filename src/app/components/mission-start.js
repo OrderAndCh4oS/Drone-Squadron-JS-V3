@@ -33,7 +33,6 @@ class MissionStart extends Component {
     };
 
     endGame = () => {
-        console.log('end');
         this.setState(prevState => ({
             play: false,
             squadronOne: {
@@ -95,6 +94,4 @@ class MissionStart extends Component {
     }
 }
 
-MissionStart = withStyles(styles)(MissionStart);
-
-export default MissionStart;
+export default withStyles(styles)(MissionStart);

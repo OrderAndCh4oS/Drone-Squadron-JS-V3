@@ -1,6 +1,6 @@
 import { returnToCanvas, shuffle } from '../functions';
 import Explosion from '../game-object/abstract/explosion';
-import { pm } from '../constants/constants';
+import { particleManager } from '../constants/constants';
 
 export default class DroneManager {
     constructor() {
@@ -28,7 +28,7 @@ export default class DroneManager {
             if(drone.health.currentHealth <= 0) {
                 const explosion = new Explosion(-1, drone.position.x,
                     drone.position.y);
-                pm.addParticle(explosion);
+                particleManager.addParticle(explosion);
                 drone.removeParticle();
             }
             return drone;

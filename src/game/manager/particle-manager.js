@@ -1,5 +1,5 @@
 import { didCollide, isOffCanvas } from '../functions';
-import { dm } from '../constants/constants';
+import { droneManager } from '../constants/constants';
 
 export default class ParticleManager {
     constructor() {
@@ -29,7 +29,7 @@ export default class ParticleManager {
     }
 
     collisionDetection(p) {
-        dm.drones.map((d) => {
+        droneManager.drones.map((d) => {
             if(didCollide(p, d)) {
                 const initialHealth = d.health.currentHealth;
                 d.health.takeDamage(p.damage);

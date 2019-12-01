@@ -99,6 +99,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-Login = withRouter(connect(null, mapDispatchToProps)(Login));
-
-export default Login;
+export default withRouter(connect(null, mapDispatchToProps)(Login));

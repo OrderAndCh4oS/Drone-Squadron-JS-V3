@@ -116,9 +116,10 @@ class ManageSquadrons extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
     return {
         squadrons: state.squadrons,
+        ...ownProps
     };
 };
 

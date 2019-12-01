@@ -1,5 +1,5 @@
 import canvas from '../../service/canvas';
-import { pm } from '../../constants/constants';
+import { particleManager } from '../../constants/constants';
 import { deltaTime } from '../../service/delta-time';
 import Vector from '../../service/vector';
 import { angleTo } from '../../functions';
@@ -82,7 +82,7 @@ export default class Weapon {
     }
 
     fire() {
-        pm.addParticle(
+        particleManager.addParticle(
             this.round.make(
                 this.drone,
                 this.position.x,

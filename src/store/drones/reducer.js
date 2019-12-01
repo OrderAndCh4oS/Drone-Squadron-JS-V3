@@ -1,4 +1,10 @@
-import { ADD_DRONE, REMOVE_DRONE, SET_DRONES, UPDATE_DRONE } from './types';
+import {
+    ADD_DRONE,
+    END_OF_GAME_UPDATE,
+    REMOVE_DRONE,
+    SET_DRONES,
+    UPDATE_DRONE,
+} from './types';
 import state from './state';
 
 let initialState = state;
@@ -17,6 +23,16 @@ const reducer = (state = initialState, action) => {
         }
         case UPDATE_DRONE:
             return state.map(d => d.id === action.drone.id ? action.drone : d);
+        case END_OF_GAME_UPDATE:
+            return state.map(d => d.id === action.id
+                ? {
+                    ...d,
+                    status: action.status,
+                    kills: action.kills,
+                    missions: action.missions,
+                }
+                : d,
+            );
         default:
             return state;
     }

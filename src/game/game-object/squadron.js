@@ -3,11 +3,12 @@ import { colours } from '../constants/constants';
 import PercentBox from '../user-interface/percent-box';
 
 export default class Squadron {
-    constructor(id, name, colour) {
+    constructor(id, name, colour, scrap) {
         this.id = id;
         this._name = name;
         this.colour = colour;
         this.drones = [];
+        this.scrap = scrap;
     }
 
     get name() {

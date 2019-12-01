@@ -84,8 +84,6 @@ class ManageDrones extends Component {
         });
     }
 
-    com;
-
     render() {
         const {classes, squadron, drones} = this.props;
         return (
@@ -184,8 +182,8 @@ class ManageDrones extends Component {
     }
 }
 
-const mapStateToProps = (state, props) => {
-    const squadron = props.location.state.squadron;
+const mapStateToProps = (state, ownProps) => {
+    const squadron = ownProps.location.state.squadron;
 
     return {
         drones: state.drones,

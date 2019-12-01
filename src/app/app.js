@@ -22,6 +22,11 @@ import ManageSquadrons from './components/manage-squadrons';
 import ManageDrones from './components/manage-drones';
 import UpdateDrone from './components/update-drone';
 import SelectSquadron from './components/select-squadron';
+import { setSquadrons } from '../store/squadrons/actions';
+import { connect } from 'react-redux';
+import { getDrone, getSquadron } from '../api';
+import request from '../api/request';
+import { setDrones } from '../store/drones/actions';
 
 const styles = theme => ({
     root: {
@@ -137,6 +142,11 @@ class App extends Component {
         });
     };
 
+    componentDidMount() {
+        request(getSquadron).then(data => this.props.setSquadrons(data));
+        request(getDrone).then(data => this.props.setDrones(data));
+    }
+
     render() {
         const {classes} = this.props;
         return (
@@ -200,6 +210,13 @@ class App extends Component {
     }
 }
 
-App = withRouter(withStyles(styles)(App));
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setSquadrons: squadrons => dispatch(setSquadrons(squadrons)),
+        setDrones: drones => dispatch(setDrones(drones)),
+    };
+};
 
-export default App;
+export default withRouter(withStyles(styles)(
+    connect(null, mapDispatchToProps)(App),
+));

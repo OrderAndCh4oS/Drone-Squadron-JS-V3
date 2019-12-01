@@ -1,5 +1,5 @@
 import Weapon from '../abstract/weapon';
-import { pm } from '../../constants/constants';
+import { particleManager } from '../../constants/constants';
 import canvas from '../../service/canvas';
 import sounds from '../../assets/audio/sound';
 
@@ -25,7 +25,7 @@ export default class Shotgun extends Weapon {
         this._sound.play();
         for(let i = 0; i < 12; i++) {
             const scatter = Math.random() * 0.08 - 0.04;
-            pm.addParticle(
+            particleManager.addParticle(
                 this.round.make(
                     this.drone,
                     this.position.x,

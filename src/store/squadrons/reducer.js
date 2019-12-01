@@ -21,7 +21,10 @@ const reducer = (state = initialState, action) => {
             return action.squadrons;
         }
         case UPDATE_SQUADRON:
-            return state.map(s => s.id === action.squadron.id ? action.squadron : s);
+            return state.map(s => s.id === action.squadron.id ? {
+                ...s,
+                ...action.squadron
+            } : s);
         default:
             return state;
     }

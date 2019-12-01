@@ -1,5 +1,5 @@
 import Drone from '../game-object/drone';
-import { allDrones, dm } from '../constants/constants';
+import { allDrones, droneManager } from '../constants/constants';
 import canvas from '../service/canvas';
 import Vector from '../service/vector';
 
@@ -33,7 +33,7 @@ export default class DroneFactory {
         );
         weapon.attachDrone(drone);
         weapon.setPosition(position.x, position.y);
-        dm.addDrone(drone);
+        droneManager.addDrone(drone);
 
         return drone;
     }
