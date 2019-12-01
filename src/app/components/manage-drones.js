@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { addDrone, setDrones } from '../../store/drones/actions';
 import { updateSquadron } from '../../store/squadrons/actions';
+import nameGenerator from '../../utilities/name-generator';
 
 const styles = theme => ({
     form: {
@@ -35,7 +36,7 @@ const styles = theme => ({
 
 class ManageDrones extends Component {
     state = {
-        name: '',
+        name: nameGenerator(),
         errors: {
             name: false,
         },
@@ -63,7 +64,7 @@ class ManageDrones extends Component {
             }
             if(data.hasOwnProperty('name')) {
                 // ToDo: return squadron scrap from API and update squadron
-                this.setState({name: ''});
+                this.setState({name: nameGenerator()});
                 this.props.addDrone(data);
                 this.props.updateSquadron({
                     ...this.props.squadron,

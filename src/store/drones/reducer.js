@@ -19,7 +19,7 @@ const reducer = (state = initialState, action) => {
         case REMOVE_DRONE:
             return state.filter(d => d.id !== action.drone.id);
         case SET_DRONES: {
-            return action.drones;
+            return action.drones.filter(d => !Object.keys(d.status_value).includes('destroyed'));
         }
         case UPDATE_DRONE:
             return state.map(d => d.id === action.drone.id ? action.drone : d);

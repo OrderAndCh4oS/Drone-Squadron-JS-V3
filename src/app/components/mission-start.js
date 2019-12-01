@@ -54,7 +54,7 @@ class MissionStart extends Component {
                 this.setState(prevState => ({
                     squadronOne: {
                         ...prevState.squadronOne,
-                        drones: data,
+                        drones: data.filter(d => !Object.keys(d.status_value).includes('destroyed')),
                     },
                 }));
             });
@@ -65,7 +65,7 @@ class MissionStart extends Component {
                 this.setState(prevState => ({
                     squadronTwo: {
                         ...prevState.squadronTwo,
-                        drones: data,
+                        drones: data.filter(d => !Object.keys(d.status_value).includes('destroyed')),
                     },
                 }));
             });
