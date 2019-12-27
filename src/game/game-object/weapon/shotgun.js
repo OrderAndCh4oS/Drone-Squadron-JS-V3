@@ -5,7 +5,7 @@ import sounds from '../../assets/audio/sound';
 
 export default class Shotgun extends Weapon {
     constructor(name, fireRate, round) {
-        super(name, fireRate, round, '#43211d', sounds.shotgunOne);
+        super(name, fireRate, round, '#533636', sounds.shotgunOne);
     }
 
     draw() {
